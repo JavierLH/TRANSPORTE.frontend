@@ -1,0 +1,88 @@
+<div class="card">
+  <p-table
+    #dt
+    [value]="usuarios"
+    dataKey="id"
+    [globalFilterFields]="['nombre']"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  >
+    <!-- ==================== BUSCADOR ==================== -->
+    <ng-template pTemplate="caption">
+      <div class="buscador-container">
+        <span class="input-con-icono">
+          <i class="pi pi-search"></i>
+          <!-- Usamos $any($event.target) para evitar errores del modo estricto de Angular -->
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar por usuario..."
+          />
+        </span>
+      </div>
+    </ng-template>
+
+    <!-- ==================== CABECERAS ==================== -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 4rem"></th>
+        <th>Nombre del Usuario</th>
+        <th class="col-centrada">VIKINGO</th>
+        <th class="col-centrada">DRAKKAR</th>
+        <th class="col-centrada">KARVE</th>
+        <th class="col-centrada">LETCA</th>
+      </tr>
+    </ng-template>
+
+    <!-- ==================== FILA PRINCIPAL ==================== -->
+    <!-- ==================== FILA PRINCIPAL ==================== -->
+    <ng-template pTemplate="body" let-usuario let-expanded="expanded">
+      <tr>
+        <td>
+          <!-- Cambiamos el icono por un texto de [Abrir] / [Cerrar] para que lo veas sí o sí -->
+          <button
+            type="button"
+            pButton
+            pRipple
+            [pRowToggler]="usuario"
+            class="p-button-text p-button-plain texto-negrita"
+          >
+            {{ expanded ? "[-] Ocultar" : "[+] Expandir" }}
+          </button>
+        </td>
+        <td class="texto-negrita">{{ usuario.nombre }}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </ng-template>
+
+    <!-- ==================== FILA EXPANDIDA (CHECKBOXES) ==================== -->
+    <ng-template pTemplate="rowexpansion" let-usuario>
+      <tr class="fila-expandida">
+        <td colspan="2" class="col-derecha texto-negrita texto-apoyo">
+          Asignar accesos para {{ usuario.nombre }}:
+        </td>
+        <td class="col-centrada">
+          <p-checkbox
+            [(ngModel)]="usuario.vikingo"
+            [binary]="true"
+          ></p-checkbox>
+        </td>
+        <td class="col-centrada">
+          <p-checkbox
+            [(ngModel)]="usuario.drakkar"
+            [binary]="true"
+          ></p-checkbox>
+        </td>
+        <td class="col-centrada">
+          <p-checkbox [(ngModel)]="usuario.karve" [binary]="true"></p-checkbox>
+        </td>
+        <td class="col-centrada">
+          <p-checkbox [(ngModel)]="usuario.letca" [binary]="true"></p-checkbox>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

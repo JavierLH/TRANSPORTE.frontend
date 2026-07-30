@@ -1,0 +1,229 @@
+/* --- Contenedor Principal --- */
+.login-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+  /*align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  width: 90vh;*/
+  margin-top: 0%;
+  width: 45%;
+  color: #202124;
+  padding: 20px;
+  margin-left: auto;
+}
+
+.fondo{
+  z-index: -1;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Cabecera --- */
+.login-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-header h2 {
+  font-size: 1.5rem; /* Tamaño más normal para un título */
+  font-weight: 500;
+  margin: 0;
+}
+
+.login-header p {
+  font-size: 0.9rem; /* Cambiado de 1px a un tamaño legible */
+  margin: 8px 0 0 0;
+  color: #5f6368;
+}
+
+.login-header a, .link-action {
+  color: #3661be;
+  text-decoration: none;
+}
+
+.login-header a:hover, .link-action:hover {
+  text-decoration: underline;
+}
+
+/* --- Tarjeta del Formulario --- */
+.login-card {
+  background-color: #ffffff;
+  width: 100%; /* Cambiado de 160% a 100% para que no se desborde */
+  height: 65vh; /* Cambiado de 60vh a auto para que se adapte al contenido */
+  max-width: 30vw;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra un poco más suave y amplia */
+  border: 1px solid #e0e0e0;
+  padding: 10%;
+  margin-top: 15%;
+}
+
+/* --- Agrupación de Inputs --- */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Mayor separación entre campos */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Separación entre el label y el input */
+}
+
+.input-group label, .password-labels label {
+  font-size: 0.95rem; /* Tamaño estándar para labels */
+  font-weight: 500;
+  color: #3c4043;
+}
+
+.password-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* --- Enlaces de acción --- */
+.link-action {
+  font-size: 0.9rem;
+}
+
+.forgot-password {
+  font-size: 0.85rem;
+  margin-top: 15px;
+  display: inline-block;
+  text-align: center;
+}
+
+/* --- Estilos PrimeNG: Inputs --- */
+:host ::ng-deep .input-group .p-inputtext {
+  width: 100%;
+  height: 42px; /* Altura estándar y cómoda para hacer clic */
+  padding: 0 12px;
+  font-size: 1rem; /* Texto legible al escribir */
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+:host ::ng-deep .input-group .p-inputtext:focus {
+  border-color: #3661be;
+  outline: 1px solid #3661be;
+}
+
+/* --- Estilos PrimeNG: Botón --- */
+:host ::ng-deep .btn-login.p-button {
+  background-color: #3f72df;
+  border: none;
+  width: 100%;
+  height: 45px; /* Botón un poco más alto que los inputs */
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+:host ::ng-deep .btn-login.p-button:hover {
+  background-color: #2f5bb5;
+}
+
+/* --- Estilos PrimeNG: ComboBox (p-select) --- */
+:host ::ng-deep .custom-combo {
+  width: 100%;
+  height: 42px; /* Igualado a la altura de los inputs de texto */
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  box-shadow: none;
+  align-items: center;
+  display: flex;
+}
+
+:host ::ng-deep .custom-combo .p-inputtext {
+  height: 100%;
+  padding: 0 12px;
+  font-size: 1rem;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background: transparent;
+}
+
+:host ::ng-deep .custom-combo.p-focus,
+:host ::ng-deep .custom-combo:focus-within {
+  border-color: #3661be;
+  outline: 1px solid #3661be;
+}
+
+:host ::ng-deep .custom-combo .p-select-dropdown,
+:host ::ng-deep .custom-combo .p-dropdown-trigger {
+  width: 35px;
+  color: #5f6368;
+}
+
+:host ::ng-deep .custom-combo .p-select-label,
+:host ::ng-deep .custom-combo .p-dropdown-label {
+  padding: 0 12px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* --- Panel desplegable del ComboBox --- */
+:host ::ng-deep .custom-combo-panel {
+  font-size: 0.95rem;
+}
+
+:host ::ng-deep .custom-combo-panel .p-select-option,
+:host ::ng-deep .custom-combo-panel .p-dropdown-item {
+  padding: 10px 12px !important; /* Espaciado cómodo para seleccionar opciones */
+  font-size: 0.95rem !important;
+  margin: 0;
+}
+
+:host ::ng-deep .custom-combo-panel .p-select-list,
+:host ::ng-deep .custom-combo-panel .p-dropdown-items {
+  padding: 4px 0 !important;
+}
+
+.contenedorSelect{
+  display: flex;
+  align-items: center;
+  gap: 5%;
+}
+
+.contenedorSelect img {
+
+  width: 35px;
+  height: 35px;
+  object-fit: contain; /* Esta es la clave para que no se deformen */
+  margin-right: 10px;  /* Da un poco de aire entre el logo y el texto */
+  padding: 2%;
+
+}
+
+
+
+.alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-message {
+  background-color: #ffeecf;
+  color: #b43426;
+  border: 1px solid #f5c2c2;
+}
+
+.success-message {
+  background-color: #def2d6;
+  color: #316d28;
+  border: 1px solid #c3e6cb;
+}

@@ -1,0 +1,47 @@
+/* Contenedor del buscador a la derecha */
+.buscador-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para el icono dentro del input */
+.input-con-icono {
+    position: relative;
+}
+
+.input-con-icono i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.input-con-icono input {
+    padding-left: 2.5rem;
+    width: 250px;
+}
+
+/* Alineaciones para las columnas */
+.col-centrada {
+    text-align: center !important;
+}
+
+.col-derecha {
+    text-align: right !important;
+    padding-right: 1.5rem !important;
+}
+
+.texto-negrita {
+    font-weight: bold;
+}
+
+/* Darle un color distinto a la fila expandida para que resalte */
+.fila-expandida {
+    background-color: #f8f9fa;
+}
+
+.texto-apoyo {
+    color: #2196F3; /* Azul estilo PrimeNG */
+}

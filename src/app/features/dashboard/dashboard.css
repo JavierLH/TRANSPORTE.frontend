@@ -1,0 +1,27 @@
+.contenedor-norte{
+  background-color: red;
+  padding: 1px 1px;
+}
+
+.contenedor-principal{
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+}
+
+.panel-lateral{
+  background-color: aqua;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.area-contenido {
+  flex-grow: 1;
+  height: 100vh;
+  overflow: auto;
+}
+
+
+

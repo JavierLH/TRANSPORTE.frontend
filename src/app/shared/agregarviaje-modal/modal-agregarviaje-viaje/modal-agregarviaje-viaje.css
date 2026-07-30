@@ -1,0 +1,140 @@
+/* Contenedor principal */
+.modal-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 10px;
+    background-color: #ffffff;
+}
+
+/* Tarjetas de cada sección */
+.seccion-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.seccion-header {
+    background-color: #eef2ff;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 6px 6px 0 0;
+}
+
+.seccion-body {
+    padding: 16px;
+}
+
+/* =========================================
+   NUEVOS GRIDS SEPARADOS
+   ========================================= */
+
+/* Sección superior: 4 columnas (No. Viaje, Fecha, Cliente, Ejecutivo) */
+.viaje-fecha-cliente-ejecutivo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+/* Sección general: Cuadrícula invisible de 6 para mezclar tamaños */
+.vista-general {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 24px 16px;
+    padding: 16px;
+}
+
+/* PRIMERO 3 COLUMNAS: Los primeros 6 campos (2 filas enteras)
+   ocupan 2 de 6 espacios (1/3 del ancho) */
+.vista-general > div:nth-child(-n+6) {
+    grid-column: span 2;
+}
+
+/* LUEGO 2 COLUMNAS: Del campo 7 en adelante
+   ocupan 3 de 6 espacios (1/2 del ancho) */
+.vista-general > div:nth-child(n+7) {
+    grid-column: span 3;
+}
+/* ========================================= */
+
+/* Estilo para cada contenedor de input y label */
+.vista-general div,
+.viaje-fecha-cliente-ejecutivo div,
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Estilo para las etiquetas (labels) */
+.vista-general label,
+.viaje-fecha-cliente-ejecutivo label,
+.campo label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+/* Utilidades Flex y Radio Buttons */
+.flex-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.gap-large {
+    gap: 40px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Footer de botones */
+.footer-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* PrimeNG Overrides */
+.w-full {
+    width: 100% !important;
+}
+
+/* Grid de 3 columnas para los radio buttons de Cambio de Turno */
+.turno-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px 40px;
+    padding: 16px;
+}
+
+@media (max-width: 640px) {
+    /* En celulares bajamos a 1 sola columna */
+    .vista-general,
+    .viaje-fecha-cliente-ejecutivo {
+        grid-template-columns: 1fr;
+    }
+
+    .seccion-body.flex-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .vista-general,
+    .viaje-fecha-cliente-ejecutivo,
+    .turno-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

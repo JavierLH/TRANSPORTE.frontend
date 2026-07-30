@@ -1,0 +1,26 @@
+<div class="menu-container">
+  <div class="menu-logo-container">
+    <span class="menu-title">{{ nombre }}</span>
+  </div>
+
+  <!-- 💡 Añadimos referencia de view y evento de scroll -->
+  <div class="menu-content-scroll" #scrollContainer (scroll)="onScroll($event)">
+    <p-panelMenu
+      [model]="items"
+      styleClass="custom-menu"
+      [multiple]="false"
+    ></p-panelMenu>
+  </div>
+
+  <button class="user-profile-btn p-ripple">
+    <p-avatar
+      image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+      class="user-avatar"
+      shape="circle"
+    ></p-avatar>
+    <div class="user-details">
+      <span class="user-name">Amy Elsner</span>
+      <span class="user-role">Admin</span>
+    </div>
+  </button>
+</div>

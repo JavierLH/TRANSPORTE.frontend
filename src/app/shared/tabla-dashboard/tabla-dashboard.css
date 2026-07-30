@@ -1,0 +1,77 @@
+/* Contenedor principal: mismo look de tarjeta que .seccion-card del modal */
+.contenedor-principal {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Encabezados: centrados, mayúsculas ligeras y más "planos" (look moderno) */
+:host ::ng-deep .p-datatable-thead > tr > th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Refuerzo de líneas verticales, por si el theme las pinta muy tenues */
+:host ::ng-deep .p-datatable-gridlines .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable-gridlines .p-datatable-tbody > tr > td {
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  font-size: 13px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Zebra striping sutil */
+:host ::ng-deep .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Hover más notorio, típico de tablas modernas */
+:host ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #eef2ff !important;
+  cursor: pointer;
+}
+
+/* Fila seleccionada con acento de color, no solo gris */
+:host ::ng-deep .p-datatable-tbody > tr.p-datatable-row-selected {
+  background-color: #e0e7ff !important;
+}
+
+/* Caption */
+:host ::ng-deep .p-datatable-header {
+  background-color: transparent;
+  border: none;
+  padding: 0 0 12px 0;
+}
+
+/* Botones */
+:host ::ng-deep .btn-juguete {
+  padding: 0.2rem 0.55rem !important;
+  font-size: 12px !important;
+  height: 26px !important;
+  border-radius: 5px !important;
+}
+
+/* Mensaje de "sin registros" */
+:host ::ng-deep .p-datatable-emptymessage td {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+}

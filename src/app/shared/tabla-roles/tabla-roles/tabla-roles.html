@@ -1,0 +1,125 @@
+<p-toast></p-toast>
+
+<div class="card">
+  <p-table
+    [value]="roles"
+    [loading]="cargando"
+    [paginator]="true"
+    [rows]="10"
+    [tableStyle]="{ 'min-width': '40rem' }"
+    dataKey="idRol"
+  >
+    <ng-template pTemplate="caption">
+      <span class="titulo">Roles - {{ empresa }}</span>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Rol</th>
+        <th>Descripción</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rol>
+      <tr class="fila-clickeable" (click)="verRol(rol)">
+        <td>{{ rol.nombreRol }}</td>
+        <td>{{ rol.descripcion }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="2" class="text-center p-4">
+          No se encontraron roles para esta empresa.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [header]="
+    rolSeleccionado
+      ? 'Permisos de ' + rolSeleccionado.nombreRol
+      : 'Permisos del rol'
+  "
+  [(visible)]="mostrarDialog"
+  [modal]="true"
+  [style]="{ width: '60rem' }"
+  [breakpoints]="{ '960px': '95vw' }"
+  (onHide)="cerrarDialog()"
+>
+  <p-table
+    #dtPermisos
+    [value]="matrizPermisos"
+    [loading]="cargandoMatriz"
+    [scrollable]="true"
+    scrollHeight="400px"
+    [globalFilterFields]="['nombrePermiso', 'rutaModulo']"
+  >
+    <ng-template pTemplate="caption">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Buscar por nombre o ruta..."
+          (input)="
+            dtPermisos.filterGlobal($any($event.target).value, 'contains')
+          "
+        />
+      </span>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Permiso</th>
+        <th *ngFor="let f of funciones" class="col-centrada">
+          {{ f.nombreFuncion }}
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-fila>
+      <tr>
+        <td>
+          <div class="permiso-nombre">{{ fila.nombrePermiso }}</div>
+          <div class="permiso-ruta">{{ fila.rutaModulo }}</div>
+        </td>
+
+        <td *ngFor="let f of funciones" class="col-centrada">
+          <p-checkbox
+            [(ngModel)]="fila.funciones[f.idFuncion]"
+            [binary]="true"
+          ></p-checkbox>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="funciones.length + 1" class="text-center p-4">
+          No hay permisos disponibles.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      class="p-button-text"
+      (click)="cerrarDialog()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      icon="pi pi-save"
+      [loading]="guardando"
+      (click)="guardarPermisos()"
+    ></button>
+  </ng-template>
+</p-dialog>

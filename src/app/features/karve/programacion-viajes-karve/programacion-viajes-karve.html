@@ -1,0 +1,173 @@
+<div class="contenedor-principal" [ngClass]="`tema-karve`">
+  <div>
+    <app-card-filtros [nombreEmpresa]="'Karve'"></app-card-filtros>
+  </div>
+
+  <div class="contenedor-tabla-viajes">
+    <app-tabla-dashboard
+      [data]="viajes"
+      dataKey="idProgramacion"
+      [loading]="cargando"
+      [globalFilterFields]="camposDeBusqueda"
+      (rowClicked)="manejarClicEnViaje($event)"
+      [datosEmpresa]="datosEmpresa"
+      (recargarTabla)="cargarViajes()"
+    >
+      <ng-template #headerTemplate>
+        <tr>
+          <th>Folio</th>
+          <th>No. Viaje</th>
+          <th>No. Convenio</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Ejecutivo</th>
+          <th>Turno</th>
+          <th>Eco. Ruta</th>
+          <th>Operador Ruta</th>
+          <th>Eco. Retira</th>
+          <th>Operador Retira</th>
+          <th>Tipo Mercancía</th>
+          <th>Operación</th>
+          <th>Terminal</th>
+          <th>Comentarios</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Ciudad</th>
+          <th>Comisión</th>
+          <th>Gasto</th>
+          <th>Asignación</th>
+          <th>Temperatura</th>
+          <th>Estatus</th>
+          <th>Eco. Ingresa</th>
+          <th>Operador Ingresa</th>
+          <th>Ingreso</th>
+          <th>Entrega</th>
+          <th>Horario Cita</th>
+          <th>Envío POD</th>
+          <th>Envio Asignación</th>
+          <th>Envio Documentos</th>
+          <th>Envío Cita</th>
+          <th>Envío Datos</th>
+          <th>Envío CCP</th>
+          <th>Salida Patio</th>
+          <th>Llegada Planta</th>
+          <th>Salida Planta</th>
+          <th>Llegada Patio</th>
+          <th>Estatus Cita</th>
+          <th>Costo por Estadia</th>
+          <th>Estadias</th>
+          <th>Total Estadias</th>
+          <th>Observaciones Monitoreo</th>
+          <th>Primer Remolque</th>
+          <th>Primer Generador</th>
+          <th>Segundo Remolque</th>
+          <th>Segundo Generador</th>
+          <th>Dolly</th>
+          <th>Fecha de creación</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #bodyTemplate let-viaje>
+        <td>{{ viaje.idProgramacion }}</td>
+
+        <td>
+          <span class="font-bold text-blue-500">{{ viaje.noViaje }}</span>
+        </td>
+
+        <td>{{ viaje.noConvenio }}</td>
+
+        <td>{{ viaje.fecha }}</td>
+
+        <td>{{ viaje.idCliente }}</td>
+
+        <td>{{ viaje.idEjecutivo }}</td>
+
+        <td>{{ viaje.turno }}</td>
+
+        <td>{{ viaje.idEquipoRuta }}</td>
+
+        <td>{{ viaje.idOperador }}</td>
+
+        <td>{{ viaje.idEquipoRetira }}</td>
+
+        <td>{{ viaje.idOperadorRetira }}</td>
+
+        <td>{{ viaje.idTipoMercancia }}</td>
+
+        <td>{{ viaje.idTipoOperacion }}</td>
+
+        <td>{{ viaje.citaTerminal }}</td>
+
+        <td>{{ viaje.comentarios }}</td>
+
+        <td>{{ viaje.idOrigen }}</td>
+
+        <td>{{ viaje.idPatio }}</td>
+
+        <td>{{ viaje.idCiudad }}</td>
+
+        <td>{{ viaje.comision }}</td>
+
+        <td>{{ viaje.gasto }}</td>
+
+        <td>{{ viaje.asignacion }}</td>
+
+        <td>{{ viaje.conexiones }}</td>
+
+        <td>{{ viaje.estatus }}</td>
+
+        <td>{{ viaje.idEquipoIngreso }}</td>
+
+        <td>{{ viaje.idOperadorIngreso }}</td>
+
+        <td>{{ viaje.ingreso }}</td>
+
+        <td>{{ viaje.entrega }}</td>
+
+        <td>{{ viaje.horaCita }}</td>
+
+        <td>{{ viaje.envio }}</td>
+
+        <td>{{ viaje.envioAsignacion }}</td>
+
+        <td>{{ viaje.envioDocumentos }}</td>
+
+        <td>{{ viaje.envioCita }}</td>
+
+        <td>{{ viaje.envioSeguimiento }}</td>
+
+        <td>{{ viaje.envioCCP }}</td>
+
+        <td>{{ viaje.salidaPatio }}</td>
+
+        <td>{{ viaje.llegadaPlanta }}</td>
+
+        <td>{{ viaje.salidaPlanta }}</td>
+
+        <td>{{ viaje.llegadaPatio }}</td>
+
+        <td>{{ viaje.estatusCita }}</td>
+
+        <td>{{ viaje.costoEstadias }}</td>
+
+        <td>{{ viaje.estadias }}</td>
+
+        <td>{{ viaje.costoToEstadias }}</td>
+
+        <td>{{ viaje.observacionesMonitoreo }}</td>
+
+        <td>{{ viaje.idEquipoRemolque1 }}</td>
+
+        <td>{{ viaje.idEquipoGenerador1 }}</td>
+
+        <td>{{ viaje.idEquipoRemolque2 }}</td>
+
+        <td>{{ viaje.idEquipoGenerador2 }}</td>
+
+        <td>{{ viaje.idEquipoDolly }}</td>
+
+        <td>{{ viaje.registro }}</td>
+      </ng-template>
+    </app-tabla-dashboard>
+  </div>
+</div>

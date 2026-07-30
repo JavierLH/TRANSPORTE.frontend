@@ -1,0 +1,137 @@
+<div class="contenedor-principal">
+  <p-table
+    #dt
+    [value]="data"
+    [dataKey]="dataKey"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [loading]="loading"
+    [paginator]="true"
+    [paginatorDropdownAppendTo]="'body'"
+    [showGridlines]="true"
+    [globalFilterFields]="globalFilterFields"
+    selectionMode="single"
+    [(selection)]="filaSeleccionada"
+    (onRowSelect)="onRowSelect($event)"
+    [scrollable]="true"
+    scrollHeight="55vh"
+    styleClass="p-datatable-sm"
+    [metaKeySelection]="false"
+  >
+    <ng-template pTemplate="caption">
+      <!-- DIV CONTENEDOR PRINCIPAL: Separa sus hijos a los extremos -->
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+        "
+      >
+        <div>
+          <p-iconfield iconPosition="left">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              class="p-inputtext-sm"
+              style="width: 250px"
+              (input)="dt.filterGlobal($event.target.value, 'contains')"
+              placeholder="Buscar..."
+            />
+          </p-iconfield>
+        </div>
+
+        <!-- DIV DERECHO: El contenedor de los botones -->
+        <!-- El 'gap: 8px' pone una separación automática entre los botones que agregues -->
+        <div style="display: flex; gap: 8px; justify-content: flex-end">
+          <p-button
+            label="Agregar viaje"
+            severity="info"
+            styleClass="p-button-sm btn-juguete"
+            (onClick)="agregarViaje()"
+          ></p-button>
+
+          <!-- Cambia el botón de Editar -->
+          <p-button
+            label="Editar"
+            severity="warn"
+            pRipple
+            styleClass="p-button-sm btn-juguete"
+            (onClick)="gestionarEdicion()"
+          ></p-button>
+
+          <p-button
+            label="Bitacora"
+            severity="help"
+            styleClass="p-button-sm btn-juguete"
+          ></p-button>
+
+          <p-button
+            label="Eliminar"
+            severity="danger"
+            styleClass="p-button-sm btn-juguete"
+          ></p-button>
+
+          <p-button
+            label="Duplicar viaje"
+            severity="success"
+            styleClass="p-button-sm btn-juguete"
+          ></p-button>
+
+          <p-button
+            label="Generar asignación"
+            severity="contrast"
+            styleClass="p-button-sm btn-juguete"
+          ></p-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+    </ng-template>
+
+    <!-- En tu app-tabla-dashboard -->
+
+    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+      <tr [pSelectableRow]="item" [pSelectableRowIndex]="rowIndex">
+        <ng-container
+          *ngTemplateOutlet="bodyTemplate; context: { $implicit: item }"
+        ></ng-container>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="100%" class="text-center p-4">
+          No se encontraron registros.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [header]="tituloFormulario"
+    [(visible)]="mostrarModal"
+    [modal]="true"
+    [style]="{ width: '80vw' }"
+    [breakpoints]="{ '960px': '95vw' }"
+    [draggable]="true"
+    [resizable]="false"
+    (onHide)="cerrarModal()"
+  >
+    @if (mostrarModal) {
+      <app-modal-agregarviaje-viaje
+        [datosViajeCreacion]="datosEmpresa"
+        [filaSeleccionada]="filaSeleccionada"
+        (onClose)="cerrarModal()"
+        (onGuardado)="viajeGuardadoConExito()"
+      ></app-modal-agregarviaje-viaje>
+    }
+  </p-dialog>
+
+  <p-toast></p-toast>
+</div>

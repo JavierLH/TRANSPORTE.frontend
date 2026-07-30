@@ -1,0 +1,100 @@
+<div class="contenedor-principal">
+  <div class="card-filtros">
+    <!-- Cabecera de la tarjeta -->
+    <div class="card-header">
+      <h3>Programacion de viajes {{ nombreEmpresa }}</h3>
+      <img [src]="recursoImagen" />
+    </div>
+
+    <!-- Cuerpo de la tarjeta -->
+    <div class="card-body">
+      <div class="grid-filtros">
+        <!-- 1. Origen -->
+        <div class="campo-filtro">
+          <label>Origen</label>
+          <p-select
+            [options]="origenes"
+            [(ngModel)]="selectedOrigen"
+            optionLabel="origen1"
+            placeholder="Selecciona el origen"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 2. Estatus de viaje -->
+        <div class="campo-filtro">
+          <label>Estatus de viaje</label>
+          <p-select
+            [options]="estatusViajes"
+            [(ngModel)]="selectedEstatus"
+            optionLabel="nombre"
+            placeholder="Selecciona el Estatus"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 3. Cliente -->
+        <div class="campo-filtro">
+          <label>Cliente</label>
+          <p-select
+            [options]="clientes"
+            [(ngModel)]="selectedCliente"
+            optionLabel="nombreCliente"
+            placeholder="Selecciona el Cliente"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 4. Estatus de convenio -->
+        <div class="campo-filtro">
+          <label>Estatus de convenio</label>
+          <p-select
+            [options]="ejecutivos"
+            [(ngModel)]="selectedEjecutivo"
+            optionLabel="nombreEjecutivo"
+            placeholder="Selecciona el Ejecutivo"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 5. Ejecutivo -->
+        <div class="campo-filtro">
+          <label>Ejecutivo</label>
+          <p-select
+            [options]="ejecutivos"
+            [(ngModel)]="selectedEjecutivo"
+            optionLabel="nombreEjecutivo"
+            placeholder="Selecciona el Ejecutivo"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 6. Rango de Fechas (reemplazarás esto luego por un p-calendar u otro componente) -->
+        <div class="campo-filtro">
+          <label>Rango de Fechas</label>
+          <p-datepicker
+            [(ngModel)]="rangeDates"
+            selectionMode="range"
+            [readonlyInput]="true"
+            class="w-full"
+          />
+        </div>
+
+        <!-- 7. Ordenar -->
+        <div class="campo-filtro">
+          <label>Ordenar</label>
+          <p-select
+            [options]="ejecutivos"
+            [(ngModel)]="selectedEjecutivo"
+            optionLabel="nombreEjecutivo"
+            placeholder="Selecciona el Ejecutivo"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <!-- Botón de aplicar -->
+      <button class="btn-aplicar">Aplicar Filtros</button>
+    </div>
+  </div>
+</div>

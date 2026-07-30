@@ -1,1 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
+/* Importamos la fuente de iconos de PrimeNG */
+
+@import "primeicons/primeicons.css";
+
+:root{
+  --color-cabecera: var(--p-sky-500)
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: var(--surface-ground);
+    color: var(--text-color);
+    padding: 0.0%;
+}
+
+.tema-vikingo {
+  --color-cabecera: var(--p-red-500)
+}
+
+.tema-drakkar {
+  --color-cabecera: var(--p-sky-500)
+}
+
+.tema-letca {
+  --color-cabecera: var(--p-violet-500)
+}
+
+.tema-karve {
+  --color-cabecera: var(--p-orange-500)
+}
+
+.mi-contenedor {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--color-cabecera);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.titulo {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+:host {
+  --p-highlight-background: var(--color-cabecera);
+  --p-highlight-color: #ffffff;
+}
+
+

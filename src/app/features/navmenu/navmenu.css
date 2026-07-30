@@ -1,0 +1,159 @@
+/* --- 1. ESTRUCTURA PRINCIPAL (Evita el scrollbar fantasma) --- */
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 300px;
+  box-sizing: border-box;
+  border-right: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.menu-logo-container {
+  padding: 1rem 0.75rem;
+  color: #00a884;
+}
+
+.menu-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.menu-content-scroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 0.0rem;
+}
+
+/* --- 2. ELIMINAR EL DISEÑO DE CAJAS DE PRIME NG --- */
+:host ::ng-deep .p-panelmenu .p-panelmenu-panel {
+  border: none !important;
+  background: transparent !important;
+  margin-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-action {
+  border: none !important;
+  background: transparent !important;
+  color: #00a884 !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  padding: 0.5rem 0 !important;
+  box-shadow: none !important;
+  transition: opacity 0.2s;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-action:hover {
+  opacity: 0.8;
+}
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-action .p-submenu-icon {
+  color: #00a884 !important;
+  font-size: 0.8rem !important;
+}
+
+/* --- 3. ESTILOS DE LOS HIJOS --- */
+:host ::ng-deep .p-panelmenu .p-panelmenu-content {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 0 0 0.65rem !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link {
+  background: transparent !important;
+  color: #333333 !important;
+  padding: 0.4rem 0.5rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 6px;
+  box-shadow: none !important;
+  text-decoration: none;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link .p-menuitem-text,
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link .p-menuitem-icon {
+  color: #333333 !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link .p-menuitem-icon {
+  font-size: 0.9rem !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link:hover {
+  background-color: #f0fdf4 !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem-link .p-submenu-icon {
+  font-size: 0.75rem !important;
+}
+
+/* --- 4. FOOTER (Perfil de Usuario) --- */
+.user-profile-btn {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.user-profile-btn:hover {
+  background-color: #f9fafb;
+}
+
+.user-avatar {
+  margin-right: 0.5rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #333333;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* --- 5. ILUMINACIÓN DE PADRES Y ABUELOS ACTIVOS --- */
+
+/* ABUELO (Panel Principal de 1er nivel) */
+:host ::ng-deep .p-panelmenu .p-panelmenu-panel.menu-activo .p-panelmenu-header-action {
+  border-left: 3px solid #00a884 !important;
+  background-color: #f0fdf4 !important;
+}
+:host ::ng-deep .p-panelmenu .p-panelmenu-panel.menu-activo .p-panelmenu-header-action * {
+  color: #00a884 !important;
+}
+
+/* PADRE / NIETO (Submenús intermedios que contienen la ruta activa) */
+:host ::ng-deep .p-panelmenu .p-menuitem.menu-activo > .p-menuitem-content > .p-menuitem-link,
+:host ::ng-deep .p-panelmenu .p-menuitem.menu-activo > .p-menuitem-link {
+  background-color: #f8fdfa !important;
+}
+
+:host ::ng-deep .p-panelmenu .p-menuitem.menu-activo > .p-menuitem-content > .p-menuitem-link *,
+:host ::ng-deep .p-panelmenu .p-menuitem.menu-activo > .p-menuitem-link * {
+  color: #00a884 !important;
+  font-weight: 600 !important;
+}
+
+/* HIJO FINAL (Ruta actual) */
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link.router-link-active {
+  background-color: #e6f7f4 !important;
+  border-right: 3px solid #00a884 !important;
+}
+:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link.router-link-active * {
+  color: #00a884 !important;
+  font-weight: 700 !important;
+}
