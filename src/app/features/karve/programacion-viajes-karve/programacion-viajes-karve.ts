@@ -49,6 +49,7 @@ export class ProgramacionViajesKarve implements OnInit {
           idCreador: usuarioStorage ? JSON.parse(usuarioStorage).idUsuario : null,
           idEmpresa: this.idEmpresa,
           tipoDeOperacion: "",
+          nombreEmpresa: "Karve"
       }
     }
 

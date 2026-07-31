@@ -1,0 +1,37 @@
+export interface ProgramacionDeViajesVista {
+  folio: number;
+  idEmpresa?: number;
+  numeroViaje?: string;
+  numeroConvenio?: string;
+  fecha?: string;
+  cliente?: string;
+  ejecutivo?: string;
+  ecoRuta?: string;
+  nombreOperador?: string;
+  ecoRetira?: string;
+  mercanciaDescripcion?: string;
+  operacion?: string;
+  nombreOrigen?: string;
+  nombreDestino?: string;
+  destinosEstadosCuidad?: string;
+  comision?: number;
+  gasto?: number;
+  asignacion?: string;
+  temperatura?: string;
+  estatus?: number;
+  ecoIngresa?: string;
+  operadorIngresa?: string;
+  sIngreso?: string;
+  entrega?: string;
+  horaCita?: string;
+  envioPod?: string;
+  envioAsignacion?: string;
+  envioDocumentos?: string;
+  envioCita?: string;
+  envioCcp?: string;
+  salidaPatio?: string;
+  llegadaPlanta?: string;
+  operadorRetira?: string;
+  citaTerminal?: string;
+  comentarios?: string;
+}

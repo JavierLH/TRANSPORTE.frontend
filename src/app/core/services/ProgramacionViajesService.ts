@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { API } from '../API';
 import { ProgramacionViajes } from '../models/ProgramacionViajesDto';
 import { ResultadoPaginado } from '../models/ResultadoPaginado';
+import { ProgramacionDeViajesVista } from '../models/ProgramacionDeViajesVista';
 
 @Injectable({
   providedIn: 'root',
@@ -51,6 +52,12 @@ export class ProgramacionViajesService {
   public obtenerPorFechaYEmpresa(fechaInicio: string, fechaFin: string, idEmpresa: number): Observable<ProgramacionViajes[]> {
     return this.http.get<ProgramacionViajes[]>(
       API.obtenerViajesFiltrados(fechaInicio, fechaFin, idEmpresa)
+    );
+  }
+
+  public obtenerPorFechaYEmpresaVista(fechaInicio: string, fechaFin: string, idEmpresa: number): Observable<ProgramacionDeViajesVista[]> {
+    return this.http.get<ProgramacionDeViajesVista[]>(
+      API.obtenerViajesFiltradosVista(fechaInicio, fechaFin, idEmpresa)
     );
   }
 

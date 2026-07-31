@@ -14,7 +14,7 @@
     [(selection)]="filaSeleccionada"
     (onRowSelect)="onRowSelect($event)"
     [scrollable]="true"
-    scrollHeight="55vh"
+    scrollHeight="flex"
     styleClass="p-datatable-sm"
     [metaKeySelection]="false"
   >
@@ -117,10 +117,10 @@
     [header]="tituloFormulario"
     [(visible)]="mostrarModal"
     [modal]="true"
-    [style]="{ width: '80vw' }"
+    [style]="{ width: '65vw' }"
     [breakpoints]="{ '960px': '95vw' }"
     [draggable]="true"
-    [resizable]="false"
+    [resizable]="true"
     (onHide)="cerrarModal()"
   >
     @if (mostrarModal) {

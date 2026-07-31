@@ -18,8 +18,8 @@ interface City {
   styleUrl: './card-filtros.css',
 })
 export class CardFiltros implements OnInit{
-    @Input() nombreEmpresa : any;
-    recursoImagen: string = '';
+      @Input() nombreEmpresa : any;
+      recursoImagen: string = '';
 
       origenes: Origen[] = [];
       estatusViajes: EstatusViaje[] = [];
@@ -44,11 +44,11 @@ export class CardFiltros implements OnInit{
           this.recursoImagen = 'Recurso 5@4x.png';
           this.catalogosViajesService.obtenerCatalagosPorEmpresa(/* idEmpresa Karve */ 1)
             .subscribe((filtros: FiltroDeBusqueda) => this.llenarFiltros(filtros));
-        }else if (this.nombreEmpresa === 'Letca') {
+        } else if (this.nombreEmpresa === 'Letca') {
           this.recursoImagen = 'letscargo (1).png';
           this.catalogosViajesService.obtenerCatalagosPorEmpresa(/* idEmpresa Letca */ 4)
             .subscribe((filtros: FiltroDeBusqueda) => this.llenarFiltros(filtros));
-        }else if(this.nombreEmpresa === 'Drakkar'){
+        } else if(this.nombreEmpresa === 'Drakkar'){
           this.recursoImagen = 'Recurso 4@4x.png';
           this.catalogosViajesService.obtenerCatalagosPorEmpresa(/* idEmpresa Letca */ 3)
             .subscribe((filtros: FiltroDeBusqueda) => this.llenarFiltros(filtros));

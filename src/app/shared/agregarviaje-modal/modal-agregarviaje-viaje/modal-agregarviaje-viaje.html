@@ -1,4 +1,102 @@
 <div class="modal-contenedor">
+  <!------------------------------>
+  <div class="seccion-card">
+    <div class="seccion-header">Ejecutivos - Comercial</div>
+    <div class="vista-general">
+      <div>
+        <label>No. convenio</label>
+        <p-select
+          [options]="convenios"
+          [(ngModel)]="idConvenio"
+          optionLabel="noConvenio"
+          optionValue="idConvenio"
+          placeholder="Selecciona No. convenio"
+          class="w-full"
+        />
+      </div>
+
+      <div>
+        <label>Fecha de vencimiento</label>
+        <p-datepicker
+          [(ngModel)]="fechaVencimientoConvenio"
+          [disabled]="true"
+          dateFormat="yy/mm/dd"
+          class="w-full"
+          appendTo="body"
+        />
+      </div>
+
+      <div class="campo-boton-nuevo">
+        <label>Nuevo</label>
+        <p-button
+          icon="pi pi-plus"
+          severity="info"
+          (onClick)="nuevoConvenio()"
+        />
+      </div>
+    </div>
+
+    <div class="campo-comentarios-comercial">
+      <label>Comentarios</label>
+      <input
+        type="text"
+        pInputText
+        class="w-full"
+        [(ngModel)]="comentariosComercial"
+      />
+    </div>
+
+    <div class="botones-documento">
+      <p-button
+        label="Cargar documento"
+        icon="pi pi-cloud-upload"
+        severity="success"
+        (onClick)="cargarDocumento()"
+      />
+      <p-button
+        label="Ver documento"
+        icon="pi pi-eye"
+        severity="info"
+        (onClick)="verDocumento()"
+      />
+    </div>
+
+    <div class="archivo-cargado">
+      <label>Archivo cargado:</label>
+      <span>{{ nombreArchivoCargado }}</span>
+    </div>
+  </div>
+
+  <p-dialog
+    header="Nuevo convenio"
+    [(visible)]="mostrarModalNuevoConvenio"
+    [modal]="true"
+    [style]="{ width: '25rem' }"
+    appendTo="body"
+    (onHide)="cerrarModalNuevoConvenio()"
+  >
+    <div class="campo">
+      <label for="nuevoConvenioInput">Nuevo convenio</label>
+      <input
+        id="nuevoConvenioInput"
+        type="text"
+        pInputText
+        class="w-full"
+        [(ngModel)]="nuevoConvenioTexto"
+      />
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Agregar"
+        severity="success"
+        (onClick)="agregarConvenio()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <!----------------------------------------------------------------------->
+
   <div class="seccion-card">
     <div class="seccion-header">Ejecutivos - General</div>
 

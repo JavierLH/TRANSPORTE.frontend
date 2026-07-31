@@ -149,11 +149,12 @@
 }
 
 /* HIJO FINAL (Ruta actual) */
-:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link.router-link-active {
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link.p-panelmenu-item-link-active {
   background-color: #e6f7f4 !important;
   border-right: 3px solid #00a884 !important;
 }
-:host ::ng-deep .p-panelmenu .p-menuitem .p-menuitem-link.router-link-active * {
+
+:host ::ng-deep .p-panelmenu .p-panelmenu-item-link.p-panelmenu-item-link-active * {
   color: #00a884 !important;
   font-weight: 700 !important;
 }

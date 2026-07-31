@@ -29,4 +29,9 @@ export const API = {
   obtenerViajePorId: (idViajeProgramacion: number): string => `${environment.host}/ProgramacionViajes/${idViajeProgramacion}`,
   obtenerCatalagosPorEmpresa: (idEmpresa: number): string => `${environment.host}/Empresas/${idEmpresa}/filtros-busqueda`,
 
+  obtenerViajesFiltradosVista: (fechaInicio: string, fechaFin: string, idEmpresa: number): string =>
+  `${environment.host}/ProgramacionViajes/filtrar-vista-completa?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&idEmpresa=${idEmpresa}`,
+
+
+
 };

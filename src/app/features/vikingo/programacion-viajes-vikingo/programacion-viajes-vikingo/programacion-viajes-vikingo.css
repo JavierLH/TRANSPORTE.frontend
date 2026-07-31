@@ -1,0 +1,12 @@
+.contenedor-principal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.contenedor-tabla-viajes {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

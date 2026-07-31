@@ -2,6 +2,7 @@ export interface Permiso {
     idPermiso: number;
     nombrePermiso: string;
     rutaModulo: string | null;
+    rutaImagen: string ;
     padre: number | null;
     funciones: string[];
     hijos: Permiso[];

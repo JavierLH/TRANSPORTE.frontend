@@ -9,6 +9,7 @@ import { ProgramacionViajes } from '../../../../core/models/ProgramacionViajesDt
 import { CrearNuevViajeDto } from '../../../../core/models/CrearNuevoViajeDto';
 import { ProgramacionViajesService } from '../../../../core/services/ProgramacionViajesService';
 import { NgClass } from '@angular/common';
+import { ProgramacionDeViajesVista } from '../../../../core/models/ProgramacionDeViajesVista';
 
 @Component({
   selector: 'app-programacion-viajes-vikingo',
@@ -39,12 +40,15 @@ export class ProgramacionViajesVikingo {
 
   datosEmpresa: CrearNuevViajeDto;
 
+  viajesVista: ProgramacionDeViajesVista[] = [];
+
   constructor(private viajesService: ProgramacionViajesService) {
     const usuarioStorage = localStorage.getItem('usuario');
     this.datosEmpresa = {
         idCreador: usuarioStorage ? JSON.parse(usuarioStorage).idUsuario : null,
         idEmpresa: 2,
         tipoDeOperacion: "",
+        nombreEmpresa: "Vikingo"
     }
   }
 
@@ -69,6 +73,7 @@ export class ProgramacionViajesVikingo {
     const fin = formatear(hoy);          // ej. 2026-07-24
     const idEmpresa = 2;
 
+    /*
     this.viajesService.obtenerPorFechaYEmpresa(inicio, fin, idEmpresa).subscribe({
       next: (datos) => {
         this.viajes = datos;
@@ -78,7 +83,20 @@ export class ProgramacionViajesVikingo {
         console.error('Error al cargar viajes', err);
         this.cargando = false;
       }
-      });
+      });*/
+
+      this.viajesService.obtenerPorFechaYEmpresaVista(inicio, fin, idEmpresa).subscribe(
+        {
+          next: (datos) => {
+            this.viajesVista = datos;
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar viajes', err);
+            this.cargando = false;
+          }
+        });
+
     }
 
     get claseTema(): string {

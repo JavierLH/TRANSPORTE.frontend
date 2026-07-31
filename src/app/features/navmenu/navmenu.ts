@@ -41,6 +41,8 @@ export class NavMenu implements OnInit, AfterViewInit {
           this.items = this.mapearPermisosAMenuItems(permisosDelBackend);
 
           this.marcarRutaActivaYExpandir(this.items, this.router.url);
+          this.cdr.detectChanges();
+
         }
       }
 
@@ -75,12 +77,13 @@ export class NavMenu implements OnInit, AfterViewInit {
       return permisos.map(permiso => {
         const menuItem: MenuItem = {
           label: permiso.nombrePermiso,
-          icon: 'pi pi-folder'
+          icon : permiso.rutaImagen || 'pi pi-folder'
         };
 
         if (permiso.rutaModulo && permiso.rutaModulo !== 'null') {
           menuItem.routerLink = ['/' + permiso.rutaModulo];
-          menuItem.icon = 'pi pi-file';
+          console.log(permiso);
+          menuItem.icon = permiso.rutaImagen;
         }
 
         if (permiso.hijos && permiso.hijos.length > 0) {
@@ -141,5 +144,6 @@ export class NavMenu implements OnInit, AfterViewInit {
       }
 
       return matchEncontrado;
+
     }
 }

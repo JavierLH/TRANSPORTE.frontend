@@ -118,9 +118,8 @@ export class TablaDashboardComponent implements OnInit{
 
   agregarViaje() {
     this.datosEmpresa.tipoDeOperacion = "CREAR";
-    this.abrirModal('Agregar viaje karve');
+    this.abrirModal('Agregar viaje '+this.datosEmpresa.nombreEmpresa);
   }
-
 
   cerrarModal() {
       this.mostrarModal = false;
@@ -130,7 +129,7 @@ export class TablaDashboardComponent implements OnInit{
   gestionarEdicion() {
     if (this.filaSeleccionada) {
       this.datosEmpresa.tipoDeOperacion = "EDITAR";
-      this.abrirModal('Editar viaje karve');
+      this.abrirModal('Editar viaje '+this.datosEmpresa.nombreEmpresa);
     } else {
       this.messageService.add({
         severity: 'warn',

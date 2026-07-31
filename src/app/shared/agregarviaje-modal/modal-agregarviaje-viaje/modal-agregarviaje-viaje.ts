@@ -12,13 +12,14 @@ import { SelectChangeEvent, SelectModule } from 'primeng/select';
 import { CatalogosViajeService } from '../../../core/services/CatalogosViajesService';
 import { Cliente, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
 import { MessageService } from 'primeng/api';
+import { DialogModule } from 'primeng/dialog';
 
 const ID_TIPO_EQUIPO_TRACTOCAMION = 3;
 
 @Component({
   selector: 'app-modal-agregarviaje-viaje',
   standalone: true,
-  imports: [InputTextModule, RadioButtonModule, ButtonModule, InputNumberModule, FormsModule, DatePickerModule, SelectModule],
+  imports: [InputTextModule, RadioButtonModule, ButtonModule, InputNumberModule, FormsModule, DatePickerModule, SelectModule, DialogModule],
   templateUrl: './modal-agregarviaje-viaje.html',
   styleUrl: './modal-agregarviaje-viaje.css',
 })
@@ -116,43 +117,69 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   label: string | undefined = 'Guardar';
 
+  convenios: any[] = [];
+  idConvenio: number | undefined;
+  fechaVencimientoConvenio: Date | undefined;
+  comentariosComercial: string = '';
+  nombreArchivoCargado: string = '';
+
+  mostrarModalNuevoConvenio = false;
+  nuevoConvenioTexto: string = '';
+
+  nuevoConvenio() {
+    this.mostrarModalNuevoConvenio = true;
+  }
+
+  cerrarModalNuevoConvenio() {
+    this.mostrarModalNuevoConvenio = false;
+    this.nuevoConvenioTexto = '';
+  }
+
+  agregarConvenio() {
+    // Aquí conectas el guardado real (service + actualizar el catálogo "convenios")
+  }
+
+  cargarDocumento() {}
+
+  verDocumento() {}
+
   ngOnInit(): void {
-  const idEmpresa = this.datosViajeCreacion?.idEmpresa;
-  if (!idEmpresa) return;
+    const idEmpresa = this.datosViajeCreacion?.idEmpresa;
+    if (!idEmpresa) return;
 
-  this.catalogosService.obtenerCatalogosViaje(idEmpresa).subscribe({
-    next: (data) => {
-      this.equipos = data.equipos.flatMap(grupo => grupo.equipos);
-      this.equiposTractocamion = data.equipos.find(
-        grupo => grupo.idTipoEquipo === ID_TIPO_EQUIPO_TRACTOCAMION
-      )?.equipos ?? [];
+    this.catalogosService.obtenerCatalogosViaje(idEmpresa).subscribe({
+      next: (data) => {
+        this.equipos = data.equipos.flatMap(grupo => grupo.equipos);
+        this.equiposTractocamion = data.equipos.find(
+          grupo => grupo.idTipoEquipo === ID_TIPO_EQUIPO_TRACTOCAMION
+        )?.equipos ?? [];
 
-      this.operadores = data.operadores;
-      this.ejecutivos = data.ejecutivos;
-      this.clientes = data.clientes;
-      this.mercancias = data.tipoMercancia;
-      this.operaciones = data.operaciones;
-      this.origenes = data.origenes;
-      this.destinos = data.destinoEstados;
-      this.todasLasCiudades = data.destinoEstadoCiudades;
+        this.operadores = data.operadores;
+        this.ejecutivos = data.ejecutivos;
+        this.clientes = data.clientes;
+        this.mercancias = data.tipoMercancia;
+        this.operaciones = data.operaciones;
+        this.origenes = data.origenes;
+        this.destinos = data.destinoEstados;
+        this.todasLasCiudades = data.destinoEstadoCiudades;
 
-      console.log('**************');
-      console.log(data);
+        console.log('**************');
+        console.log(data);
 
-      // Solo hasta que los catálogos ya estén listos, pedimos el viaje a editar
-      if (this.datosViajeCreacion?.tipoDeOperacion === "EDITAR") {
-        this.label = 'Actualizar';
-        this.viajesService.obtenerViajePorId(this.filaSeleccionada.idProgramacion)
-          .subscribe({
-            next: (viaje) => {
-              this.aplicarValoresCamposDeTexto(viaje);
-            }
-          });
-      }
-    },
-    error: (err) => console.error('Error cargando catálogos del viaje:', err)
-  });
-}
+        // Solo hasta que los catálogos ya estén listos, pedimos el viaje a editar
+        if (this.datosViajeCreacion?.tipoDeOperacion === "EDITAR") {
+          this.label = 'Actualizar';
+          this.viajesService.obtenerViajePorId(this.filaSeleccionada.idProgramacion)
+            .subscribe({
+              next: (viaje) => {
+                this.aplicarValoresCamposDeTexto(viaje);
+              }
+            });
+        }
+      },
+      error: (err) => console.error('Error cargando catálogos del viaje:', err)
+    });
+  }
 
 
   public aplicarValoresCamposDeTexto(viaje: ProgramacionViajes) {
@@ -330,18 +357,17 @@ export class ModalAgregarviajeViaje implements OnInit {
     const ciudadSeleccionada = this.destinos.find(c => c.idEstado === idSeleccionado);
 
     if (ciudadSeleccionada) {
-      console.log('Ciudad seleccionada -> id:', ciudadSeleccionada.idEstado, '| nombre:', ciudadSeleccionada.destinoEstado1);
-
-
+      console.log ('Ciudad seleccionada -> id:', ciudadSeleccionada.idEstado, '| nombre:', ciudadSeleccionada.destinoEstado1);
 
     }
+
   }
 
-cambioEnDestino(evento: SelectChangeEvent) {
-  const idEstadoSeleccionado = evento.value; // gracias a optionValue="idEstado" en el select de Destino
-  this.ciudades = this.todasLasCiudades.filter(c => c.idEstado === idEstadoSeleccionado);
-  this.idCiudad = undefined; // la ciudad que tenía elegida antes ya no aplica al nuevo estado
-}
+    cambioEnDestino(evento: SelectChangeEvent) {
+      const idEstadoSeleccionado = evento.value; // gracias a optionValue="idEstado" en el select de Destino
+      this.ciudades = this.todasLasCiudades.filter(c => c.idEstado === idEstadoSeleccionado);
+      this.idCiudad = undefined; // la ciudad que tenía elegida antes ya no aplica al nuevo estado
+    }
 
   guardarDatos() {
     if(this.datosViajeCreacion?.tipoDeOperacion === "EDITAR"){

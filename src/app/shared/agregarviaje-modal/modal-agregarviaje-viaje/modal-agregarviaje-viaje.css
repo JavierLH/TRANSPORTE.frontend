@@ -1,3 +1,43 @@
+
+
+/* Evita que el botón "Nuevo" se estire dentro del grid */
+.campo-boton-nuevo {
+  align-items: flex-start !important;
+}
+
+/* Comentarios (Comercial): mismo padding que el resto de secciones */
+.campo-comentarios-comercial {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px 16px 16px;
+}
+
+.campo-comentarios-comercial label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+/* Fila de botones de documento */
+.botones-documento {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 16px 16px;
+}
+
+/* Archivo cargado */
+.archivo-cargado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px 16px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+
+
 /* Contenedor principal */
 .modal-contenedor {
     display: flex;
@@ -15,10 +55,10 @@
 }
 
 .seccion-header {
-    background-color: #eef2ff;
+    background-color: var(--color-cabecera, #eef2ff);
     padding: 12px 16px;
     font-weight: 600;
-    color: #374151;
+    color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
     border-radius: 6px 6px 0 0;
 }
