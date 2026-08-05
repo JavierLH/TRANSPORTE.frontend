@@ -65,4 +65,22 @@ export class ProgramacionViajesService {
     return this.http.get<ProgramacionViajes>(API.obtenerViajePorId(id));
   }
 
+  public obtenerViajesFiltradosVistaPorCriterios(
+      idEmpresa: number,
+      fechaInicio?: string | null,
+      fechaFin?: string | null,
+      idOrigen?: number | null,
+      idEstatus?: number | null,
+      idCliente?: number | null,
+      idEjecutivo?: number | null
+    ): Observable<ProgramacionDeViajesVista[]> {
+    return this.http.get<ProgramacionDeViajesVista[]>(
+      API.obtenerViajesFiltradosVistaPorCriterios(
+        idEmpresa, fechaInicio, fechaFin, idOrigen, idEstatus, idCliente, idEjecutivo
+      )
+    );
+  }
+
 }
+
+

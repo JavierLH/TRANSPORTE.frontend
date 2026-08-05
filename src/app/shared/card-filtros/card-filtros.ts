@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select, SelectModule } from "primeng/select";
 import { EstatusViaje, FiltroDeBusqueda, Origen } from '../../core/models/CatalogosFiltrosDtos';
@@ -6,10 +6,6 @@ import { Cliente, Ejecutivo } from '../../core/models/CatalogosViajeDtos';
 import { CatalogosViajeService } from '../../core/services/CatalogosViajesService';
 import { DatePickerModule } from 'primeng/datepicker';
 
-interface City {
-    name: string;
-    code: string;
-}
 
 @Component({
   selector: 'app-card-filtros',
@@ -18,20 +14,22 @@ interface City {
   styleUrl: './card-filtros.css',
 })
 export class CardFiltros implements OnInit{
-      @Input() nombreEmpresa : any;
-      recursoImagen: string = '';
+    @Input() nombreEmpresa : any;
+    recursoImagen: string = '';
 
-      origenes: Origen[] = [];
-      estatusViajes: EstatusViaje[] = [];
-      clientes: Cliente[] = [];
-      ejecutivos: Ejecutivo[] = [];
+    origenes: Origen[] = [];
+    estatusViajes: EstatusViaje[] = [];
+    clientes: Cliente[] = [];
+    ejecutivos: Ejecutivo[] = [];
 
-      selectedOrigen: Origen | undefined;
-      selectedEstatus: EstatusViaje | undefined;
-      selectedCliente: Cliente | undefined;
-      selectedEjecutivo: Ejecutivo | undefined;
+    selectedOrigen: Origen | undefined;
+    selectedEstatus: EstatusViaje | undefined;
+    selectedCliente: Cliente | undefined;
+    selectedEjecutivo: Ejecutivo | undefined;
 
-      rangeDates: Date[] | undefined;
+    rangeDates: Date[] | undefined;
+
+    @Output() EmitirFiltros : any = new EventEmitter<any>();
 
     constructor(private catalogosViajesService: CatalogosViajeService) {}
 
@@ -55,14 +53,35 @@ export class CardFiltros implements OnInit{
         }
       }
 
-    private llenarFiltros(filtros: FiltroDeBusqueda) {
+      private llenarFiltros(filtros: FiltroDeBusqueda) {
 
-      this.origenes = filtros.origenesDestinos;
-      this.estatusViajes = filtros.estatusViajes;
-      this.clientes = filtros.cliente;
-      this.ejecutivos = filtros.ejecutivos;
+        this.origenes = filtros.origenesDestinos;
+        this.estatusViajes = filtros.estatusViajes;
+        this.clientes = filtros.cliente;
+        this.ejecutivos = filtros.ejecutivos;
+      }
+
+
+    public filtrar(){
+
+      this.EmitirFiltros.emit({
+        origen : this.selectedOrigen,
+        estatus : this.selectedEstatus,
+        cliente : this.selectedCliente,
+        ejecutivos : this.selectedEjecutivo,
+        fehas : this.rangeDates
+      });
+
     }
 
+    public limpiarFiltros(){
+      this.selectedOrigen = undefined;
+      this.selectedEstatus = undefined;
+      this.selectedCliente = undefined;
+      this.selectedEjecutivo = undefined;
+      this.rangeDates = undefined;
+
+    }
 
 
 }

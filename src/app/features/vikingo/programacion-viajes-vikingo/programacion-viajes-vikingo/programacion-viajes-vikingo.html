@@ -1,7 +1,10 @@
 <div class="contenedor-principal" [ngClass]="`tema-vikingo`">
   <div>
     <!--<div><i class="pi pi-sign-out"></i></div>-->
-    <app-card-filtros [nombreEmpresa]="'Vikingo'"></app-card-filtros>
+    <app-card-filtros
+      [nombreEmpresa]="'Vikingo'"
+      (EmitirFiltros)="configurarFiltrosDeAppCardFiltros($event)"
+    ></app-card-filtros>
   </div>
 
   <div class="contenedor-tabla-viajes">
@@ -168,7 +171,6 @@
         <td>{{ viaje.idEquipoDolly }}</td>
 
         <td>{{ viaje.registro }}</td>
-
       </ng-template>
     </app-tabla-dashboard>
   </div>

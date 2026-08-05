@@ -1,0 +1,36 @@
+<div class="contenedor-principal" [ngClass]="'tema-' + temaEmpresa">
+  <div class="barra-seccion">Comparativa Anual</div>
+
+  <section class="tarjeta">
+    <div class="tarjeta__encabezado">
+      <div>
+        <h2 class="tarjeta__titulo">Comparativa Anual</h2>
+        <p class="tarjeta__subtitulo">{{ empresa }}</p>
+      </div>
+
+      <div class="tarjeta__acciones">
+        <button type="button" class="boton-icono" title="Ver como línea">
+          <i class="pi pi-chart-line"></i>
+        </button>
+        <button type="button" class="boton-icono" title="Ver como barras">
+          <i class="pi pi-chart-bar"></i>
+        </button>
+        <button
+          type="button"
+          class="boton-icono"
+          title="Actualizar"
+          (click)="construirGrafico()"
+        >
+        <i class="pi pi-refresh"></i>
+        </button>
+        <button type="button" class="boton-icono" title="Descargar">
+          <i class="pi pi-download"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="tarjeta__cuerpo">
+      <p-chart type="bar" [data]="data" [options]="options" class="grafico" />
+    </div>
+  </section>
+</div>

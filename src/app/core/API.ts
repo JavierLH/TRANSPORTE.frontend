@@ -2,6 +2,9 @@ import { environment } from "../environments/enviroments";
 
 export const API = {
 
+  obtenerTodosLosConvenios: (noConvenio: number) : string => `${environment.host}/Convenio/${noConvenio}`,
+  crearNuevoConvenio: () : string => `${environment.host}/Convenio`,
+
   obtenerUsuarioPorID: (id: number): string => `${environment.host}/UsuariosSistema/${id}`,
   IniciarSesionEnSistema: () => `${environment.host}/UsuariosSistema`,
 
@@ -32,6 +35,48 @@ export const API = {
   obtenerViajesFiltradosVista: (fechaInicio: string, fechaFin: string, idEmpresa: number): string =>
   `${environment.host}/ProgramacionViajes/filtrar-vista-completa?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&idEmpresa=${idEmpresa}`,
 
+  obtenerViajesFiltradosVistaPorCriterios: (
+    idEmpresa: number,
+    fechaInicio?: string | null,
+    fechaFin?: string | null,
+    idOrigen?: number | null,
+    idEstatus?: number | null,
+    idCliente?: number | null,
+    idEjecutivo?: number | null
+  ): string => {
+    let url = `${environment.host}/ProgramacionViajes/filtrar-vista?idEmpresa=${idEmpresa}`;
+
+    if (fechaInicio) url += `&fechaInicio=${fechaInicio}`;
+    if (fechaFin) url += `&fechaFin=${fechaFin}`;
+    if (idOrigen != null) url += `&idOrigen=${idOrigen}`;
+    if (idEstatus != null) url += `&idEstatus=${idEstatus}`;
+    if (idCliente != null) url += `&idCliente=${idCliente}`;
+    if (idEjecutivo != null) url += `&idEjecutivo=${idEjecutivo}`;
+
+    return url;
+  },
+
+  obtenerAcumuladosVikingo: (anio : number): string => { return `${environment.host}/Pizarra/acumulado-anualVikingo?anio=${anio}` },
+
+  obtenerAcumuladoRangoVikingo: (anioInicial: number, anioFinal: number): string => {
+    return `${environment.host}/Pizarra/acumulado-rango-anual?anioInicial=${anioInicial}&anioFinal=${anioFinal}`;
+  },
+
+  obtenerAcumuladoRangoPorCodigos: (
+    anioInicial: number,
+    anioFinal: number,
+    codigos: string[]
+  ): string => {
+    let url = `${environment.host}/Pizarra/acumulado-rango-anual-codigos?anioInicial=${anioInicial}&anioFinal=${anioFinal}`;
+
+    codigos.forEach((codigo) => {
+      url += `&codigos=${codigo}`;
+    });
+
+    return url;
+  },
+
+  
 
 
 };

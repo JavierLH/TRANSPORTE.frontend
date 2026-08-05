@@ -18,6 +18,8 @@ import { DrakkarRoles } from './features/configuraciones/roles/drakkar/drakkar-r
 import { ProgramacionViajesLetca } from './features/letca/programacion-viajes-letca/programacion-viajes-letca';
 import { ProgramacionViajesDrakkar } from './features/drakkar/programacion-viajes-drakkar/programacion-viajes-drakkar';
 import { EjecutivosVikingo } from './features/vikingo/ejecutivos/ejecutivos-vikingo/ejecutivos-vikingo';
+import { AcumuladoGraficoBarra } from './features/vikingo/graficos/acumulado/acumulado-grafico-barra/acumulado-grafico-barra';
+import { AcumuladosDrakkar } from './features/drakkar/graficos/acumulados-drakkar/acumulados-drakkar';
 
 
 export const routes: Routes = [
@@ -31,12 +33,7 @@ export const routes: Routes = [
     component: Dashboard,
     canActivate: [authGuard],
     children: [
-      {
-        path: 'siil/vikingo/dashboard',
-        component: DashboardVK,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/vikingo/dashboard' }
-      },
+
       {
         path: 'siil/karve/dashboard',
         component: DashboardKarve,
@@ -134,6 +131,22 @@ export const routes: Routes = [
         data: { rutaModulo: 'siil/vikingo/trafico/catalogo/ejecutivos' }
 
       },
+
+      {
+        path: 'siil/vikingo/dashboard',
+        component: AcumuladoGraficoBarra,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/vikingo/dashboard' }
+      },
+
+      {
+        path: 'siil/drakkar/dashboard',
+        component: AcumuladosDrakkar,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/drakkar/dashboard' }
+
+      },
+
 
     ]
 

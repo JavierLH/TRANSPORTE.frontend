@@ -80,8 +80,12 @@
           />
         </div>
 
+        <button (click)="limpiarFiltros()" class="btn-limpiar-filtros">
+          Limpiar filtros
+        </button>
+
         <!-- 7. Ordenar -->
-        <div class="campo-filtro">
+        <!--<div class="campo-filtro">
           <label>Ordenar</label>
           <p-select
             [options]="ejecutivos"
@@ -90,11 +94,11 @@
             placeholder="Selecciona el Ejecutivo"
             class="w-full"
           />
-        </div>
+        </div>-->
       </div>
 
       <!-- Botón de aplicar -->
-      <button class="btn-aplicar">Aplicar Filtros</button>
+      <button class="btn-aplicar" (click)="filtrar()">Aplicar Filtros</button>
     </div>
   </div>
 </div>

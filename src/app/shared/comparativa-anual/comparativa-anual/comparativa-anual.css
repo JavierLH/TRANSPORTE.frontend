@@ -1,0 +1,127 @@
+.contenedor-principal {
+  padding: 1.25rem 1.5rem 2rem;
+  background: #f3f5f9;
+  min-height: 100%;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+/* ===== Encabezado de la página ===== */
+
+.encabezado-pagina h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.encabezado-pagina__debil {
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 0.4rem;
+}
+
+.migas-de-pan {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.migas-de-pan a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.migas-de-pan a:hover {
+  text-decoration: underline;
+}
+
+.migas-de-pan__separador {
+  margin: 0 0.4rem;
+}
+
+.migas-de-pan__actual {
+  color: #6b7280;
+}
+
+/* ===== Barra roja de sección ===== */
+
+.barra-seccion {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--color-cabecera, #e63950);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-cabecera, #e63950) 35%, transparent);
+}
+
+/* ===== Tarjeta blanca ===== */
+
+.tarjeta {
+  margin-top: 1rem;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.tarjeta__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tarjeta__titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.tarjeta__subtitulo {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: #9aa1ac;
+}
+
+.tarjeta__acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.boton-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9aa1ac;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.boton-icono:hover {
+  background: #f1f3f6;
+  color: #2c3e50;
+}
+
+.boton-icono i {
+  font-size: 0.95rem;
+}
+
+.tarjeta__cuerpo {
+  width: 100%;
+}
+
+.grafico {
+  display: block;
+  height: 26rem;
+  width: 100%;
+}

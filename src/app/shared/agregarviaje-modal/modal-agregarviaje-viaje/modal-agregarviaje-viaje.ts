@@ -13,6 +13,8 @@ import { CatalogosViajeService } from '../../../core/services/CatalogosViajesSer
 import { Cliente, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
+import { ConvenioServices } from '../../../core/services/ConvenioService';
+import Convenio from '../../../core/models/Convenio';
 
 const ID_TIPO_EQUIPO_TRACTOCAMION = 3;
 
@@ -34,12 +36,11 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   private viajesService = inject(ProgramacionViajesService);
   private catalogosService = inject(CatalogosViajeService);
-
   private messageService = inject(MessageService);
+  private ConvenioServices = inject(ConvenioServices);
 
-  // Propiedades vinculadas al HTML
   noViaje: string = '';
-  datetime24h: Date[] | undefined;
+  datetime24h: Date | undefined;
   fecha: Date[] | undefined;
 
   idCliente: number | undefined;
@@ -117,7 +118,7 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   label: string | undefined = 'Guardar';
 
-  convenios: any[] = [];
+  convenios: Convenio[] = [];
   idConvenio: number | undefined;
   fechaVencimientoConvenio: Date | undefined;
   comentariosComercial: string = '';
@@ -136,7 +137,35 @@ export class ModalAgregarviajeViaje implements OnInit {
   }
 
   agregarConvenio() {
-    // Aquí conectas el guardado real (service + actualizar el catálogo "convenios")
+    if (!this.nuevoConvenioTexto || !this.datosViajeCreacion?.idEmpresa) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Ingresa el número de convenio.'
+      });
+      return;
+    }
+
+    const nuevoConvenio: Convenio = {
+      noConvenio: this.nuevoConvenioTexto,
+      idEmpresa: this.datosViajeCreacion.idEmpresa
+    };
+
+    this.ConvenioServices.crearNuevoConvenio(nuevoConvenio).subscribe({
+      next: (convenioCreado) => {
+        this.convenios.push(convenioCreado);
+        this.idConvenio = convenioCreado.idConvenio;
+        this.cerrarModalNuevoConvenio();
+      },
+      error: (err) => {
+        console.error('Error al crear el convenio:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo crear el convenio.'
+        });
+      }
+    });
   }
 
   cargarDocumento() {}
@@ -163,16 +192,20 @@ export class ModalAgregarviajeViaje implements OnInit {
         this.destinos = data.destinoEstados;
         this.todasLasCiudades = data.destinoEstadoCiudades;
 
-        console.log('**************');
-        console.log(data);
-
-        // Solo hasta que los catálogos ya estén listos, pedimos el viaje a editar
         if (this.datosViajeCreacion?.tipoDeOperacion === "EDITAR") {
           this.label = 'Actualizar';
-          this.viajesService.obtenerViajePorId(this.filaSeleccionada.idProgramacion)
+          this.viajesService.obtenerViajePorId(this.filaSeleccionada.folio)
             .subscribe({
               next: (viaje) => {
+
+                this.ConvenioServices.obtenerTodosLosConvenios(idEmpresa).subscribe({
+                  next: (data) => {
+                    this.convenios = data;
+                  }
+                });
+
                 this.aplicarValoresCamposDeTexto(viaje);
+
               }
             });
         }
@@ -185,7 +218,7 @@ export class ModalAgregarviajeViaje implements OnInit {
   public aplicarValoresCamposDeTexto(viaje: ProgramacionViajes) {
     this.idProgramacion = viaje.idProgramacion;
     this.noViaje = viaje.noViaje ?? '';
-    //this.datetime24h = viaje.fecha ? new Date(viaje.fecha) : undefined;
+    this.datetime24h = viaje.fecha ? new Date(viaje.fecha) : undefined;
     this.turno = viaje.turno ?? '';
 
     this.idCliente = viaje.idCliente;
@@ -208,6 +241,9 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.idDestino = viaje.idEstado;
 
     this.ciudades = this.todasLasCiudades.filter(c => c.idEstado === viaje.idEstado);
+
+    this.idConvenio = viaje.idConvenio;
+    this.comentariosComercial = (viaje.comentariosConvenio === undefined) ? '' : viaje.comentariosConvenio;
 
     this.idPatio = viaje.idPatio ?? '';
     this.idCiudad = viaje.idCiudad;
@@ -237,16 +273,94 @@ export class ModalAgregarviajeViaje implements OnInit {
   }
 
   insertarNuevoValor(){
+    if (!this.datetime24h) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'La fecha es obligatoria para guardar el viaje.'
+      });
+      return;
+    }
 
-      if (!this.datetime24h) {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Atención',
-          detail: 'La fecha es obligatoria para guardar el viaje.'
-        });
-        return;
+    const nuevoViaje = this.construirObjetoViaje();
+
+    console.log('Objeto limpio enviado al API:', nuevoViaje);
+
+    this.viajesService.insertarViaje(nuevoViaje).subscribe({
+      next: (respuesta) => {
+        console.log('Viaje creado con éxito:', respuesta);
+        this.onGuardado.emit();
+        this.cerrarModal();
+      },
+      error: (err) => {
+        console.error('Error detallado del backend:', err.error?.errors);
       }
+    });
+  }
 
+  actualizarValorExistente() {
+    if (!this.datetime24h) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'La fecha es obligatoria para guardar el viaje.'
+      });
+      return;
+  }
+
+    if (!this.idProgramacion) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se encontró el ID del viaje a actualizar.'
+      });
+      return;
+    }
+
+    const viajeActualizado = this.construirObjetoViaje();
+
+    this.viajesService.actualizarViaje(this.idProgramacion, viajeActualizado).subscribe({
+      next: (respuesta) => {
+        console.log('Viaje actualizado con éxito:', respuesta);
+        this.onGuardado.emit();
+        this.cerrarModal();
+      },
+      error: (err) => {
+        console.error('Error detallado del backend:', err.error?.errors);
+      }
+    });
+  }
+
+  cambioEnCuidad(evento: SelectChangeEvent) {
+    const idSeleccionado = evento.value;
+    const ciudadSeleccionada = this.destinos.find(c => c.idEstado === idSeleccionado);
+
+    if (ciudadSeleccionada) {
+      console.log ('Ciudad seleccionada -> id:', ciudadSeleccionada.idEstado, '| nombre:', ciudadSeleccionada.destinoEstado1);
+
+    }
+
+  }
+
+  cambioEnDestino(evento: SelectChangeEvent) {
+    const idEstadoSeleccionado = evento.value; // gracias a optionValue="idEstado" en el select de Destino
+    this.ciudades = this.todasLasCiudades.filter(c => c.idEstado === idEstadoSeleccionado);
+    this.idCiudad = undefined; // la ciudad que tenía elegida antes ya no aplica al nuevo estado
+  }
+
+  guardarDatos() {
+    if (this.datosViajeCreacion?.tipoDeOperacion === "EDITAR") {
+      this.actualizarValorExistente();
+    } else {
+      this.insertarNuevoValor();
+    }
+  }
+
+  cerrarModal() {
+    this.onClose.emit();
+  }
+
+  private construirObjetoViaje(): ProgramacionViajes {
     const resolverNumero = (val: any): number | undefined => {
       if (val === null || val === undefined || val === '') return undefined;
       const num = Number(val);
@@ -260,7 +374,6 @@ export class ModalAgregarviajeViaje implements OnInit {
     const resolverFecha = (val: any): string | undefined => {
       if (!val) return undefined;
 
-      // El p-datepicker entrega un objeto Date real (o un arreglo con uno)
       const fecha = Array.isArray(val) ? val[0] : val;
       if (!fecha) return undefined;
 
@@ -268,7 +381,6 @@ export class ModalAgregarviajeViaje implements OnInit {
         return fecha.toISOString();
       }
 
-      // Los campos de texto libre (ingreso, entrega) llegan como string
       let fechaStr = String(fecha).trim();
       if (fechaStr.includes(' ') && !fechaStr.includes('T')) {
         fechaStr = fechaStr.replace(' ', 'T');
@@ -279,13 +391,12 @@ export class ModalAgregarviajeViaje implements OnInit {
       return fechaStr;
     };
 
-    // Extraer solo la hora del componente DatePicker (HH:mm)
     const formatearHora = (dateObj: Date | undefined): string | undefined => {
       if (!dateObj) return undefined;
-      return dateObj.toTimeString().substring(0, 5); // Ej: "14:30"
+      return dateObj.toTimeString().substring(0, 5);
     };
 
-    const nuevoViaje: ProgramacionViajes = {
+    return {
       noViaje: resolverTexto(this.noViaje),
       fecha: resolverFecha(this.datetime24h),
       turno: resolverTexto(this.turno),
@@ -295,9 +406,11 @@ export class ModalAgregarviajeViaje implements OnInit {
       asignacion: resolverTexto(this.asignacion),
       sIngreso: resolverTexto(this.sIngreso),
 
-     horaCita: formatearHora(this.horaCitaDate) || resolverTexto(this.horaCita),
+      horaCita: formatearHora(this.horaCitaDate) || resolverTexto(this.horaCita),
 
-      comentariosConvenio: resolverTexto(this.comentariosConvenio),
+      idConvenio: this.idConvenio,
+      comentariosConvenio: resolverTexto(this.comentariosComercial),
+
       insumosAdicionales: resolverTexto(this.insumosAdicionales),
       reexpedicion: resolverTexto(this.reexpedicion),
 
@@ -324,8 +437,8 @@ export class ModalAgregarviajeViaje implements OnInit {
       envioDocumentos: resolverTexto(this.EnvioDoc),
       envioCita: resolverTexto(this.EnvioCitas),
 
-      envioSeguimiento: resolverTexto(this.EnvioSeguimiento), // <-- nuevo
-      envioCCP: resolverTexto(this.EnvioCcp),
+      envioSeguimiento: resolverTexto(this.EnvioSeguimiento),
+      envioCCP : resolverTexto(this.EnvioCcp),
 
       idEquipoIngreso: resolverNumero(this.idEquipoIngreso),
       idOperadorIngreso: resolverNumero(this.idOperadorIngreso),
@@ -334,51 +447,9 @@ export class ModalAgregarviajeViaje implements OnInit {
       envio: resolverTexto(this.envio),
 
       idUsuario: this.datosViajeCreacion?.idCreador || undefined,
-      idEmpresa: this.datosViajeCreacion?.idEmpresa || undefined
+      idEmpresa: this.datosViajeCreacion?.idEmpresa || undefined,
+
     };
-
-    console.log('Objeto limpio enviado al API:', nuevoViaje);
-
-    this.viajesService.insertarViaje(nuevoViaje).subscribe({
-      next: (respuesta) => {
-        console.log('Viaje creado con éxito:', respuesta);
-        this.onGuardado.emit();
-        this.cerrarModal();
-      },
-      error: (err) => {
-        console.error('Error detallado del backend:', err.error?.errors);
-      }
-    });
-
   }
 
-  cambioEnCuidad(evento: SelectChangeEvent) {
-    const idSeleccionado = evento.value;
-    const ciudadSeleccionada = this.destinos.find(c => c.idEstado === idSeleccionado);
-
-    if (ciudadSeleccionada) {
-      console.log ('Ciudad seleccionada -> id:', ciudadSeleccionada.idEstado, '| nombre:', ciudadSeleccionada.destinoEstado1);
-
-    }
-
-  }
-
-    cambioEnDestino(evento: SelectChangeEvent) {
-      const idEstadoSeleccionado = evento.value; // gracias a optionValue="idEstado" en el select de Destino
-      this.ciudades = this.todasLasCiudades.filter(c => c.idEstado === idEstadoSeleccionado);
-      this.idCiudad = undefined; // la ciudad que tenía elegida antes ya no aplica al nuevo estado
-    }
-
-  guardarDatos() {
-    if(this.datosViajeCreacion?.tipoDeOperacion === "EDITAR"){
-      alert('Se editara el viaje '+this.noViaje);
-
-    }else{
-      this.insertarNuevoValor();
-    }
-  }
-
-  cerrarModal() {
-    this.onClose.emit();
-  }
 }

@@ -60,7 +60,9 @@ export class ProgramacionViajesVikingo {
     this.cargando = true;
 
     const hoy = new Date();
-    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1); // día 1 del mes actual
+    const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
 
     const formatear = (fecha: Date) => {
       const a = fecha.getFullYear();
@@ -69,8 +71,8 @@ export class ProgramacionViajesVikingo {
       return `${a}-${m}-${d}`;
     };
 
-    const inicio = formatear(inicioMes); // ej. 2026-07-01
-    const fin = formatear(hoy);          // ej. 2026-07-24
+    const inicio = formatear(inicioMes);
+    const fin = formatear(finMes);
     const idEmpresa = 2;
 
     /*
@@ -88,6 +90,7 @@ export class ProgramacionViajesVikingo {
       this.viajesService.obtenerPorFechaYEmpresaVista(inicio, fin, idEmpresa).subscribe(
         {
           next: (datos) => {
+            console.log(datos);
             this.viajesVista = datos;
             this.cargando = false;
           },
@@ -101,6 +104,49 @@ export class ProgramacionViajesVikingo {
 
     get claseTema(): string {
       return `tema-vikingo`;
+    }
+
+    public configurarFiltrosDeAppCardFiltros(datosDeLaCard: any) {
+      const idOrigen = datosDeLaCard.origen?.idOrigen ?? null;
+      const idEstatus = datosDeLaCard.estatus?.idEstatus ?? null;
+      const idCliente = datosDeLaCard.cliente?.idCliente ?? null;
+      const idEjecutivo = datosDeLaCard.ejecutivos?.idEjecutivo ?? null;
+      const rangoDeFechas: Date[] | undefined = datosDeLaCard?.fehas;
+
+      const formatear = (fecha: Date) => {
+        const a = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${a}-${m}-${d}`;
+      };
+
+      const fechaInicio = rangoDeFechas?.[0] ? formatear(rangoDeFechas[0]) : null;
+      const fechaFin = rangoDeFechas?.[1]
+        ? formatear(rangoDeFechas[1])
+        : (rangoDeFechas?.[0] ? formatear(rangoDeFechas[0]) : null);
+
+      const idEmpresa = 2;
+
+      this.cargando = true;
+
+      this.viajesService.obtenerViajesFiltradosVistaPorCriterios(
+        idEmpresa,
+        fechaInicio,
+        fechaFin,
+        idOrigen,
+        idEstatus,
+        idCliente,
+        idEjecutivo
+      ).subscribe({
+        next: (datos) => {
+          this.viajesVista = datos;
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('Error al filtrar viajes', err);
+          this.cargando = false;
+        }
+      });
     }
 
     manejarClicEnViaje(viajeSeleccionado: ProgramacionViajes) {

@@ -16,6 +16,16 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
+.btn-limpiar-filtros{
+  width: 100%;
+  background-color: var(--color-cabecera);
+  color: #ffffff;
+  gap: 10px; /* Reduje un poco la separación para que respiren mejor si la pantalla es chica */
+  margin-top: 15%;
+  margin-left: 0%;
+}
+
+
 .card-header {
   padding: 10px 15px;
   font-weight: 500;
