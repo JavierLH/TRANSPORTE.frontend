@@ -42,7 +42,7 @@ export class ComparativaAnual implements OnChanges {
 
     if(this.nombre_empresa === 'Vikingo'){
 
-      
+
 
     }else if(this.nombre_empresa === 'Drakkar'){
 

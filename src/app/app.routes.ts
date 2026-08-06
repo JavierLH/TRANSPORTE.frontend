@@ -20,6 +20,7 @@ import { ProgramacionViajesDrakkar } from './features/drakkar/programacion-viaje
 import { EjecutivosVikingo } from './features/vikingo/ejecutivos/ejecutivos-vikingo/ejecutivos-vikingo';
 import { AcumuladoGraficoBarra } from './features/vikingo/graficos/acumulado/acumulado-grafico-barra/acumulado-grafico-barra';
 import { AcumuladosDrakkar } from './features/drakkar/graficos/acumulados-drakkar/acumulados-drakkar';
+import { AcumuladoKarve } from './features/karve/graficos/acumulado-karve/acumulado-karve';
 
 
 export const routes: Routes = [
@@ -34,12 +35,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
 
-      {
-        path: 'siil/karve/dashboard',
-        component: DashboardKarve,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/dashboard' }
-      },
       {
         path: 'siil/karve/trafico/programaciondeviajes',
         component: ProgramacionViajesKarve,
@@ -146,8 +141,12 @@ export const routes: Routes = [
         data: { rutaModulo: 'siil/drakkar/dashboard' }
 
       },
-
-
+      {
+        path: 'siil/karve/dashboard',
+        component: AcumuladoKarve,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/karve/dashboard' }
+      },
     ]
 
   },
