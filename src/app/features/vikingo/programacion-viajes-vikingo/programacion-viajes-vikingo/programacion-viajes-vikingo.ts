@@ -113,6 +113,13 @@ export class ProgramacionViajesVikingo {
       const idEjecutivo = datosDeLaCard.ejecutivos?.idEjecutivo ?? null;
       const rangoDeFechas: Date[] | undefined = datosDeLaCard?.fehas;
 
+      const sinFechas = !rangoDeFechas?.[0];
+
+      if (idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
+        this.cargarViajes();
+        return;
+      }
+
       const formatear = (fecha: Date) => {
         const a = fecha.getFullYear();
         const m = String(fecha.getMonth() + 1).padStart(2, '0');
