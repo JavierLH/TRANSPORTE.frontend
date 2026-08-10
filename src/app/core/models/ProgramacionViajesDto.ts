@@ -17,7 +17,7 @@ export interface ProgramacionViajes {
   gasto?: number;
   idEjecutivo?: number;
   asignacion?: string;
-  idPatio?: string;
+  idPatio?: number;
   ingreso?: string;
   idEquipoIngreso?: number;
   idOperadorIngreso?: number;

@@ -10,13 +10,15 @@ import { ProgramacionViajes } from '../../../core/models/ProgramacionViajesDto';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectChangeEvent, SelectModule } from 'primeng/select';
 import { CatalogosViajeService } from '../../../core/services/CatalogosViajesService';
-import { Cliente, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
+import { Cliente, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, Patios, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConvenioServices } from '../../../core/services/ConvenioService';
 import Convenio from '../../../core/models/Convenio';
 
 const ID_TIPO_EQUIPO_TRACTOCAMION = 3;
+const ID_TIPO_EQUIPO_RABON = 7;
+
 
 @Component({
   selector: 'app-modal-agregarviaje-viaje',
@@ -62,7 +64,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   citaTerminal: string = '';
   comentarios: string = '';
   idOrigen: number | undefined;
-  idPatio: string = ''; // Destino
+  idPatio: number | undefined;   // antes: idPatio: string = ''; // Destino
+
   idCiudad: number | undefined;
   insumosAdicionales: string = '';
   reexpedicion: string = '';
@@ -71,6 +74,7 @@ export class ModalAgregarviajeViaje implements OnInit {
   estatus: number | undefined;
   asignacion: string = '';
   sIngreso: string = '';
+
   idPatio2: number | undefined;
 
   horaCita: string = '';
@@ -106,6 +110,8 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   origenes: Origenes[] = [];
   destinos: DestinoEstados[] = [];
+
+  patios: Patios[] = [];
 
   todasLasCiudades: DestinoEstadoCiudades[] = [];  // <-- nuevo: el catálogo completo, sin filtrar
   ciudades: DestinoEstadoCiudades[] = [];          // <-- ahora arranca vacío; se llena al elegir un Destino
@@ -180,7 +186,8 @@ export class ModalAgregarviajeViaje implements OnInit {
       next: (data) => {
         this.equipos = data.equipos.flatMap(grupo => grupo.equipos);
         this.equiposTractocamion = data.equipos.find(
-          grupo => grupo.idTipoEquipo === ID_TIPO_EQUIPO_TRACTOCAMION
+          grupo => (grupo.idTipoEquipo === ID_TIPO_EQUIPO_TRACTOCAMION
+                 || grupo.idTipoEquipo === ID_TIPO_EQUIPO_RABON)
         )?.equipos ?? [];
 
         this.operadores = data.operadores;
@@ -191,6 +198,7 @@ export class ModalAgregarviajeViaje implements OnInit {
         this.origenes = data.origenes;
         this.destinos = data.destinoEstados;
         this.todasLasCiudades = data.destinoEstadoCiudades;
+        this.patios = data.patios;
 
         if (this.datosViajeCreacion?.tipoDeOperacion === "EDITAR") {
           this.label = 'Actualizar';
@@ -245,7 +253,6 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.idConvenio = viaje.idConvenio;
     this.comentariosComercial = (viaje.comentariosConvenio === undefined) ? '' : viaje.comentariosConvenio;
 
-    this.idPatio = viaje.idPatio ?? '';
     this.idCiudad = viaje.idCiudad;
     this.insumosAdicionales = viaje.insumosAdicionales ?? '';
     this.reexpedicion = viaje.reexpedicion ?? '';
@@ -254,10 +261,12 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.estatus = viaje.estatus;
     this.asignacion = viaje.asignacion ?? '';
     this.sIngreso = viaje.sIngreso ?? '';
-    this.idPatio2 = viaje.idPatio2;
+
+    this.idPatio = viaje.idPatio ? Number(viaje.idPatio) : undefined;
+    this.idPatio2 = viaje.idPatio2 ? Number(viaje.idPatio2) : undefined;
 
     this.horaCita = viaje.horaCita ?? '';
-    this.horaCitaDate = viaje.horaCita ? new Date(`1970-01-01T${viaje.horaCita}:00`) : undefined;
+    this.horaCitaDate = viaje.horaCita ? new Date(`1970-01-01T${viaje.horaCita.substring(0, 5)}:00`) : undefined;
 
     this.EnvioAsig = viaje.envioAsignacion ?? '';
     this.EnvioDoc = viaje.envioDocumentos ?? '';
@@ -402,7 +411,7 @@ export class ModalAgregarviajeViaje implements OnInit {
       turno: resolverTexto(this.turno),
       citaTerminal: resolverFecha(this.citaTerminal),
       comentarios: resolverTexto(this.comentarios),
-      idPatio: resolverTexto(this.idPatio),
+      idPatio: resolverNumero(this.idPatio),
       asignacion: resolverTexto(this.asignacion),
       sIngreso: resolverTexto(this.sIngreso),
 

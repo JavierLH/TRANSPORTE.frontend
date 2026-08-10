@@ -333,12 +333,29 @@
 
       <div>
         <label>Patio de Vacío/Terminal Expo (1)</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="sIngreso" />
+        <p-select
+          [options]="patios"
+          [(ngModel)]="idPatio"
+          optionLabel="descripcion"
+          optionValue="idPatio"
+          placeholder="Seleccione Patio"
+          appendTo="body"
+          class="w-full"
+        />
       </div>
       <div>
         <label>Patio de Vacío/Terminal Expo (2)</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="idPatio2" />
+        <p-select
+          [options]="patios"
+          [(ngModel)]="idPatio2"
+          optionLabel="descripcion"
+          optionValue="idPatio"
+          placeholder="Seleccione Patio"
+          appendTo="body"
+          class="w-full"
+        />
       </div>
+
       <div>
         <label>Horario Cita</label>
         <p-datepicker

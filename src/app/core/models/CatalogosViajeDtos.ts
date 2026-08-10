@@ -64,6 +64,17 @@ export interface DestinoEstadoCiudades {
   destinoEstadoCiudad1: string | null;
 }
 
+export interface Patios {
+
+  idPatio: number | null;
+  idEstado: number | null;
+  idTipoOperacion: number | null;
+  idTipoPatio: number | null;
+  descripcion: string | null;
+  estatus: number | null;
+
+}
+
 export interface CatalogosViaje {
   equipos: EquipoPorTipo[];
   operadores: Operador[];
@@ -74,4 +85,5 @@ export interface CatalogosViaje {
   origenes: Origenes[];
   destinoEstados: DestinoEstados[];
   destinoEstadoCiudades: DestinoEstadoCiudades[];   // <-- antes decía "destinosEstadosCuidades", no coincidía con el JSON real
+  patios: Patios[]
 }

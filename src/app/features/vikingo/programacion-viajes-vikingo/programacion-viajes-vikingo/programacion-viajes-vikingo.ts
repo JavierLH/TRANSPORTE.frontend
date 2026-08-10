@@ -85,7 +85,8 @@ export class ProgramacionViajesVikingo {
         console.error('Error al cargar viajes', err);
         this.cargando = false;
       }
-      });*/
+      });
+      */
 
       this.viajesService.obtenerPorFechaYEmpresaVista(inicio, fin, idEmpresa).subscribe(
         {
