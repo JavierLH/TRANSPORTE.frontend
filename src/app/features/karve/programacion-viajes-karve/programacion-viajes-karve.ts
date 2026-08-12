@@ -90,20 +90,20 @@ export class ProgramacionViajesKarve implements OnInit {
       return `tema-karve`;
     }
 
-  manejarClicEnViaje(viajeSeleccionado: ProgramacionViajes) {
-    //console.log('¡El usuario hizo clic en este viaje!', viajeSeleccionado);
-    //this.abrirModal('Editar viaje');
-  }
+    manejarClicEnViaje(viajeSeleccionado: ProgramacionViajes) {
+      //console.log('¡El usuario hizo clic en este viaje!', viajeSeleccionado);
+      //this.abrirModal('Editar viaje');
+    }
 
-  abrirModal(titulo: string) {
-      this.tituloFormulario = titulo;
-      this.mostrarModal = true;
-      this.cdr.detectChanges();
-  }
+    abrirModal(titulo: string) {
+        this.tituloFormulario = titulo;
+        this.mostrarModal = true;
+        this.cdr.detectChanges();
+    }
 
-  cerrarModal() {
-      this.mostrarModal = false;
-      this.cdr.detectChanges();
-  }
+    cerrarModal() {
+        this.mostrarModal = false;
+        this.cdr.detectChanges();
+    }
 
 }

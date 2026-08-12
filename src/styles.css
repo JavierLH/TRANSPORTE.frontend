@@ -1,4 +1,8 @@
 @import "primeicons/primeicons.css";
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+
+@layer theme, base, primeng, utilities;
 
 :root{
   --color-cabecera: var(--p-sky-500);

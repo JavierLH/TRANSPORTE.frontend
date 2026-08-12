@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {  TablaDashboardComponent } from '../../shared/tabla-dashboard/tabla-dashboard';
 import { MegaMenu } from "../../shared/mega-menu/mega-menu";
 import { Usuarios } from '../../core/services/usuarios';
-import { LoginResponse, Usuario } from '../../core/models/usuarioRolesFunciones';
 import { NavMenu } from '../navmenu/navmenu';
-import { UsuarioCredenciales } from '../../core/models/UsuarioCredenciales';
 import { RouterOutlet } from '@angular/router';
-import { PrimeIcons } from 'primeng/api';
 import { NgClass } from '@angular/common';
 
 @Component({

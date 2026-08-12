@@ -1,26 +1,32 @@
-<div class="menu-container">
-  <div class="menu-logo-container">
-    <span class="menu-title">{{ nombre }}</span>
+<div
+  class="flex flex-col h-screen w-[300px] box-border border-r border-gray-200 bg-white"
+>
+  <div class="py-4 px-3 text-emerald-600">
+    <span class="text-lg font-bold">{{ nombre }}</span>
   </div>
 
-  <!-- 💡 Añadimos referencia de view y evento de scroll -->
-  <div class="menu-content-scroll" #scrollContainer (scroll)="onScroll($event)">
+  <div
+    class="grow overflow-y-auto"
+    #scrollContainer
+    (scroll)="onScroll($event)"
+  >
     <p-panelMenu
       [model]="items"
-      styleClass="custom-menu"
-      [multiple]="false"
+      [multiple]="true"
+      styleClass="w-full"
+      [pt]="{
+        panel: { class: 'border-2' },
+      }"
     ></p-panelMenu>
   </div>
 
-  <button class="user-profile-btn p-ripple">
-    <p-avatar
-      image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
-      class="user-avatar"
-      shape="circle"
-    ></p-avatar>
-    <div class="user-details">
-      <span class="user-name">Amy Elsner</span>
-      <span class="user-role">Admin</span>
+  <button
+    class="flex items-center w-full p-3 border-0 border-t border-gray-200 bg-transparent text-left cursor-pointer hover:bg-gray-50"
+  >
+    <p-avatar image="..." shape="circle" class="mr-2"></p-avatar>
+    <div class="flex flex-col">
+      <span class="font-bold text-sm text-gray-800">{{ nombre }}</span>
+      <span class="text-xs text-gray-500">Admin</span>
     </div>
   </button>
 </div>
