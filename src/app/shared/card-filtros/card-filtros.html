@@ -80,9 +80,9 @@
           />
         </div>
 
-        <button (click)="limpiarFiltros()" class="btn-limpiar-filtros">
+        <p-button (click)="limpiarFiltros()" class="btn-limpiar-filtros">
           Limpiar filtros
-        </button>
+        </p-button>
 
         <!-- 7. Ordenar -->
         <!--<div class="campo-filtro">
@@ -98,7 +98,13 @@
       </div>
 
       <!-- Botón de aplicar -->
-      <button class="btn-aplicar" (click)="filtrar()">Aplicar Filtros</button>
+      <div class="flex w-full">
+        <p-button class="w-full" styleClass="w-full" (click)="filtrar()">
+          Aplicar Filtros
+        </p-button>
+      </div>
+
+      
     </div>
   </div>
 </div>

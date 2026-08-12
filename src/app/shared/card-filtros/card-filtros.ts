@@ -5,11 +5,12 @@ import { EstatusViaje, FiltroDeBusqueda, Origen } from '../../core/models/Catalo
 import { Cliente, Ejecutivo } from '../../core/models/CatalogosViajeDtos';
 import { CatalogosViajeService } from '../../core/services/CatalogosViajesService';
 import { DatePickerModule } from 'primeng/datepicker';
+import { Button } from "primeng/button";
 
 
 @Component({
   selector: 'app-card-filtros',
-  imports: [Select, SelectModule, FormsModule, DatePickerModule],
+  imports: [Select, SelectModule, FormsModule, DatePickerModule, Button],
   templateUrl: './card-filtros.html',
   styleUrl: './card-filtros.css',
 })

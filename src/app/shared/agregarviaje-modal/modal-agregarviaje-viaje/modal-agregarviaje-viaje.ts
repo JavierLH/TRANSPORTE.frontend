@@ -15,6 +15,8 @@ import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConvenioServices } from '../../../core/services/ConvenioService';
 import Convenio from '../../../core/models/Convenio';
+import { PanelModule } from 'primeng/panel';
+
 
 const ID_TIPO_EQUIPO_TRACTOCAMION = 3;
 const ID_TIPO_EQUIPO_RABON = 7;
@@ -23,7 +25,7 @@ const ID_TIPO_EQUIPO_RABON = 7;
 @Component({
   selector: 'app-modal-agregarviaje-viaje',
   standalone: true,
-  imports: [InputTextModule, RadioButtonModule, ButtonModule, InputNumberModule, FormsModule, DatePickerModule, SelectModule, DialogModule],
+  imports: [PanelModule, InputTextModule, RadioButtonModule, ButtonModule, InputNumberModule, FormsModule, DatePickerModule, SelectModule, DialogModule],
   templateUrl: './modal-agregarviaje-viaje.html',
   styleUrl: './modal-agregarviaje-viaje.css',
 })

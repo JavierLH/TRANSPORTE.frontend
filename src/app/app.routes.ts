@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 import { Login } from './features/login/login';
 import { authGuard, publicGuard } from './security/Guards';
 import { Dashboard } from './features/dashboard/dashboard';
-import { DashboardVK } from './features/vikingo/dashboard/dashboardVK';
-import { DashboardKarve } from './features/karve/dashboard-karve/dashboard-karve';
 import { ProgramacionViajesKarve } from './features/karve/programacion-viajes-karve/programacion-viajes-karve';
 import { ProgramacionViajesVikingo } from './features/vikingo/programacion-viajes-vikingo/programacion-viajes-vikingo/programacion-viajes-vikingo';
 import { UsuariosEmpresas } from './features/configuraciones/usuarios-empresas/usuarios-empresas';
@@ -22,7 +20,6 @@ import { AcumuladoGraficoBarra } from './features/vikingo/graficos/acumulado/acu
 import { AcumuladosDrakkar } from './features/drakkar/graficos/acumulados-drakkar/acumulados-drakkar';
 import { AcumuladoKarve } from './features/karve/graficos/acumulado-karve/acumulado-karve';
 
-
 export const routes: Routes = [
   {
     path: 'login',
@@ -35,117 +32,119 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
 
+      // ─── Tráfico / Programación de viajes ──────────────────────────
       {
         path: 'siil/karve/trafico/programaciondeviajes',
         component: ProgramacionViajesKarve,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes' }
+        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes', brand: 'karve' }
       },
       {
         path: 'siil/vikingo/trafico/programaciondeviajes',
         component: ProgramacionViajesVikingo,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes' }
+        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes', brand: 'vikingo' }
       },
-      {
-        path: 'siil/configuraciones/usuariosEmpresas',
-        component: UsuariosEmpresas,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/usuariosEmpresas' }
-      },
-
-      {
-        path: 'siil/configuraciones/permisos/drakkar',
-        component: Drakkar,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/permisos/drakkar' }
-      },
-
-      {
-        path: 'siil/configuraciones/permisos/karve',
-        component: KarvePermisos,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/permisos/karve' }
-      },
-      {
-        path: 'siil/configuraciones/permisos/letca',
-        component: LetcaPermisos,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/permisos/letca' }
-      },
-      {
-        path: 'siil/configuraciones/permisos/vikingo',
-        component: VikingoPermisos,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/permisos/vikingo' }
-      },
-
-
-      {
-        path: 'siil/configuraciones/roles/vikingo',
-        component: VikingoRoles,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/roles/vikingo' }
-      },
-            {
-        path: 'siil/configuraciones/roles/karve',
-        component: KarveRoles,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/roles/karve' }
-      },
-            {
-        path: 'siil/configuraciones/roles/letca',
-        component: LetcaRoles,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/permisos/letca' }
-      },
-      {
-        path: 'siil/configuraciones/roles/drakkar',
-        component: DrakkarRoles,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/configuraciones/roles/vikingo' }
-      },
-
       {
         path: 'siil/letca/trafico/programaciondeviajes',
         component: ProgramacionViajesLetca,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/letca/trafico/programaciondeviajes' }
+        data: { rutaModulo: 'siil/letca/trafico/programaciondeviajes', brand: 'letca' }
       },
       {
         path: 'siil/drakkar/trafico/programaciondeviajes',
         component: ProgramacionViajesDrakkar,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/drakkar/trafico/programaciondeviajes' }
+        data: { rutaModulo: 'siil/drakkar/trafico/programaciondeviajes', brand: 'drakkar' }
       },
 
+      // ─── Catálogos ─────────────────────────────────────────────────
       {
         path: 'siil/vikingo/trafico/catalogo/ejecutivos',
         component: EjecutivosVikingo,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/vikingo/trafico/catalogo/ejecutivos' }
-
+        data: { rutaModulo: 'siil/vikingo/trafico/catalogo/ejecutivos', brand: 'vikingo' }
       },
 
+      // ─── Dashboards ────────────────────────────────────────────────
       {
         path: 'siil/vikingo/dashboard',
         component: AcumuladoGraficoBarra,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/vikingo/dashboard' }
+        data: { rutaModulo: 'siil/vikingo/dashboard', brand: 'vikingo' }
       },
-
       {
         path: 'siil/drakkar/dashboard',
         component: AcumuladosDrakkar,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/drakkar/dashboard' }
-
+        data: { rutaModulo: 'siil/drakkar/dashboard', brand: 'drakkar' }
       },
       {
         path: 'siil/karve/dashboard',
         component: AcumuladoKarve,
         canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/dashboard' }
+        data: { rutaModulo: 'siil/karve/dashboard', brand: 'karve' }
+      },
+
+      // ─── Configuraciones / Permisos ────────────────────────────────
+      {
+        path: 'siil/configuraciones/permisos/vikingo',
+        component: VikingoPermisos,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/permisos/vikingo', brand: 'vikingo' }
+      },
+      {
+        path: 'siil/configuraciones/permisos/karve',
+        component: KarvePermisos,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/permisos/karve', brand: 'karve' }
+      },
+      {
+        path: 'siil/configuraciones/permisos/letca',
+        component: LetcaPermisos,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/permisos/letca', brand: 'letca' }
+      },
+      {
+        path: 'siil/configuraciones/permisos/drakkar',
+        component: Drakkar,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/permisos/drakkar', brand: 'drakkar' }
+      },
+
+      // ─── Configuraciones / Roles ───────────────────────────────────
+      {
+        path: 'siil/configuraciones/roles/vikingo',
+        component: VikingoRoles,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/roles/vikingo', brand: 'vikingo' }
+      },
+      {
+        path: 'siil/configuraciones/roles/karve',
+        component: KarveRoles,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/roles/karve', brand: 'karve' }
+      },
+      {
+        path: 'siil/configuraciones/roles/letca',
+        component: LetcaRoles,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/permisos/letca', brand: 'letca' }
+      },
+      {
+        path: 'siil/configuraciones/roles/drakkar',
+        component: DrakkarRoles,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/roles/vikingo', brand: 'drakkar' }
+      },
+
+      // ─── Configuraciones / Transversal ─────────────────────────────
+      // Sin `brand`: conserva la empresa desde la que se entró.
+      {
+        path: 'siil/configuraciones/usuariosEmpresas',
+        component: UsuariosEmpresas,
+        canActivate: [authGuard],
+        data: { rutaModulo: 'siil/configuraciones/usuariosEmpresas' }
       },
     ]
 

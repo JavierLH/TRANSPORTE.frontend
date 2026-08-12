@@ -8,7 +8,7 @@
 
 .card-filtros {
   background-color: #ffffff;
-  border-top: 25px solid var(--color-cabecera);
+  /*border-top: 25px solid var(--color-cabecera);*/
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-left: 1px solid #e0e0e0;
@@ -18,13 +18,12 @@
 
 .btn-limpiar-filtros{
   width: 100%;
-  background-color: var(--color-cabecera);
+  
   color: #ffffff;
   gap: 10px; /* Reduje un poco la separación para que respiren mejor si la pantalla es chica */
   margin-top: 15%;
   margin-left: 0%;
 }
-
 
 .card-header {
   padding: 10px 15px;
@@ -74,36 +73,34 @@
   font-size: 12px;
   font-weight: 700;
   color: #1f2d3d;
-  white-space: nowrap; /* Evita que los labels largos se corten en dos líneas feas */
+  white-space: nowrap;
 }
 
-/* --- SOLUCIÓN DEL ASPECTO "TOY" (TAMAÑO EQUILIBRADO) --- */
+/*
 ::ng-deep .campo-filtro p-select,
 ::ng-deep .campo-filtro .p-dropdown {
   width: 100% !important;
-  height: 34px !important; /* Subimos a 34px, compacto pero no apachurrado */
+  height: 34px !important;
 }
 
 ::ng-deep .campo-filtro .p-dropdown-label {
   padding: 0 10px !important;
-  line-height: 32px !important; /* Ajustado a la nueva altura */
-  font-size: 13px !important; /* Letra un poquito más grande */
+  line-height: 32px !important;
+  font-size: 13px !important;
 }
 
 ::ng-deep .campo-filtro .p-dropdown-trigger {
   width: 34px !important;
 }
 
-/* Si usas p-calendar */
 ::ng-deep .campo-filtro p-calendar .p-inputtext,
 ::ng-deep .campo-filtro p-calendar .p-calendar-input {
   padding: 0 10px !important;
   height: 34px !important;
   line-height: 32px !important;
   font-size: 13px !important;
-}
+}*/
 
-/* --- BOTÓN --- */
 .btn-aplicar {
   width: 100%;
   background-color: var(--color-cabecera);

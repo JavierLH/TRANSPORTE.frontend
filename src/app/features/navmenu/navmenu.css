@@ -1,9 +1,10 @@
 
+/*
 :host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link * {
   color: #ff4400 !important;
   font-weight: 600 !important;
 }
 
-/*:host ::ng-deep .p-panelmenu-panel {
+:host ::ng-deep .p-panelmenu-panel {
   border: none;
 }*/
