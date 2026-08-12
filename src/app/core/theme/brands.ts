@@ -22,3 +22,17 @@ export const BRANDS: Record<BrandKey, Brand> = {
 };
 
 export const BRAND_DEFAULT: BrandKey = 'vikingo';
+
+export const BRAND_STORAGE_KEY = 'brand';
+
+/**
+ * Marca persistida en localStorage, validada contra el catálogo.
+ * Se lee en `app.config.ts` para que `providePrimeNG` arranque ya con el
+ * preset correcto: aplicarlo después con `usePreset` llega tarde, porque
+ * el effect interno de PrimeNG lo sobrescribe en la primera detección de cambios.
+ */
+export function marcaGuardada(): BrandKey {
+  if (typeof localStorage === 'undefined') return BRAND_DEFAULT;
+  const key = localStorage.getItem(BRAND_STORAGE_KEY) as BrandKey | null;
+  return key && key in BRANDS ? key : BRAND_DEFAULT;
+}

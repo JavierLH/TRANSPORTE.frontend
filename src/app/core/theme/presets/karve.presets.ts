@@ -37,22 +37,69 @@ export const KarvePreset = definePreset(Aura, {
   //  COMPONENTES
   // ═══════════════════════════════════════════════════════════
   components: {
+    // Tabla con la marca en tonos bajos: el color aparece en la cabecera
+    // y al interactuar; el cuerpo se mantiene neutro para que muchas
+    // columnas no cansen la vista.
     datatable: {
+
+      // Cabecera: tinte de marca al ~5% + texto de marca oscuro
       headerCell: {
-        background:  '{surface.50}',
-        color:       '{text.color}',
-        borderColor: '{surface.200}',
-        padding:     '0.75rem 1rem',
+        background:         '{primary.50}',
+        color:              '{primary.800}',
+        borderColor:        '{primary.200}',
+        hoverBackground:    '{primary.100}',
+        hoverColor:         '{primary.900}',
+        selectedBackground: '{primary.100}',
+        selectedColor:      '{primary.900}',
+        padding:            '0.6rem 0.75rem',
+        gap:                '0.5rem',
       },
-      bodyCell: { padding: '0.6rem 1rem' },
+      columnTitle: { fontWeight: '600' },
+      sortIcon:    { color: '{primary.400}', hoverColor: '{primary.600}', size: '0.875rem' },
+
+      // Cuerpo: neutro. Rejilla muy tenue para que 15 columnas no parezcan jaula.
+      bodyCell: {
+        padding:     '0.5rem 0.75rem',
+        borderColor: '{surface.100}',
+      },
       row: {
-        stripedBackground: '{surface.50}',
-        hoverBackground:   '{surface.100}',
+        background:         '{surface.0}',
+        color:              '{text.color}',
+        stripedBackground:  '{surface.50}',
+        hoverBackground:    '{primary.50}',
+        hoverColor:         '{primary.800}',
+        selectedBackground: '{primary.100}',
+        selectedColor:      '{primary.900}',
       },
+
+      // Separadores del paginador
+      paginatorTop:    { borderColor: '{surface.200}', borderWidth: '0 0 1px 0' },
+      paginatorBottom: { borderColor: '{surface.200}', borderWidth: '1px 0 0 0' },
     },
 
     card: {
       root: { borderRadius: '10px', shadow: '0 1px 3px rgba(0,0,0,.08)' },
+    },
+
+    panel: {
+      root: {
+        background:   '{surface.0}',
+        borderColor:  '{surface.200}',
+        color:        '{text.color}',
+        borderRadius: '6px',
+      },
+      // Cabecera con el color de marca (reemplaza a .seccion-header)
+      header: {
+        background:   '{primary.color}',
+        color:        '{primary.contrast.color}',
+        padding:      '0.75rem 1.125rem',
+        borderColor:  '{surface.200}',
+        borderWidth:  '0 0 1px 0',
+        borderRadius: '6px 6px 0 0',
+      },
+      title:   { fontWeight: '600' },
+      content: { padding: '1.125rem' },
+      footer:  { padding: '0 1.125rem 1.125rem 1.125rem' },
     },
 
     button: {

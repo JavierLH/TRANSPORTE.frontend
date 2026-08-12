@@ -89,451 +89,465 @@
     </div>
 
     <ng-template pTemplate="footer">
-      <p-button
-        label="Agregar"
-        severity="success"
-        (onClick)="agregarConvenio()"
-      />
+      <p-button label="Agregar" (onClick)="agregarConvenio()" />
     </ng-template>
   </p-dialog>
 
   <!----------------------------------------------------------------------->
 
   <div class="seccion-card">
-    <div class="seccion-header">Ejecutivos - General</div>
+    <!--<div class="seccion-header">Ejecutivos - General</div>-->
 
-    <div class="viaje-fecha-cliente-ejecutivo">
-      <div>
-        <label>No. Viaje</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="noViaje" />
-      </div>
-      <div>
-        <label>Fecha *</label>
-        <p-datepicker
-          inputId="calendar-24h"
-          [(ngModel)]="datetime24h"
-          [showTime]="true"
-          class="w-full"
-          appendTo="body"
-        />
-      </div>
-      <div>
-        <label>Cliente</label>
-        <p-select
-          [options]="clientes"
-          [(ngModel)]="idCliente"
-          optionLabel="nombreCliente"
-          optionValue="idCliente"
-          placeholder="Seleccione Cliente"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Ejecutivo</label>
-        <p-select
-          [options]="ejecutivos"
-          [(ngModel)]="idEjecutivo"
-          optionLabel="nombreEjecutivo"
-          optionValue="idEjecutivo"
-          placeholder="Seleccione Ejecutivo"
-          class="w-full"
-        />
-      </div>
-    </div>
-
-    <div class="vista-general">
-      <div>
-        <label>Requerimientos viaje</label>
-        <input
-          type="text"
-          pInputText
-          class="w-full"
-          [(ngModel)]="comentariosConvenio"
-        />
-      </div>
-      <div>
-        <label>Turno</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="turno" />
-      </div>
-      <div>
-        <label>Operador Ruta</label>
-        <p-select
-          [options]="operadores"
-          [(ngModel)]="idOperador"
-          optionLabel="nombreOperador"
-          optionValue="idOperador"
-          placeholder="Seleccione Operador"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Económico Ruta</label>
-        <p-select
-          [options]="equiposTractocamion"
-          [(ngModel)]="idEquipoRuta"
-          optionLabel="descripcion"
-          optionValue="idEquipo"
-          placeholder="Seleccione Equipo"
-          class="w-full"
-        />
+    <p-panel header="Ejecutivos - General">
+      <div class="viaje-fecha-cliente-ejecutivo">
+        <div>
+          <label>No. Viaje</label>
+          <input type="text" pInputText class="w-full" [(ngModel)]="noViaje" />
+        </div>
+        <div>
+          <label>Fecha *</label>
+          <p-datepicker
+            inputId="calendar-24h"
+            [(ngModel)]="datetime24h"
+            [showTime]="true"
+            class="w-full"
+            appendTo="body"
+          />
+        </div>
+        <div>
+          <label>Cliente</label>
+          <p-select
+            [options]="clientes"
+            [(ngModel)]="idCliente"
+            optionLabel="nombreCliente"
+            optionValue="idCliente"
+            placeholder="Seleccione Cliente"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Ejecutivo</label>
+          <p-select
+            [options]="ejecutivos"
+            [(ngModel)]="idEjecutivo"
+            optionLabel="nombreEjecutivo"
+            optionValue="idEjecutivo"
+            placeholder="Seleccione Ejecutivo"
+            class="w-full"
+          />
+        </div>
       </div>
 
-      <div>
-        <label>Operador Retira</label>
-        <p-select
-          [options]="operadores"
-          [(ngModel)]="idOperadorRetira"
-          optionLabel="nombreOperador"
-          optionValue="idOperador"
-          placeholder="Seleccione Operador"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Económico Retira</label>
-        <p-select
-          [options]="equiposTractocamion"
-          [(ngModel)]="idEquipoRetira"
-          optionLabel="descripcion"
-          optionValue="idEquipo"
-          placeholder="Seleccione Equipo"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Tipo</label>
-        <p-select
-          [options]="tipos"
-          [(ngModel)]="idTipo"
-          optionLabel="nombre"
-          optionValue="id"
-          placeholder="Seleccione Tipo"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Mercancía</label>
-        <p-select
-          [options]="mercancias"
-          [(ngModel)]="idTipoMercancia"
-          optionLabel="descripcion"
-          optionValue="idTipoMercancia"
-          placeholder="Seleccione Mercancía"
-          class="w-full"
-        />
-      </div>
+      <div class="vista-general">
+        <div>
+          <label>Requerimientos viaje</label>
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="comentariosConvenio"
+          />
+        </div>
+        <div>
+          <label>Turno</label>
+          <input type="text" pInputText class="w-full" [(ngModel)]="turno" />
+        </div>
+        <div>
+          <label>Operador Ruta</label>
+          <p-select
+            [options]="operadores"
+            [(ngModel)]="idOperador"
+            optionLabel="nombreOperador"
+            optionValue="idOperador"
+            placeholder="Seleccione Operador"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Económico Ruta</label>
+          <p-select
+            [options]="equiposTractocamion"
+            [(ngModel)]="idEquipoRuta"
+            optionLabel="descripcion"
+            optionValue="idEquipo"
+            placeholder="Seleccione Equipo"
+            class="w-full"
+          />
+        </div>
 
-      <div>
-        <label>Operación</label>
-        <p-select
-          [options]="operaciones"
-          [(ngModel)]="idTipoOperacion"
-          optionLabel="tipoOperacion"
-          optionValue="idOperacion"
-          placeholder="Seleccione Operación"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Cita Terminal</label>
-        <p-datepicker
-          [(ngModel)]="citaTerminal"
-          [showTime]="true"
-          placeholder="Seleccione Fecha/Hora"
-          class="w-full"
-          appendTo="body"
-        />
-      </div>
-      <div>
-        <label>Comentarios</label>
-        <input
-          type="text"
-          pInputText
-          class="w-full"
-          [(ngModel)]="comentarios"
-        />
-      </div>
-      <div>
-        <label>Origen</label>
-        <p-select
-          [options]="origenes"
-          [(ngModel)]="idOrigen"
-          optionLabel="origen1"
-          optionValue="idOrigen"
-          placeholder="Seleccione Origen"
-          class="w-full"
-        />
-      </div>
+        <div>
+          <label>Operador Retira</label>
+          <p-select
+            [options]="operadores"
+            [(ngModel)]="idOperadorRetira"
+            optionLabel="nombreOperador"
+            optionValue="idOperador"
+            placeholder="Seleccione Operador"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Económico Retira</label>
+          <p-select
+            [options]="equiposTractocamion"
+            [(ngModel)]="idEquipoRetira"
+            optionLabel="descripcion"
+            optionValue="idEquipo"
+            placeholder="Seleccione Equipo"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Tipo</label>
+          <p-select
+            [options]="tipos"
+            [(ngModel)]="idTipo"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Seleccione Tipo"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Mercancía</label>
+          <p-select
+            [options]="mercancias"
+            [(ngModel)]="idTipoMercancia"
+            optionLabel="descripcion"
+            optionValue="idTipoMercancia"
+            placeholder="Seleccione Mercancía"
+            class="w-full"
+          />
+        </div>
 
-      <div>
-        <label>Destino</label>
-        <p-select
-          [options]="destinos"
-          [(ngModel)]="idDestino"
-          optionLabel="destinoEstado1"
-          optionValue="idEstado"
-          placeholder="Seleccione Destino"
-          class="w-full"
-          (onChange)="cambioEnDestino($event)"
-        />
-      </div>
+        <div>
+          <label>Operación</label>
+          <p-select
+            [options]="operaciones"
+            [(ngModel)]="idTipoOperacion"
+            optionLabel="tipoOperacion"
+            optionValue="idOperacion"
+            placeholder="Seleccione Operación"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Cita Terminal</label>
+          <p-datepicker
+            [(ngModel)]="citaTerminal"
+            [showTime]="true"
+            placeholder="Seleccione Fecha/Hora"
+            class="w-full"
+            appendTo="body"
+          />
+        </div>
+        <div>
+          <label>Comentarios</label>
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="comentarios"
+          />
+        </div>
+        <div>
+          <label>Origen</label>
+          <p-select
+            [options]="origenes"
+            [(ngModel)]="idOrigen"
+            optionLabel="origen1"
+            optionValue="idOrigen"
+            placeholder="Seleccione Origen"
+            class="w-full"
+          />
+        </div>
 
-      <div>
-        <label>Ciudad</label>
-        <p-select
-          [options]="ciudades"
-          [(ngModel)]="idCiudad"
-          optionLabel="destinoEstadoCiudad1"
-          optionValue="idCiudad"
-          placeholder="Seleccione Ciudad"
-          class="w-full"
-        />
-      </div>
+        <div>
+          <label>Destino</label>
+          <p-select
+            [options]="destinos"
+            [(ngModel)]="idDestino"
+            optionLabel="destinoEstado1"
+            optionValue="idEstado"
+            placeholder="Seleccione Destino"
+            class="w-full"
+            (onChange)="cambioEnDestino($event)"
+          />
+        </div>
 
-      <div>
-        <label>Dirección</label>
-        <input
-          type="text"
-          pInputText
-          class="w-full"
-          [(ngModel)]="insumosAdicionales"
-        />
-      </div>
-      <div>
-        <label>Reexpedición</label>
-        <input
-          type="text"
-          pInputText
-          class="w-full"
-          [(ngModel)]="reexpedicion"
-        />
-      </div>
+        <div>
+          <label>Ciudad</label>
+          <p-select
+            [options]="ciudades"
+            [(ngModel)]="idCiudad"
+            optionLabel="destinoEstadoCiudad1"
+            optionValue="idCiudad"
+            placeholder="Seleccione Ciudad"
+            class="w-full"
+          />
+        </div>
 
-      <div>
-        <label>Comisión</label>
-        <input type="number" pInputText class="w-full" [(ngModel)]="comision" />
-      </div>
-      <div>
-        <label>Gasto</label>
-        <input type="number" pInputText class="w-full" [(ngModel)]="gasto" />
-      </div>
-      <div>
-        <label>Estatus</label>
-        <p-select
-          [options]="estatusList"
-          [(ngModel)]="estatus"
-          optionLabel="nombre"
-          optionValue="id"
-          placeholder="Seleccione Estatus"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Asignación</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="asignacion" />
-      </div>
+        <div>
+          <label>Dirección</label>
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="insumosAdicionales"
+          />
+        </div>
+        <div>
+          <label>Reexpedición</label>
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="reexpedicion"
+          />
+        </div>
 
-      <div>
-        <label>Patio de Vacío/Terminal Expo (1)</label>
-        <p-select
-          [options]="patios"
-          [(ngModel)]="idPatio"
-          optionLabel="descripcion"
-          optionValue="idPatio"
-          placeholder="Seleccione Patio"
-          appendTo="body"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Patio de Vacío/Terminal Expo (2)</label>
-        <p-select
-          [options]="patios"
-          [(ngModel)]="idPatio2"
-          optionLabel="descripcion"
-          optionValue="idPatio"
-          placeholder="Seleccione Patio"
-          appendTo="body"
-          class="w-full"
-        />
-      </div>
+        <div>
+          <label>Comisión</label>
+          <input
+            type="number"
+            pInputText
+            class="w-full"
+            [(ngModel)]="comision"
+          />
+        </div>
+        <div>
+          <label>Gasto</label>
+          <input type="number" pInputText class="w-full" [(ngModel)]="gasto" />
+        </div>
+        <div>
+          <label>Estatus</label>
+          <p-select
+            [options]="estatusList"
+            [(ngModel)]="estatus"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Seleccione Estatus"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Asignación</label>
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="asignacion"
+          />
+        </div>
 
-      <div>
-        <label>Horario Cita</label>
-        <p-datepicker
-          [(ngModel)]="horaCitaDate"
-          [timeOnly]="true"
-          placeholder="00:00"
-          class="w-full"
-          appendTo="body"
-        />
+        <div>
+          <label>Patio de Vacío/Terminal Expo (1)</label>
+          <p-select
+            [options]="patios"
+            [(ngModel)]="idPatio"
+            optionLabel="descripcion"
+            optionValue="idPatio"
+            placeholder="Seleccione Patio"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Patio de Vacío/Terminal Expo (2)</label>
+          <p-select
+            [options]="patios"
+            [(ngModel)]="idPatio2"
+            optionLabel="descripcion"
+            optionValue="idPatio"
+            placeholder="Seleccione Patio"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div>
+          <label>Horario Cita</label>
+          <p-datepicker
+            [(ngModel)]="horaCitaDate"
+            [timeOnly]="true"
+            placeholder="00:00"
+            class="w-full"
+            appendTo="body"
+          />
+        </div>
       </div>
-    </div>
+    </p-panel>
   </div>
 
   <div class="seccion-card">
-    <div class="seccion-header">Ejecutivos - Cambio de Turno</div>
-    <div class="seccion-body turno-grid">
-      <div class="campo">
-        <label>Envío de asignación de operador</label>
-        <div class="flex-row">
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioAsig"
-              value="Sí"
-              [(ngModel)]="EnvioAsig"
-              inputId="asig_si"
-            />
-            <label for="asig_si">Sí</label>
-          </div>
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioAsig"
-              value="No"
-              [(ngModel)]="EnvioAsig"
-              inputId="asig_no"
-            />
-            <label for="asig_no">No</label>
-          </div>
-        </div>
-      </div>
+    <!--<div class="seccion-header">Ejecutivos - Cambio de Turno</div>-->
 
-      <div class="campo">
-        <label>Envío de documentos de viaje</label>
-        <div class="flex-row">
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioDocs"
-              value="Sí"
-              [(ngModel)]="EnvioDoc"
-              inputId="doc_si"
-            />
-            <label for="doc_si">Sí</label>
-          </div>
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioDocs"
-              value="No"
-              [(ngModel)]="EnvioDoc"
-              inputId="doc_no"
-            />
-            <label for="doc_no">No</label>
+    <p-panel header="Ejecutivos - Cambio de Turno">
+      <div class="seccion-body turno-grid">
+        <div class="campo">
+          <label>Envío de asignación de operador</label>
+          <div class="flex-row">
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioAsig"
+                value="Sí"
+                [(ngModel)]="EnvioAsig"
+                inputId="asig_si"
+              />
+              <label for="asig_si">Sí</label>
+            </div>
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioAsig"
+                value="No"
+                [(ngModel)]="EnvioAsig"
+                inputId="asig_no"
+              />
+              <label for="asig_no">No</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="campo">
-        <label>Envío de cita de carga</label>
-        <div class="flex-row">
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioCitas"
-              value="Sí"
-              [(ngModel)]="EnvioCitas"
-              inputId="cita_si"
-            />
-            <label for="cita_si">Sí</label>
-          </div>
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioCitas"
-              value="No"
-              [(ngModel)]="EnvioCitas"
-              inputId="cita_no"
-            />
-            <label for="cita_no">No</label>
+        <div class="campo">
+          <label>Envío de documentos de viaje</label>
+          <div class="flex-row">
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioDocs"
+                value="Sí"
+                [(ngModel)]="EnvioDoc"
+                inputId="doc_si"
+              />
+              <label for="doc_si">Sí</label>
+            </div>
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioDocs"
+                value="No"
+                [(ngModel)]="EnvioDoc"
+                inputId="doc_no"
+              />
+              <label for="doc_no">No</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="campo">
-        <label>Envío de datos de seguimiento a cliente</label>
-        <div class="flex-row">
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioSeguimiento"
-              value="Sí"
-              [(ngModel)]="EnvioSeguimiento"
-              inputId="seguimiento_si"
-            />
-            <label for="seguimiento_si">Sí</label>
-          </div>
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioSeguimiento"
-              value="No"
-              [(ngModel)]="EnvioSeguimiento"
-              inputId="seguimiento_no"
-            />
-            <label for="seguimiento_no">No</label>
+        <div class="campo">
+          <label>Envío de cita de carga</label>
+          <div class="flex-row">
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioCitas"
+                value="Sí"
+                [(ngModel)]="EnvioCitas"
+                inputId="cita_si"
+              />
+              <label for="cita_si">Sí</label>
+            </div>
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioCitas"
+                value="No"
+                [(ngModel)]="EnvioCitas"
+                inputId="cita_no"
+              />
+              <label for="cita_no">No</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="campo">
-        <label>Envío de CCP a operador</label>
-        <div class="flex-row">
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioCcp"
-              value="Sí"
-              [(ngModel)]="EnvioCcp"
-              inputId="ccp_si"
-            />
-            <label for="ccp_si">Sí</label>
+        <div class="campo">
+          <label>Envío de datos de seguimiento a cliente</label>
+          <div class="flex-row">
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioSeguimiento"
+                value="Sí"
+                [(ngModel)]="EnvioSeguimiento"
+                inputId="seguimiento_si"
+              />
+              <label for="seguimiento_si">Sí</label>
+            </div>
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioSeguimiento"
+                value="No"
+                [(ngModel)]="EnvioSeguimiento"
+                inputId="seguimiento_no"
+              />
+              <label for="seguimiento_no">No</label>
+            </div>
           </div>
-          <div class="radio-item">
-            <p-radiobutton
-              name="EnvioCcp"
-              value="No"
-              [(ngModel)]="EnvioCcp"
-              inputId="ccp_no"
-            />
-            <label for="ccp_no">No</label>
+        </div>
+
+        <div class="campo">
+          <label>Envío de CCP a operador</label>
+          <div class="flex-row">
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioCcp"
+                value="Sí"
+                [(ngModel)]="EnvioCcp"
+                inputId="ccp_si"
+              />
+              <label for="ccp_si">Sí</label>
+            </div>
+            <div class="radio-item">
+              <p-radiobutton
+                name="EnvioCcp"
+                value="No"
+                [(ngModel)]="EnvioCcp"
+                inputId="ccp_no"
+              />
+              <label for="ccp_no">No</label>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </p-panel>
   </div>
 
   <div class="seccion-card">
-    <div class="seccion-header">Ejecutivos - Ingreso</div>
-    <div class="vista-general">
-      <div>
-        <label>Económico Ingresa</label>
-        <p-select
-          [options]="equipos"
-          [(ngModel)]="idEquipoIngreso"
-          optionLabel="descripcion"
-          optionValue="idEquipo"
-          placeholder="Seleccione Equipo"
-          class="w-full"
-        />
+    <!--<div class="seccion-header">Ejecutivos - Ingreso</div>-->
+
+    <p-panel header="Ejecutivos - Ingreso">
+      <div class="vista-general">
+        <div>
+          <label>Económico Ingresa</label>
+          <p-select
+            [options]="equipos"
+            [(ngModel)]="idEquipoIngreso"
+            optionLabel="descripcion"
+            optionValue="idEquipo"
+            placeholder="Seleccione Equipo"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Operador Ingresa</label>
+          <p-select
+            [options]="operadores"
+            [(ngModel)]="idOperadorIngreso"
+            optionLabel="nombreOperador"
+            optionValue="idOperador"
+            placeholder="Seleccione Operador"
+            class="w-full"
+          />
+        </div>
+        <div>
+          <label>Ingreso</label>
+          <input type="text" pInputText class="w-full" [(ngModel)]="ingreso" />
+        </div>
+        <div>
+          <label>Entrega</label>
+          <input type="text" pInputText class="w-full" [(ngModel)]="entrega" />
+        </div>
+        <div>
+          <label>Envío de POD a Facturación</label>
+          <input type="text" pInputText class="w-full" [(ngModel)]="envio" />
+        </div>
       </div>
-      <div>
-        <label>Operador Ingresa</label>
-        <p-select
-          [options]="operadores"
-          [(ngModel)]="idOperadorIngreso"
-          optionLabel="nombreOperador"
-          optionValue="idOperador"
-          placeholder="Seleccione Operador"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label>Ingreso</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="ingreso" />
-      </div>
-      <div>
-        <label>Entrega</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="entrega" />
-      </div>
-      <div>
-        <label>Envío de POD a Facturación</label>
-        <input type="text" pInputText class="w-full" [(ngModel)]="envio" />
-      </div>
-    </div>
+    </p-panel>
   </div>
 
   <div class="footer-botones">

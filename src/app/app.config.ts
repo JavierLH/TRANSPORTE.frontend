@@ -1,14 +1,13 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, Inject } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura'; // Puedes cambiar 'aura' por 'lara', 'material' o 'nora'
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { provideAppInitializer, inject } from '@angular/core';
-import { BRANDS, BRAND_DEFAULT } from './core/theme/brands';
+import { BRANDS, marcaGuardada } from './core/theme/brands';
 import { ThemeService } from './core/theme/theme.services';
 
 export const appConfig: ApplicationConfig = {
@@ -19,14 +18,18 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([authInterceptor])),
     providePrimeNG({
-    theme: {
-      preset: BRANDS[BRAND_DEFAULT].preset,
-      options: {
-        darkModeSelector: false,
-        cssLayer: { name: 'primeng', order: 'theme, base, primeng, utilities' }
+      theme: {
+        // Preset de la marca persistida. Tiene que entrar por aquí:
+        // aplicarlo después con `usePreset` lo pisa el effect interno de PrimeNG.
+        preset: BRANDS[marcaGuardada()].preset,
+        options: {
+          darkModeSelector: false,
+          cssLayer: { name: 'primeng', order: 'theme, base, primeng, utilities' }
+        }
       }
-    }
-  }),
-    provideAppInitializer(() => inject(ThemeService).restaurar()),
+    }),
+    // Instancia el servicio para que su constructor enganche el router
+    // y aplique el `brand` de cada ruta al navegar.
+    provideAppInitializer(() => { inject(ThemeService); }),
   ]
 };

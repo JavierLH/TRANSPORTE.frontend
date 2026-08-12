@@ -2,12 +2,14 @@ import { Injectable, signal, inject } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { filter } from 'rxjs';
 import { usePreset } from '@primeuix/themes';
-import { Brand, BRAND_DEFAULT, BrandKey, BRANDS } from './brands';
+import { Brand, BRAND_DEFAULT, BRAND_STORAGE_KEY, BrandKey, BRANDS, marcaGuardada } from './brands';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly router = inject(Router);
-  readonly brand = signal<Brand>(BRANDS[BRAND_DEFAULT]);
+
+  /** Arranca en la marca persistida: es la misma que recibió `providePrimeNG`. */
+  readonly brand = signal<Brand>(BRANDS[marcaGuardada()]);
 
   constructor() {
     this.router.events
@@ -23,11 +25,7 @@ export class ThemeService {
     if (b.key === this.brand().key) return;   // ← evita regenerar el CSS sin necesidad
     this.brand.set(b);
     usePreset(b.preset);
-    localStorage.setItem('brand', b.key);
-  }
-
-  restaurar(): void {
-    this.aplicar((localStorage.getItem('brand') as BrandKey) ?? BRAND_DEFAULT);
+    localStorage.setItem(BRAND_STORAGE_KEY, b.key);
   }
 
   /** Recorre el árbol de rutas y se queda con el `brand` más profundo. */
