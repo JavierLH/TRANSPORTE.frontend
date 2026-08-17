@@ -174,6 +174,8 @@ export const routes: Routes = [
         data: { rutaModulo: 'siil/drakkar/trafico/catalogo/ejecutivos', brand: 'drakkar' }
       },
 
+      
+
       {
         path: 'siil/sin-permisos',
         component: SinPermisos,
