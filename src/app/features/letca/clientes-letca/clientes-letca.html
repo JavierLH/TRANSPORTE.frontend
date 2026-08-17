@@ -1,1 +1,106 @@
-<p>clientes-letca works!</p>
+<p-toast></p-toast>
+
+<div class="card">
+  <p-table
+    #dt
+    [value]="tablaClientes"
+    [loading]="cargando"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 50]"
+    [globalFilterFields]="['nombreCliente']"
+    [tableStyle]="{ 'min-width': '40rem' }"
+    dataKey="idCliente"
+  >
+    <ng-template pTemplate="caption">
+      <div class="tabla-header">
+        <span class="titulo">Clientes - LETCA</span>
+
+        <div class="grid-cols-3 p-1">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search mr-2"></i>
+            <input
+              pInputText
+              type="text"
+              placeholder="Buscar cliente..."
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              class="mr-2"
+            />
+          </span>
+
+          <button
+            pButton
+            type="button"
+            label="Nuevo cliente"
+            icon="pi pi-plus"
+            (click)="nuevoCliente()"
+            class=""
+          ></button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nombre</th>
+        <th style="width: 6rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-cliente>
+      <tr>
+        <td>{{ cliente.nombreCliente }}</td>
+        <td>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="p-button-text p-button-sm"
+            (click)="editarCliente(cliente)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="2" class="text-center p-4">
+          No se encontraron clientes para esta empresa.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [header]="clienteSeleccionado ? 'Editar cliente' : 'Nuevo cliente'"
+  [(visible)]="mostrarDialog"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+  (onHide)="cerrarDialog()"
+>
+  <div class="grid-cols-2">
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input pInputText id="nombre" [(ngModel)]="formNombre" class="w-full" />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      class="p-button-text"
+      (click)="cerrarDialog()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      icon="pi pi-save"
+      (click)="guardarCliente()"
+    ></button>
+  </ng-template>
+</p-dialog>

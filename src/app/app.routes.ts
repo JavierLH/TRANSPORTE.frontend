@@ -23,6 +23,10 @@ import { SinPermisos } from './features/sin-permisos/sin-permisos/sin-permisos';
 import { EjecutivosKarve } from './features/karve/ejecutivos-karve/ejecutivos-karve';
 import { EjecutivosLetca } from './features/letca/ejecutivos-letca/ejecutivos-letca';
 import { EjecutivosDrakkar } from './features/drakkar/ejecutivos/ejecutivos-drakkar/ejecutivos-drakkar';
+import { ClientesVikingo } from './features/vikingo/clientes-vikingo/clientes-vikingo';
+import { ClientesKarve } from './features/karve/clientes-karve/clientes-karve';
+import { ClientesLetca } from './features/letca/clientes-letca/clientes-letca';
+import { ClientesDrakkar } from './features/drakkar/clientes-drakkar/clientes-drakkar';
 
 export const routes: Routes = [
   {
@@ -174,7 +178,36 @@ export const routes: Routes = [
         data: { rutaModulo: 'siil/drakkar/trafico/catalogo/ejecutivos', brand: 'drakkar' }
       },
 
-      
+
+
+      // ─── Catálogo general / Clientes ───────────────────────────────
+      {
+        path: 'siil/vikingo/trafico/catalogo/clientesfactura',
+        component: ClientesVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/vikingo/trafico/catalogo/clientesfactura', brand: 'vikingo' }
+      },
+
+      {
+        path: 'siil/karve/trafico/catalogo/clientesfactura',
+        component: ClientesKarve,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/karve/trafico/catalogo/clientesfactura', brand: 'karve' }
+      },
+
+      {
+        path: 'siil/letca/trafico/catalogo/clientesfactura',
+        component: ClientesLetca,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/letca/trafico/catalogo/clientesfactura', brand: 'letca' }
+      },
+
+      {
+        path: 'siil/drakkar/trafico/catalogo/clientesfactura',
+        component: ClientesDrakkar,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/drakkar/trafico/catalogo/clientesfactura', brand: 'drakkar' }
+      },
 
       {
         path: 'siil/sin-permisos',
