@@ -1,0 +1,28 @@
+<div
+  class="flex align-items-center justify-content-center"
+  style="min-height: 70vh"
+>
+  <p-card styleClass="text-center">
+    <div class="text-6xl font-bold mb-2">403</div>
+    <h2 class="mt-0 mb-3">Acceso denegado</h2>
+
+    <p class="text-color-secondary mb-2">
+      No cuentas con permisos para acceder a este módulo.
+    </p>
+
+    <p class="text-sm text-color-secondary mb-4" *ngIf="rutaIntentada">
+      Ruta solicitada: <code>{{ rutaIntentada }}</code>
+    </p>
+
+    <p class="text-sm text-color-secondary mb-4">
+      Si consideras que deberías tener acceso, contacta al administrador del
+      sistema.
+    </p>
+
+    <p-button
+      label="Volver al inicio"
+      icon="pi pi-home"
+      (onClick)="regresar()"
+    ></p-button>
+  </p-card>
+</div>

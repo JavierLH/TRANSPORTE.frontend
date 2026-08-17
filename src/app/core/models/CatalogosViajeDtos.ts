@@ -29,6 +29,7 @@ export interface Ejecutivo {
   idEjecutivo: number | null;
   nombreEjecutivo: string | null;
   idEmpresa: number | null;
+  activo: boolean | null;
 }
 
 export interface Cliente {

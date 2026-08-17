@@ -76,7 +76,9 @@ export const API = {
     return url;
   },
 
-  
+  verificarPermisoRuta: (ruta: string): string =>
+  `${environment.host}/UsuariosSistema/tiene-permiso?ruta=${encodeURIComponent(ruta)}`,
+
 
 
 };

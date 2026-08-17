@@ -1,7 +1,31 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { catchError, map, throwError } from 'rxjs';
+import { PermisosService } from '../core/services/PermisosService';
+
+export const permisoRutaGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+  const permisosService = inject(PermisosService);
+
+  const rutaModulo = route.data?.['rutaModulo'] as string | undefined;
+
+  if (!rutaModulo) {
+    return true;
+  }
+
+  return permisosService.tienePermiso(rutaModulo).pipe(
+    map(tieneAcceso => {
+      if (tieneAcceso) {
+        return true;
+      }
+
+      return router.createUrlTree(['/siil/sin-permisos'], {
+        queryParams: { ruta: state.url }
+      });
+    })
+  );
+};
 
 
 export const authGuard: CanActivateFn = (route, state) => {
@@ -14,7 +38,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     router.navigate(['/login']);
     return false;
   }
-  
+
 };
 
 export const publicGuard: CanActivateFn = (route, state) => {
@@ -28,6 +52,8 @@ export const publicGuard: CanActivateFn = (route, state) => {
 
   return true;
 };
+
+
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);

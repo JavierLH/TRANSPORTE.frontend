@@ -9,13 +9,8 @@ import { TagModule } from 'primeng/tag';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
-// TODO: reemplazar por el DTO real cuando exista el endpoint de ejecutivos (con "habilitado" incluido)
-interface EjecutivoVikingo {
-  idEjecutivo: number;
-  nombreEjecutivo: string;
-  habilitado: boolean;
-}
+import EjecutivoService from '../../../../core/services/EjecutivoServices';
+import { Ejecutivo } from '../../../../core/models/CatalogosViajeDtos';
 
 @Component({
   selector: 'app-ejecutivos-vikingo',
@@ -38,16 +33,20 @@ interface EjecutivoVikingo {
 export class EjecutivosVikingo implements OnInit {
   private readonly idEmpresa = 2;
   private messageService = inject(MessageService);
-  // private ejecutivosService = inject(EjecutivosService); // TODO: crear el service real
 
-  ejecutivos: EjecutivoVikingo[] = [];
+  ejecutivoService: EjecutivoService = inject(EjecutivoService);
+
+  tablaEjecutivos: Ejecutivo[] = [];
   cargando = false;
 
   mostrarDialog = false;
-  ejecutivoSeleccionado: EjecutivoVikingo | null = null;
+  ejecutivoSeleccionado: Ejecutivo | null = null;
 
   formNombre = '';
   formHabilitado = true;
+  formIdEjecutivo : number | undefined;
+
+  private seGuardaElEjecutivo : boolean | undefined;
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -55,12 +54,19 @@ export class EjecutivosVikingo implements OnInit {
 
   cargarDatos(): void {
     this.cargando = true;
-    // TODO: reemplazar por la llamada real al service
-    // this.ejecutivosService.obtenerPorEmpresa(this.idEmpresa).subscribe({
-    //   next: (ejecutivos) => { this.ejecutivos = ejecutivos; this.cargando = false; },
-    //   error: (err) => { ...manejo de error... this.cargando = false; },
-    // });
-    this.cargando = false;
+
+    this.ejecutivoService.obtenerEjecutivosPorEmpresa(this.idEmpresa).subscribe(
+      {
+        next : (data) => {
+          this.tablaEjecutivos = data;
+          this.cargando = false;
+        },
+        error: (error) => {
+          console.log('Error ',error);
+        }
+      }
+    );
+
   }
 
   nuevoEjecutivo(): void {
@@ -68,13 +74,17 @@ export class EjecutivosVikingo implements OnInit {
     this.formNombre = '';
     this.formHabilitado = true;
     this.mostrarDialog = true;
+    this.seGuardaElEjecutivo = true;
+
   }
 
-  editarEjecutivo(ejecutivo: EjecutivoVikingo): void {
+  editarEjecutivo(ejecutivo: Ejecutivo): void {
+    this.formIdEjecutivo = ejecutivo.idEjecutivo ?? undefined;
     this.ejecutivoSeleccionado = ejecutivo;
-    this.formNombre = ejecutivo.nombreEjecutivo;
-    this.formHabilitado = ejecutivo.habilitado;
+    this.formNombre = ejecutivo.nombreEjecutivo ?? '';
+    this.formHabilitado = ejecutivo.activo ?? true;
     this.mostrarDialog = true;
+    this.seGuardaElEjecutivo = false;
   }
 
   cerrarDialog(): void {
@@ -83,18 +93,85 @@ export class EjecutivosVikingo implements OnInit {
   }
 
   guardarEjecutivo(): void {
-    // TODO: distinguir alta (POST) vs edición (PUT) según this.ejecutivoSeleccionado
-    // this.ejecutivosService.guardar(...).subscribe({
-    //   next: () => { ...actualizar this.ejecutivos... this.cerrarDialog(); },
-    //   error: (err) => { ...toast de error... },
-    // });
+    const idEjecutivo = this.formIdEjecutivo;
+    const nombreEjecutivo = this.formNombre;
+    const idEmpresa = this.idEmpresa;
+    const activo = this.formHabilitado;
 
-    this.messageService.add({
-      severity: 'success',
-      summary: this.ejecutivoSeleccionado ? 'Ejecutivo actualizado' : 'Ejecutivo creado',
-      detail: `${this.formNombre} se guardó correctamente.`,
-    });
+    const creandoEjecutivo : Ejecutivo = {
+      idEjecutivo: idEjecutivo ?? null,
+      nombreEjecutivo : nombreEjecutivo,
+      activo : activo,
+      idEmpresa : idEmpresa
+    };
 
+    if(this.seGuardaElEjecutivo){
+      this.ejecutivoService.agregarNuevoEjecutivo(creandoEjecutivo)
+      .subscribe(
+        {
+          next : (req) => {
+            this.imprimirMensaje(
+              'success',
+               this.ejecutivoSeleccionado ? 'Ejecutivo actualizado' : 'Ejecutivo creado',
+              `${this.formNombre} se guardó correctamente.`
+              );
+
+            this.cargarDatos();
+          },
+          error : (error) => {
+            this.imprimirMensaje(
+              'error',
+              'Error al guardar',
+              `${this.formNombre} Error al guardar ejecutivo`
+              );
+
+              this.cargarDatos();
+
+            }
+        }
+      );
+
+    } else {
+
+      this.ejecutivoService.actualizarEjecutivo(creandoEjecutivo).subscribe(
+        {
+          next : (data) => {
+            this.imprimirMensaje(
+              'success',
+               this.ejecutivoSeleccionado ? 'Ejecutivo actualizado' : 'Ejecutivo creado',
+              `${this.formNombre} se guardó correctamente.`
+              );
+
+              this.cargarDatos();
+          },
+          error : (error) => {
+            this.imprimirMensaje(
+              'error',
+              'Error al guardar',
+              `${this.formNombre} Error al guardar ejecutivo`
+              );
+
+              this.cargarDatos();
+
+            }
+
+        }
+      );
+
+
+    }
+
+    this.seGuardaElEjecutivo = undefined;
     this.cerrarDialog();
+
   }
+
+  imprimirMensaje (severety : string, summary : string, detail: string) {
+      this.messageService.add({
+      severity: severety,
+      summary: summary,
+      detail: detail,
+    });
+  }
+
 }

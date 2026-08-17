@@ -3,7 +3,7 @@
 <div class="card">
   <p-table
     #dt
-    [value]="ejecutivos"
+    [value]="tablaEjecutivos"
     [loading]="cargando"
     [paginator]="true"
     [rows]="10"
@@ -16,14 +16,15 @@
       <div class="tabla-header">
         <span class="titulo">Ejecutivos - VIKINGO</span>
 
-        <div class="tabla-header-acciones">
+        <div class="grid-cols-3 p-1">
           <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
+            <i class="pi pi-search mr-2"></i>
             <input
               pInputText
               type="text"
               placeholder="Buscar ejecutivo..."
               (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              class="mr-2"
             />
           </span>
 
@@ -33,6 +34,7 @@
             label="Nuevo ejecutivo"
             icon="pi pi-plus"
             (click)="nuevoEjecutivo()"
+            class=""
           ></button>
         </div>
       </div>
@@ -51,8 +53,8 @@
         <td>{{ ejecutivo.nombreEjecutivo }}</td>
         <td>
           <p-tag
-            [value]="ejecutivo.habilitado ? 'Habilitado' : 'Deshabilitado'"
-            [severity]="ejecutivo.habilitado ? 'success' : 'secondary'"
+            [value]="ejecutivo.activo ? 'Habilitado' : 'Deshabilitado'"
+            [severity]="ejecutivo.activo ? 'success' : 'secondary'"
           ></p-tag>
         </td>
         <td>
@@ -85,14 +87,13 @@
   [breakpoints]="{ '640px': '95vw' }"
   (onHide)="cerrarDialog()"
 >
-  <!-- Esqueleto del formulario: campos reales pendientes -->
-  <div class="dialog-contenido">
+  <div class="grid-cols-2">
     <div class="campo">
       <label for="nombre">Nombre</label>
       <input pInputText id="nombre" [(ngModel)]="formNombre" class="w-full" />
     </div>
 
-    <div class="campo">
+    <div class="mt-2 grid-cols-2 p-2">
       <label for="habilitado">Habilitado</label>
       <p-toggleswitch
         id="habilitado"

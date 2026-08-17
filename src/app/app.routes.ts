@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/login/login';
-import { authGuard, publicGuard } from './security/Guards';
+import { authGuard, permisoRutaGuard, publicGuard } from './security/Guards';
 import { Dashboard } from './features/dashboard/dashboard';
 import { ProgramacionViajesKarve } from './features/karve/programacion-viajes-karve/programacion-viajes-karve';
 import { ProgramacionViajesVikingo } from './features/vikingo/programacion-viajes-vikingo/programacion-viajes-vikingo/programacion-viajes-vikingo';
@@ -19,6 +19,10 @@ import { EjecutivosVikingo } from './features/vikingo/ejecutivos/ejecutivos-viki
 import { AcumuladoGraficoBarra } from './features/vikingo/graficos/acumulado/acumulado-grafico-barra/acumulado-grafico-barra';
 import { AcumuladosDrakkar } from './features/drakkar/graficos/acumulados-drakkar/acumulados-drakkar';
 import { AcumuladoKarve } from './features/karve/graficos/acumulado-karve/acumulado-karve';
+import { SinPermisos } from './features/sin-permisos/sin-permisos/sin-permisos';
+import { EjecutivosKarve } from './features/karve/ejecutivos-karve/ejecutivos-karve';
+import { EjecutivosLetca } from './features/letca/ejecutivos-letca/ejecutivos-letca';
+import { EjecutivosDrakkar } from './features/drakkar/ejecutivos/ejecutivos-drakkar/ejecutivos-drakkar';
 
 export const routes: Routes = [
   {
@@ -33,28 +37,23 @@ export const routes: Routes = [
     children: [
 
       // ─── Tráfico / Programación de viajes ──────────────────────────
-      {
-        path: 'siil/karve/trafico/programaciondeviajes',
-        component: ProgramacionViajesKarve,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes', brand: 'karve' }
-      },
+
       {
         path: 'siil/vikingo/trafico/programaciondeviajes',
         component: ProgramacionViajesVikingo,
-        canActivate: [authGuard],
-        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes', brand: 'vikingo' }
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/vikingo/trafico/programaciondeviajes', brand: 'vikingo' }
       },
       {
         path: 'siil/letca/trafico/programaciondeviajes',
         component: ProgramacionViajesLetca,
-        canActivate: [authGuard],
+        canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/letca/trafico/programaciondeviajes', brand: 'letca' }
       },
       {
         path: 'siil/drakkar/trafico/programaciondeviajes',
         component: ProgramacionViajesDrakkar,
-        canActivate: [authGuard],
+        canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/drakkar/trafico/programaciondeviajes', brand: 'drakkar' }
       },
 
@@ -146,6 +145,41 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { rutaModulo: 'siil/configuraciones/usuariosEmpresas' }
       },
+
+      {
+        path: 'siil/karve/trafico/programaciondeviajes',
+        component: ProgramacionViajesKarve,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/karve/trafico/programaciondeviajes', brand: 'karve' }
+      },
+
+      {
+        path: 'siil/karve/trafico/catalogo/ejecutivos',
+        component: EjecutivosKarve,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/karve/trafico/catalogo/ejecutivos', brand: 'karve' }
+      },
+
+      {
+        path: 'siil/letca/trafico/catalogo/ejecutivos',
+        component: EjecutivosLetca,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/letca/trafico/catalogo/ejecutivos', brand: 'letca' }
+      },
+
+      {
+        path: 'siil/drakkar/trafico/catalogo/ejecutivos',
+        component: EjecutivosDrakkar,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/drakkar/trafico/catalogo/ejecutivos', brand: 'drakkar' }
+      },
+
+      {
+        path: 'siil/sin-permisos',
+        component: SinPermisos,
+        canActivate: [authGuard]
+      },
+
     ]
 
   },
