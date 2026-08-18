@@ -16,61 +16,8 @@
       (rowClicked)="manejarClicEnViaje($event)"
       [datosEmpresa]="datosEmpresa"
       (recargarTabla)="cargarViajes()"
+      [columnas]="columnas"
     >
-      <ng-template #headerTemplate>
-        <tr>
-          <th>Folio</th>
-          <th>No. Viaje</th>
-          <th>No. Convenio</th>
-          <th>Fecha</th>
-          <th>Cliente</th>
-          <th>Ejecutivo</th>
-          <th>Turno</th>
-          <th>Eco. Ruta</th>
-          <th>Operador Ruta</th>
-          <th>Eco. Retira</th>
-          <th>Operador Retira</th>
-          <th>Tipo Mercancía</th>
-          <th>Operación</th>
-          <th>Terminal</th>
-          <th>Comentarios</th>
-          <th>Origen</th>
-          <th>Destino</th>
-          <th>Ciudad</th>
-          <th>Comisión</th>
-          <th>Gasto</th>
-          <th>Asignación</th>
-          <th>Temperatura</th>
-          <th>Estatus</th>
-          <th>Eco. Ingresa</th>
-          <th>Operador Ingresa</th>
-          <th>Ingreso</th>
-          <th>Entrega</th>
-          <th>Horario Cita</th>
-          <th>Envío POD</th>
-          <th>Envio Asignación</th>
-          <th>Envio Documentos</th>
-          <th>Envío Cita</th>
-          <th>Envío Datos</th>
-          <th>Envío CCP</th>
-          <th>Salida Patio</th>
-          <th>Llegada Planta</th>
-          <th>Salida Planta</th>
-          <th>Llegada Patio</th>
-          <th>Estatus Cita</th>
-          <th>Costo por Estadia</th>
-          <th>Estadias</th>
-          <th>Total Estadias</th>
-          <th>Observaciones Monitoreo</th>
-          <th>Primer Remolque</th>
-          <th>Primer Generador</th>
-          <th>Segundo Remolque</th>
-          <th>Segundo Generador</th>
-          <th>Dolly</th>
-          <th>Fecha de creación</th>
-        </tr>
-      </ng-template>
-
       <ng-template #bodyTemplate let-viaje>
         <td>{{ viaje.folio }}</td>
 

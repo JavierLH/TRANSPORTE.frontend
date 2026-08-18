@@ -3,12 +3,13 @@ import { CardFiltros } from "../../../shared/card-filtros/card-filtros";
 import { Button, ButtonModule } from "primeng/button";
 import { DialogModule } from 'primeng/dialog';
 import { ModalAgregarviajeViaje } from '../../../shared/agregarviaje-modal/modal-agregarviaje-viaje/modal-agregarviaje-viaje';
-import { TablaDashboardComponent } from '../../../shared/tabla-dashboard/tabla-dashboard';
+import { TablaDashboardComponent, ColumnaTabla } from '../../../shared/tabla-dashboard/tabla-dashboard';
 import { ProgramacionViajes } from '../../../core/models/ProgramacionViajesDto';
 import { ProgramacionViajesService } from '../../../core/services/ProgramacionViajesService';
 import { TableModule } from "primeng/table";
 import { CrearNuevViajeDto } from '../../../core/models/CrearNuevoViajeDto';
 import { NgClass } from '@angular/common';
+import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeViajesVista';
 
 @Component({
   selector: 'app-programacion-viajes-letca',
@@ -28,10 +29,68 @@ import { NgClass } from '@angular/common';
 export class ProgramacionViajesLetca implements OnInit{
 private cdr = inject(ChangeDetectorRef);
 
+    /**
+     * Columnas de la tabla. `field` apunta a las propiedades de
+     * ProgramacionDeViajesVista, que es lo que se enlaza en [data].
+     * El orden debe coincidir con el de los <td> del bodyTemplate.
+     */
+    columnas: ColumnaTabla[] = [
+    { field: 'folio',                   header: 'Folio' },
+    { field: 'numeroViaje',             header: 'No. Viaje' },
+    { field: 'numeroConvenio',          header: 'No. Convenio' },
+    { field: 'fecha',                   header: 'Fecha' },
+    { field: 'cliente',                 header: 'Cliente' },
+    { field: 'ejecutivo',               header: 'Ejecutivo' },
+    { field: 'turno',                   header: 'Turno' },
+    { field: 'ecoRuta',                 header: 'Eco. Ruta' },
+    { field: 'nombreOperador',          header: 'Operador Ruta' },
+    { field: 'ecoRetira',               header: 'Eco. Retira' },
+    { field: 'operadorRetira',          header: 'Operador Retira' },
+    { field: 'mercanciaDescripcion',    header: 'Tipo Mercancía' },
+    { field: 'operacion',               header: 'Operación' },
+    { field: 'citaTerminal',            header: 'Terminal' },
+    { field: 'comentarios',             header: 'Comentarios' },
+    { field: 'nombreOrigen',            header: 'Origen' },
+    { field: 'nombreDestino',           header: 'Destino' },
+    { field: 'destinosEstadosCuidad',   header: 'Ciudad' },
+    { field: 'comision',                header: 'Comisión' },
+    { field: 'gasto',                   header: 'Gasto' },
+    { field: 'asignacion',              header: 'Asignación' },
+    { field: 'temperatura',             header: 'Temperatura' },
+    { field: 'estatus',                 header: 'Estatus' },
+    { field: 'ecoIngresa',              header: 'Eco. Ingresa' },
+    { field: 'operadorIngresa',         header: 'Operador Ingresa' },
+    { field: 'ingreso',                 header: 'Ingreso' },
+    { field: 'entrega',                 header: 'Entrega' },
+    { field: 'horaCita',                header: 'Horario Cita' },
+    { field: 'envioPod',                header: 'Envío POD' },
+    { field: 'envioAsignacion',         header: 'Envio Asignación' },
+    { field: 'envioDocumentos',         header: 'Envio Documentos' },
+    { field: 'envioCita',               header: 'Envío Cita' },
+    { field: 'envioSeguimiento',        header: 'Envío Datos' },
+    { field: 'envioCCP',                header: 'Envío CCP' },
+    { field: 'salidaPatio',             header: 'Salida Patio' },
+    { field: 'llegadaPlanta',           header: 'Llegada Planta' },
+    { field: 'salidaPlanta',            header: 'Salida Planta' },
+    { field: 'llegadaPatio',            header: 'Llegada Patio' },
+    { field: 'estatusCita',             header: 'Estatus Cita' },
+    { field: 'costoEstadias',           header: 'Costo por Estadia' },
+    { field: 'estadias',                header: 'Estadias' },
+    { field: 'costoToEstadias',         header: 'Total Estadias' },
+    { field: 'observacionesMonitoreo',  header: 'Observaciones Monitoreo' },
+    { field: 'idEquipoRemolque1',       header: 'Primer Remolque' },
+    { field: 'idEquipoGenerador1',      header: 'Primer Generador' },
+    { field: 'idEquipoRemolque2',       header: 'Segundo Remolque' },
+    { field: 'idEquipoGenerador2',      header: 'Segundo Generador' },
+    { field: 'idEquipoDolly',           header: 'Dolly' },
+    { field: 'registro',                header: 'Fecha de creación' },
+    ];
+
     mostrarModal = false;
     tituloFormulario = 'Agregar Viaje KARVE';
 
     viajes: ProgramacionViajes[] = [];
+    viajesVista: ProgramacionDeViajesVista[] = [];
     cargando: boolean = false;
     totalRegistros: number = 0;
     paginaActual: number = 1;
@@ -73,9 +132,9 @@ private cdr = inject(ChangeDetectorRef);
       const fin = formatear(hoy);          // ej. 2026-07-24
       const idEmpresa = this.idEmpresa;
 
-      this.viajesService.obtenerPorFechaYEmpresa(inicio, fin, idEmpresa).subscribe({
+      this.viajesService.obtenerPorFechaYEmpresaVista(inicio, fin, idEmpresa).subscribe({
         next: (datos) => {
-          this.viajes = datos;
+          this.viajesVista = datos;
           this.cargando = false;
         },
         error: (err) => {

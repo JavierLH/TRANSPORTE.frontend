@@ -17,6 +17,8 @@
     scrollHeight="flex"
     styleClass="p-datatable-sm"
     [metaKeySelection]="false"
+    sortMode="multiple"
+    [sortOrder]="-1"
   >
     <ng-template pTemplate="caption">
       <!-- DIV CONTENEDOR PRINCIPAL: Separa sus hijos a los extremos -->
@@ -91,10 +93,14 @@
     </ng-template>
 
     <ng-template pTemplate="header">
-      <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
+      <tr>
+        <th *ngFor="let col of columnas" [pSortableColumn]="col.field">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </tr>
     </ng-template>
 
-    <!-- En tu app-tabla-dashboard -->
 
     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
       <tr [pSelectableRow]="item" [pSelectableRowIndex]="rowIndex">

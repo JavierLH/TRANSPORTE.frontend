@@ -14,6 +14,16 @@ import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import { CrearNuevViajeDto } from '../../core/models/CrearNuevoViajeDto';
 
+/**
+ * Definición de una columna de la tabla.
+ * `field` debe ser el nombre de la propiedad del objeto de datos (no la etiqueta),
+ * porque es lo que usa PrimeNG para ordenar.
+ */
+export interface ColumnaTabla {
+  field: string;
+  header: string;
+}
+
 @Component({
   standalone: true,
   imports: [
@@ -41,7 +51,16 @@ export class TablaDashboardComponent implements OnInit{
   @Input() dataKey: string = 'id';
   @Input() globalFilterFields: string[] = [];
 
-  @ContentChild('headerTemplate') headerTemplate!: TemplateRef<any>;
+  /**
+   * Columnas del encabezado. Se declaran aquí y no como plantilla proyectada
+   * porque `pSortableColumn` y `p-sortIcon` necesitan inyectar la instancia de
+   * `Table`, y una plantilla proyectada resuelve sus dependencias en el
+   * componente donde fue declarada, no donde se dibuja.
+   *
+   * El orden debe coincidir con el de los <td> del `bodyTemplate`.
+   */
+  @Input() columnas: ColumnaTabla[] = [];
+
   @ContentChild('bodyTemplate') bodyTemplate!: TemplateRef<any>;
 
   @Output() rowClicked = new EventEmitter<any>();
