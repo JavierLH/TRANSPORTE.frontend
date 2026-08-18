@@ -35,9 +35,14 @@
             <p-inputicon>
               <i class="pi pi-search"></i>
             </p-inputicon>
+            <!-- `name` + autocomplete="off": sin esto, al abrirse el diálogo de
+                 contraseña el navegador toma este campo como el "usuario" del
+                 formulario y lo autocompleta con credenciales guardadas. -->
             <input
               pInputText
               type="text"
+              name="buscadorTabla"
+              autocomplete="off"
               class="p-inputtext-sm"
               style="width: 250px"
               (input)="dt.filterGlobal($event.target.value, 'contains')"
@@ -87,6 +92,7 @@
             label="Eliminar"
             severity="danger"
             styleClass="p-button-sm btn-juguete"
+            (onClick)="gestionarEliminacion()"
           ></p-button>
 
           <p-button
@@ -97,11 +103,11 @@
             (onClick)="duplicarViaje()"
           ></p-button>
 
-          <p-button
+          <!--<p-button
             label="Generar asignación"
             severity="contrast"
             styleClass="p-button-sm btn-juguete"
-          ></p-button>
+          ></p-button>-->
         </div>
       </div>
     </ng-template>
@@ -114,7 +120,6 @@
         </th>
       </tr>
     </ng-template>
-
 
     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
       <tr [pSelectableRow]="item" [pSelectableRowIndex]="rowIndex">
@@ -151,6 +156,56 @@
         (onGuardado)="viajeGuardadoConExito()"
       ></app-modal-agregarviaje-viaje>
     }
+  </p-dialog>
+
+  <p-dialog
+    header="Confirmar eliminación"
+    [(visible)]="mostrarDialogEliminar"
+    [modal]="true"
+    [style]="{ width: '26rem' }"
+    [breakpoints]="{ '640px': '95vw' }"
+    (onHide)="cerrarDialogEliminar()"
+  >
+    <p class="mb-3">
+      Se eliminará el viaje con folio
+      <strong>{{ filaSeleccionada?.folio }}</strong
+      >. Esta acción no se puede deshacer.
+    </p>
+
+    <label for="contrasenaEliminar" class="block mb-2">
+      Contraseña de autorización
+    </label>
+
+    <!-- autocomplete="new-password" evita que el gestor de contraseñas del
+         navegador rellene este campo y busque un campo de usuario que emparejar. -->
+    <p-password
+      inputId="contrasenaEliminar"
+      name="contrasenaEliminar"
+      autocomplete="new-password"
+      [(ngModel)]="contrasenaEliminar"
+      [feedback]="false"
+      [toggleMask]="true"
+      styleClass="w-full"
+      [inputStyle]="{ width: '100%' }"
+      (keyup.enter)="confirmarEliminacion()"
+    ></p-password>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        styleClass="p-button-text"
+        [disabled]="eliminando"
+        (onClick)="cerrarDialogEliminar()"
+      ></p-button>
+      <p-button
+        label="Eliminar"
+        icon="pi pi-trash"
+        severity="danger"
+        [loading]="eliminando"
+        (onClick)="confirmarEliminacion()"
+      ></p-button>
+    </ng-template>
   </p-dialog>
 
   <p-toast></p-toast>

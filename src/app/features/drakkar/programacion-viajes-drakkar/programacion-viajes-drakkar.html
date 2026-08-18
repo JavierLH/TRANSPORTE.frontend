@@ -1,6 +1,9 @@
 <div class="contenedor-principal" [ngClass]="`tema-drakkar`">
   <div>
-    <app-card-filtros [nombreEmpresa]="'Drakkar'"></app-card-filtros>
+    <app-card-filtros
+      [nombreEmpresa]="'Drakkar'"
+      (EmitirFiltros)="configurarFiltrosDeAppCardFiltros($event)"
+    ></app-card-filtros>
   </div>
 
   <div class="contenedor-tabla-viajes">

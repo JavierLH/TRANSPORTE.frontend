@@ -1,6 +1,8 @@
 import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TableModule, Table } from 'primeng/table';
+import { PasswordModule } from 'primeng/password';
 import { TooltipModule } from 'primeng/tooltip';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -43,7 +45,9 @@ export interface ColumnaTabla {
     ToastModule,
     RippleModule,
     TooltipModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    FormsModule,
+    PasswordModule
   ],
   providers: [MessageService, ConfirmationService],
   selector: 'app-tabla-dashboard',
@@ -232,6 +236,78 @@ export class TablaDashboardComponent implements OnInit{
 viajeGuardadoConExito() {
     this.cerrarModal();
     this.recargarTabla.emit(); // Disparamos el aviso hacia el componente Padre (Principal)
+  }
+
+  mostrarDialogEliminar = false;
+  contrasenaEliminar = '';
+  eliminando = false;
+
+  /** Abre el diálogo que pide la contraseña de autorización. */
+  gestionarEliminacion() {
+    if (!this.filaSeleccionada) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Por favor, seleccione una fila para eliminar.'
+      });
+      return;
+    }
+
+    this.contrasenaEliminar = '';
+    this.mostrarDialogEliminar = true;
+    this.cdr.detectChanges();
+  }
+
+  cerrarDialogEliminar() {
+    this.mostrarDialogEliminar = false;
+    this.contrasenaEliminar = '';
+    this.eliminando = false;
+  }
+
+  confirmarEliminacion() {
+    if (!this.contrasenaEliminar.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Escribe la contraseña para continuar.'
+      });
+      return;
+    }
+
+    // La tabla se alimenta de la vista, donde el id del viaje es `folio`.
+    const folio = this.filaSeleccionada.folio;
+
+    this.eliminando = true;
+
+    this.viajesService.eliminarViaje(folio, this.contrasenaEliminar).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Viaje eliminado',
+          detail: `Se eliminó el viaje con folio ${folio}.`
+        });
+
+        this.cerrarDialogEliminar();
+        this.filaSeleccionada = null;
+        this.recargarTabla.emit();
+      },
+      error: (err) => {
+        this.eliminando = false;
+
+        // 403: contraseña incorrecta. Se deja el diálogo abierto para reintentar.
+        const detalle = err?.status === 403
+          ? 'La contraseña es incorrecta.'
+          : err?.error?.mensaje ?? 'No se pudo eliminar el viaje.';
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'No se eliminó',
+          detail: detalle
+        });
+
+        this.contrasenaEliminar = '';
+      }
+    });
   }
 
   duplicando = false;

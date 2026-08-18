@@ -36,12 +36,14 @@ export class ProgramacionViajesService {
   }
 
   /**
-   * Remueve un viaje del sistema.
+   * Remueve un viaje del sistema. Requiere la contraseña de autorización, que
+   * viaja en el cuerpo de la petición y no en la URL.
    * @returns El objeto que acaba de ser eliminado de la base de datos.
    */
-  public eliminarViaje(idProgramacion: number): Observable<ProgramacionViajes> {
+  public eliminarViaje(idProgramacion: number, contrasena: string): Observable<ProgramacionViajes> {
     return this.http.delete<ProgramacionViajes>(
-      API.eliminarViaje(idProgramacion)
+      API.eliminarViaje(idProgramacion),
+      { body: { contrasena } }
     );
   }
 

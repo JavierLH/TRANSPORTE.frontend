@@ -149,6 +149,56 @@ private cdr = inject(ChangeDetectorRef);
       return `tema-letca`;
     }
 
+    /** Recibe los filtros de app-card-filtros y recarga la tabla con ellos. */
+    public configurarFiltrosDeAppCardFiltros(datosDeLaCard: any) {
+      const idOrigen = datosDeLaCard.origen?.idOrigen ?? null;
+      const idEstatus = datosDeLaCard.estatus?.idEstatus ?? null;
+      const idCliente = datosDeLaCard.cliente?.idCliente ?? null;
+      const idEjecutivo = datosDeLaCard.ejecutivos?.idEjecutivo ?? null;
+      const rangoDeFechas: Date[] | undefined = datosDeLaCard?.fehas;
+
+      const sinFechas = !rangoDeFechas?.[0];
+
+      // Sin ningún criterio, se vuelve a la carga por defecto del mes.
+      if (idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
+        this.cargarViajes();
+        return;
+      }
+
+      const formatear = (fecha: Date) => {
+        const a = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${a}-${m}-${d}`;
+      };
+
+      const fechaInicio = rangoDeFechas?.[0] ? formatear(rangoDeFechas[0]) : null;
+      const fechaFin = rangoDeFechas?.[1]
+        ? formatear(rangoDeFechas[1])
+        : (rangoDeFechas?.[0] ? formatear(rangoDeFechas[0]) : null);
+
+      this.cargando = true;
+
+      this.viajesService.obtenerViajesFiltradosVistaPorCriterios(
+        this.idEmpresa,
+        fechaInicio,
+        fechaFin,
+        idOrigen,
+        idEstatus,
+        idCliente,
+        idEjecutivo
+      ).subscribe({
+        next: (datos) => {
+          this.viajesVista = datos;
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('Error al filtrar viajes', err);
+          this.cargando = false;
+        }
+      });
+    }
+
   manejarClicEnViaje(viajeSeleccionado: ProgramacionViajes) {
     //console.log('¡El usuario hizo clic en este viaje!', viajeSeleccionado);
     //this.abrirModal('Editar viaje');

@@ -1,6 +1,9 @@
 <div class="contenedor-principal" [ngClass]="`tema-karve`">
   <div>
-    <app-card-filtros [nombreEmpresa]="'Karve'"></app-card-filtros>
+    <app-card-filtros
+      [nombreEmpresa]="'Karve'"
+      (EmitirFiltros)="configurarFiltrosDeAppCardFiltros($event)"
+    ></app-card-filtros>
   </div>
 
   <div class="contenedor-tabla-viajes">
