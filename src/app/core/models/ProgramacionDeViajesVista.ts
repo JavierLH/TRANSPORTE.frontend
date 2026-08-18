@@ -1,11 +1,15 @@
 export interface ProgramacionDeViajesVista {
-  folio: number;
-  idEmpresa?: number;
-  numeroViaje?: string;
-  numeroConvenio?: string;
-  fecha?: string;
-  cliente?: string;
-  ejecutivo?: string;
+  folio: number; // Necesario
+  idEmpresa?: number; // extra
+  numeroViaje?: string; // Necesario
+  numeroConvenio?: string; // necesario
+  fecha?: string; // necesario
+  cliente?: string; //necesario
+  ejecutivo?: string; //mecesario
+  //falta turno
+
+  turno?: string;
+
   ecoRuta?: string;
   nombreOperador?: string;
   ecoRetira?: string;

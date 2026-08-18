@@ -66,7 +66,7 @@ export class ProgramacionViajesVikingo {
     { field: 'envioDocumentos',         header: 'Envio Documentos' },
     { field: 'envioCita',               header: 'Envío Cita' },
     { field: 'envioSeguimiento',        header: 'Envío Datos' },
-    { field: 'envioCCP',                header: 'Envío CCP' },
+    { field: 'envioCcp',                header: 'Envío CCP' },
     { field: 'salidaPatio',             header: 'Salida Patio' },
     { field: 'llegadaPlanta',           header: 'Llegada Planta' },
     { field: 'salidaPlanta',            header: 'Salida Planta' },
