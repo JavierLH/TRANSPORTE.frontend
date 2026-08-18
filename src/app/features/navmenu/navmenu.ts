@@ -20,14 +20,26 @@ export class NavMenu implements OnInit, AfterViewInit {
     items: MenuItem[] = [];
     nombre: string | undefined;
 
+    /** Menú lateral colapsado a rail de iconos. Se persiste entre recargas. */
+    colapsado = false;
+
+    private readonly CLAVE_COLAPSADO = 'menuColapsado';
+
     @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
     constructor(private router: Router, private cdr: ChangeDetectorRef) {
+      this.colapsado = localStorage.getItem(this.CLAVE_COLAPSADO) === 'true';
+
       const usuarioRaw = localStorage.getItem('usuario');
       if (usuarioRaw) {
         const usuario = JSON.parse(usuarioRaw) as Usuario;
         this.nombre = usuario.nombre;
       }
+    }
+
+    alternarMenu(): void {
+      this.colapsado = !this.colapsado;
+      localStorage.setItem(this.CLAVE_COLAPSADO, String(this.colapsado));
     }
 
     ngOnInit() {
