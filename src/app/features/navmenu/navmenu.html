@@ -15,11 +15,14 @@
       [attr.aria-expanded]="!colapsado"
       (click)="alternarMenu()"
     >
-      <i class="pi" [ngClass]="colapsado ? 'pi-bars' : 'pi-angle-double-left'"></i>
+      <i
+        class="pi"
+        [ngClass]="colapsado ? 'pi-bars' : 'pi-angle-double-left'"
+      ></i>
     </button>
 
     <span *ngIf="!colapsado" class="text-lg font-bold whitespace-nowrap">
-      {{ nombre }}
+      SIIL
     </span>
   </div>
 
@@ -36,8 +39,7 @@
       [multiple]="true"
       styleClass="w-full"
       [pt]="{
-        panel: { class: 'border-1',  },
-
+        panel: { class: 'border-1' },
       }"
     ></p-panelMenu>
   </div>
@@ -46,19 +48,36 @@
        contenedor con `grow` está en display:none. -->
   <div *ngIf="colapsado" class="grow"></div>
 
-  <button
-    class="flex items-center w-full p-3 border-0 border-t border-gray-200 bg-transparent text-left cursor-pointer hover:bg-gray-50"
-    [ngClass]="colapsado ? 'justify-center' : ''"
+  <div
+    class="flex border-t border-gray-200"
+    [ngClass]="colapsado ? 'flex-col' : 'flex-row items-center'"
   >
-    <p-avatar
-      image="..."
-      shape="circle"
-      [ngClass]="colapsado ? '' : 'mr-2'"
-    ></p-avatar>
+    <button
+      class="flex items-center flex-1 p-3 border-0 bg-transparent text-left cursor-pointer hover:bg-gray-50 min-w-0"
+      [ngClass]="colapsado ? 'justify-center' : ''"
+    >
+      <p-avatar
+        image="..."
+        shape="circle"
+        [ngClass]="colapsado ? '' : 'mr-2'"
+      ></p-avatar>
 
-    <div *ngIf="!colapsado" class="flex flex-col">
-      <span class="font-bold text-sm text-gray-800">{{ nombre }}</span>
-      <span class="text-xs text-gray-500">Admin</span>
-    </div>
-  </button>
+      <div *ngIf="!colapsado" class="flex flex-col min-w-0">
+        <span class="font-bold text-sm text-gray-800 truncate">{{ nombre }}</span>
+        <span class="text-xs text-gray-500">Admin</span>
+      </div>
+    </button>
+
+    <button
+      type="button"
+      class="flex items-center justify-center w-11 h-11 shrink-0 border-0 bg-transparent text-red-500 cursor-pointer hover:bg-red-50"
+      [ngClass]="colapsado ? '' : 'mr-1'"
+      pTooltip="Cerrar sesión"
+      tooltipPosition="right"
+      [attr.aria-label]="'Cerrar sesión'"
+      (click)="cerrarSesion()"
+    >
+      <i class="pi pi-sign-out"></i>
+    </button>
+  </div>
 </div>

@@ -4,17 +4,19 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 import { BadgeModule } from 'primeng/badge';
 import { RippleModule } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router, NavigationEnd } from "@angular/router";
 import { filter } from 'rxjs/operators';
 import { Usuario, Permiso } from '../../core/models/usuarioRolesFunciones';
+import { PermisosService } from '../../core/services/PermisosService';
 
 @Component({
     selector: 'app-navmenu',
     templateUrl: './navmenu.html',
     styleUrl: './navmenu.css',
     standalone: true,
-    imports: [PanelMenuModule, BadgeModule, RippleModule, AvatarModule, CommonModule, RouterLink]
+    imports: [PanelMenuModule, BadgeModule, RippleModule, AvatarModule, TooltipModule, CommonModule, RouterLink]
 })
 export class NavMenu implements OnInit, AfterViewInit {
     items: MenuItem[] = [];
@@ -27,7 +29,11 @@ export class NavMenu implements OnInit, AfterViewInit {
 
     @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
-    constructor(private router: Router, private cdr: ChangeDetectorRef) {
+    constructor(
+      private router: Router,
+      private cdr: ChangeDetectorRef,
+      private permisosService: PermisosService
+    ) {
       this.colapsado = localStorage.getItem(this.CLAVE_COLAPSADO) === 'true';
 
       const usuarioRaw = localStorage.getItem('usuario');
@@ -40,6 +46,17 @@ export class NavMenu implements OnInit, AfterViewInit {
     alternarMenu(): void {
       this.colapsado = !this.colapsado;
       localStorage.setItem(this.CLAVE_COLAPSADO, String(this.colapsado));
+    }
+
+    cerrarSesion(): void {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+
+      // Los permisos cacheados son del usuario que se va; el siguiente que
+      // inicie sesión (en la misma pestaña) no debe heredarlos.
+      this.permisosService.limpiarCache();
+
+      this.router.navigate(['/login']);
     }
 
     ngOnInit() {
