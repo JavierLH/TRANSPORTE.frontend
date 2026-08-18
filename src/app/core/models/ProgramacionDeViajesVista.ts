@@ -23,6 +23,7 @@ export interface ProgramacionDeViajesVista {
   asignacion?: string;
   temperatura?: string;
   estatus?: number;
+  estatusConDetalle?: string;
   ecoIngresa?: string;
   operadorIngresa?: string;
   sIngreso?: string;

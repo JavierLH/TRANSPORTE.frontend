@@ -55,7 +55,7 @@ export class ProgramacionViajesVikingo {
     { field: 'gasto',                   header: 'Gasto' },
     { field: 'asignacion',              header: 'Asignación' },
     { field: 'temperatura',             header: 'Temperatura' },
-    { field: 'estatus',                 header: 'Estatus' },
+    { field: 'estatusConDetalle',      header: 'Estatus' },
     { field: 'ecoIngresa',              header: 'Eco. Ingresa' },
     { field: 'operadorIngresa',         header: 'Operador Ingresa' },
     { field: 'ingreso',                 header: 'Ingreso' },
