@@ -93,7 +93,8 @@ export class ProgramacionViajesVikingo {
   paginaActual: number = 1;
   tamanoPagina: number = 20;
 
-  camposDeBusqueda: string[] = ['idProgramacion', 'noViaje', 'fecha', 'comentarios'];
+  // Nombres de ProgramacionDeViajesVista, que es lo que se enlaza en [data].
+  camposDeBusqueda: string[] = ['folio', 'numeroViaje', 'cliente', 'ejecutivo', 'comentarios'];
 
   datosEmpresa: CrearNuevViajeDto;
 

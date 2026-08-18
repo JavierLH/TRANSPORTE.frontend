@@ -184,6 +184,16 @@ export class ModalAgregarviajeViaje implements OnInit {
     const idEmpresa = this.datosViajeCreacion?.idEmpresa;
     if (!idEmpresa) return;
 
+    // Los convenios se cargan siempre, tanto al CREAR como al EDITAR, y de forma
+    // independiente de los catálogos: son peticiones distintas y si una falla,
+    // la otra no tiene por qué quedarse sin datos.
+    this.ConvenioServices.obtenerTodosLosConvenios(idEmpresa).subscribe({
+      next: (data) => {
+        this.convenios = data;
+      },
+      error: (err) => console.error('Error cargando convenios de la empresa:', err)
+    });
+
     this.catalogosService.obtenerCatalogosViaje(idEmpresa).subscribe({
       next: (data) => {
         this.equipos = data.equipos.flatMap(grupo => grupo.equipos);
@@ -207,15 +217,7 @@ export class ModalAgregarviajeViaje implements OnInit {
           this.viajesService.obtenerViajePorId(this.filaSeleccionada.folio)
             .subscribe({
               next: (viaje) => {
-
-                this.ConvenioServices.obtenerTodosLosConvenios(idEmpresa).subscribe({
-                  next: (data) => {
-                    this.convenios = data;
-                  }
-                });
-
                 this.aplicarValoresCamposDeTexto(viaje);
-
               }
             });
         }
