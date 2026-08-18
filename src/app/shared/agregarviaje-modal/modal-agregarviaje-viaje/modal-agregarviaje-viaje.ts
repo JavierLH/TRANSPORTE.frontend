@@ -161,9 +161,18 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     this.ConvenioServices.crearNuevoConvenio(nuevoConvenio).subscribe({
       next: (convenioCreado) => {
-        this.convenios.push(convenioCreado);
+        // Se reemplaza el arreglo en vez de hacer push: p-select detecta cambios
+        // por referencia, y mutar el arreglo existente no refresca las opciones.
+        this.convenios = [...this.convenios, convenioCreado];
+
         this.idConvenio = convenioCreado.idConvenio;
         this.cerrarModalNuevoConvenio();
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Convenio creado',
+          detail: `${convenioCreado.noConvenio} quedó seleccionado.`
+        });
       },
       error: (err) => {
         console.error('Error al crear el convenio:', err);
