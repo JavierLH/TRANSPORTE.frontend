@@ -1,6 +1,7 @@
 import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule, Table } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -37,7 +38,8 @@ export interface ColumnaTabla {
     DialogModule,
     ModalAgregarviajeViaje,
     ToastModule,
-    RippleModule
+    RippleModule,
+    TooltipModule
   ],
   providers: [MessageService],
   selector: 'app-tabla-dashboard',
@@ -97,6 +99,69 @@ export class TablaDashboardComponent implements OnInit{
   onLazyLoad(event: any) {
     const pagina = Math.floor(event.first / event.rows) + 1;
     this.lazyLoad.emit({ pagina, tamanoPagina: event.rows });
+  }
+
+  copiando = false;
+
+  /**
+   * Copia la tabla al portapapeles en formato TSV (separado por tabuladores),
+   * que es lo que Excel interpreta como columnas al pegar.
+   *
+   * Copia lo que el usuario está viendo: si hay filtro activo usa el resultado
+   * filtrado, y respeta el orden actual. No se limita a la página visible.
+   */
+  async copiarTabla(tabla: Table): Promise<void> {
+    if (!this.columnas?.length) {
+      this.avisar('warn', 'Sin columnas', 'La tabla no tiene columnas configuradas.');
+      return;
+    }
+
+    // filteredValue sólo existe cuando hay un filtro aplicado.
+    const filas: any[] = tabla.filteredValue ?? tabla.value ?? [];
+
+    if (!filas.length) {
+      this.avisar('warn', 'Tabla vacía', 'No hay filas que copiar.');
+      return;
+    }
+
+    this.copiando = true;
+
+    try {
+      const encabezados = this.columnas.map(c => c.header).join('\t');
+
+      const cuerpo = filas
+        .map(fila => this.columnas.map(c => this.limpiar(fila?.[c.field])).join('\t'))
+        .join('\n');
+
+      await navigator.clipboard.writeText(`${encabezados}\n${cuerpo}`);
+
+      this.avisar(
+        'success',
+        'Copiado',
+        `${filas.length} ${filas.length === 1 ? 'fila copiada' : 'filas copiadas'} al portapapeles.`
+      );
+    } catch (error) {
+      console.error('Error al copiar la tabla', error);
+      this.avisar('error', 'No se pudo copiar', 'El navegador bloqueó el acceso al portapapeles.');
+    } finally {
+      this.copiando = false;
+    }
+  }
+
+  /**
+   * Los tabuladores y saltos de línea dentro de una celda romperían el TSV
+   * (Excel los leería como columna o fila nueva), así que se aplanan.
+   */
+  private limpiar(valor: any): string {
+    if (valor === null || valor === undefined) {
+      return '';
+    }
+
+    return String(valor).replace(/[\t\r\n]+/g, ' ').trim();
+  }
+
+  private avisar(severity: string, summary: string, detail: string): void {
+    this.messageService.add({ severity, summary, detail });
   }
 
   constructor(){

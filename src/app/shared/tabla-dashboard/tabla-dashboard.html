@@ -30,7 +30,7 @@
           width: 100%;
         "
       >
-        <div>
+        <div style="display: flex; gap: 8px; align-items: center">
           <p-iconfield iconPosition="left">
             <p-inputicon>
               <i class="pi pi-search"></i>
@@ -44,6 +44,18 @@
               placeholder="Buscar..."
             />
           </p-iconfield>
+
+          <!-- Copia al portapapeles lo que el usuario está viendo:
+               filtrado y ordenado, con encabezados, en formato TSV. -->
+          <p-button
+            icon="pi pi-clipboard"
+            severity="secondary"
+            styleClass="p-button-sm"
+            pTooltip="Copiar tabla al portapapeles"
+            tooltipPosition="bottom"
+            [disabled]="copiando"
+            (onClick)="copiarTabla(dt)"
+          ></p-button>
         </div>
 
         <!-- DIV DERECHO: El contenedor de los botones -->
