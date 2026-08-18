@@ -12,8 +12,11 @@ import { DialogModule } from 'primeng/dialog';
 import { ModalAgregarviajeViaje } from '../agregarviaje-modal/modal-agregarviaje-viaje/modal-agregarviaje-viaje';
 import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
-import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { CrearNuevViajeDto } from '../../core/models/CrearNuevoViajeDto';
+import { ProgramacionViajesService } from '../../core/services/ProgramacionViajesService';
+import { ProgramacionViajes } from '../../core/models/ProgramacionViajesDto';
 
 /**
  * Definición de una columna de la tabla.
@@ -39,9 +42,10 @@ export interface ColumnaTabla {
     ModalAgregarviajeViaje,
     ToastModule,
     RippleModule,
-    TooltipModule
+    TooltipModule,
+    ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   selector: 'app-tabla-dashboard',
   templateUrl: './tabla-dashboard.html',
   styleUrl: './tabla-dashboard.css',
@@ -173,6 +177,8 @@ export class TablaDashboardComponent implements OnInit{
   }
 
   private messageService = inject(MessageService);
+    private confirmationService = inject(ConfirmationService);
+    private viajesService = inject(ProgramacionViajesService);
     private cdr = inject(ChangeDetectorRef);
 
     mostrarModal = false;
@@ -226,6 +232,94 @@ export class TablaDashboardComponent implements OnInit{
 viajeGuardadoConExito() {
     this.cerrarModal();
     this.recargarTabla.emit(); // Disparamos el aviso hacia el componente Padre (Principal)
+  }
+
+  duplicando = false;
+
+  /**
+   * Duplica el viaje seleccionado: pide el registro completo al backend y lo
+   * vuelve a insertar como uno nuevo. El id no se envía, así que SQL Server
+   * genera el folio del duplicado.
+   */
+  duplicarViaje() {
+    if (!this.filaSeleccionada) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Por favor, seleccione una fila para duplicar.'
+      });
+      return;
+    }
+
+    // La tabla se alimenta de la vista, donde el id del viaje es `folio`.
+    const folio = this.filaSeleccionada.folio;
+
+    this.confirmationService.confirm({
+      header: 'Duplicar viaje',
+      message: `¿Estás seguro que deseas duplicar el viaje con folio ${folio}?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, duplicar',
+      rejectLabel: 'Cancelar',
+      accept: () => this.ejecutarDuplicado(folio)
+    });
+  }
+
+  private ejecutarDuplicado(folio: number) {
+    this.duplicando = true;
+
+    this.viajesService.obtenerViajePorId(folio).subscribe({
+      next: (viaje) => {
+        if (!viaje) {
+          this.duplicando = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'No se pudo duplicar',
+            detail: `No se encontró el viaje con folio ${folio}.`
+          });
+          return;
+        }
+
+        const duplicado: ProgramacionViajes = {
+          ...viaje,
+          // Copia idéntica salvo el folio: se omite el id para que SQL Server
+          // genere uno nuevo. Todo lo demás se conserva tal cual.
+          idProgramacion: undefined
+        };
+
+        this.viajesService.insertarViaje(duplicado).subscribe({
+          next: (creado) => {
+            this.duplicando = false;
+
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Viaje duplicado',
+              detail: `Se creó el viaje con folio ${creado?.idProgramacion ?? 'nuevo'} a partir del ${folio}.`
+            });
+
+            this.filaSeleccionada = null;
+            this.recargarTabla.emit();
+          },
+          error: (err) => {
+            this.duplicando = false;
+            console.error('Error al insertar el viaje duplicado', err);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'No se pudo duplicar',
+              detail: 'El servidor rechazó el nuevo viaje.'
+            });
+          }
+        });
+      },
+      error: (err) => {
+        this.duplicando = false;
+        console.error('Error al obtener el viaje a duplicar', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'No se pudo duplicar',
+          detail: `No se pudieron leer los datos del viaje ${folio}.`
+        });
+      }
+    });
   }
 
   showWarn() {

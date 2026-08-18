@@ -93,6 +93,8 @@
             label="Duplicar viaje"
             severity="success"
             styleClass="p-button-sm btn-juguete"
+            [loading]="duplicando"
+            (onClick)="duplicarViaje()"
           ></p-button>
 
           <p-button
@@ -152,4 +154,5 @@
   </p-dialog>
 
   <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
 </div>
