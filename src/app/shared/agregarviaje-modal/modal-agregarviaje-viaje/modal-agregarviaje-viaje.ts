@@ -77,7 +77,6 @@ export class ModalAgregarviajeViaje implements OnInit {
   gasto: number = 0;
   estatus: number | undefined;
   asignacion: string = '';
-  sIngreso: string = '';
 
   idPatio2: number | undefined;
 
@@ -94,7 +93,7 @@ export class ModalAgregarviajeViaje implements OnInit {
   // Sección Ingreso
   idEquipoIngreso: number | undefined;
   idOperadorIngreso: number | undefined;
-  ingreso: Date | undefined;
+  sIngreso: Date | undefined;   // se guarda en la columna sIngreso (datetime) de ProgramacionViajes
   entrega: Date | undefined;
   envio: string = '';
 
@@ -278,7 +277,6 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.gasto = viaje.gasto ?? 0;
     this.estatus = viaje.estatus;
     this.asignacion = viaje.asignacion ?? '';
-    this.sIngreso = viaje.sIngreso ?? '';
 
     this.idPatio = viaje.idPatio ? Number(viaje.idPatio) : undefined;
     this.idPatio2 = viaje.idPatio2 ? Number(viaje.idPatio2) : undefined;
@@ -294,7 +292,7 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     this.idEquipoIngreso = viaje.idEquipoIngreso;
     this.idOperadorIngreso = viaje.idOperadorIngreso;
-    this.ingreso = viaje.ingreso ? new Date(viaje.ingreso) : undefined;
+    this.sIngreso = viaje.sIngreso ? new Date(viaje.sIngreso) : undefined;
     this.entrega = viaje.entrega ? new Date(viaje.entrega) : undefined;
     this.envio = viaje.envio ?? '';
   }
@@ -449,7 +447,7 @@ export class ModalAgregarviajeViaje implements OnInit {
       comentarios: resolverTexto(this.comentarios),
       idPatio: resolverNumero(this.idPatio),
       asignacion: resolverTexto(this.asignacion),
-      sIngreso: resolverTexto(this.sIngreso),
+      sIngreso: resolverFecha(this.sIngreso),
 
       horaCita: formatearHora(this.horaCitaDate) || resolverTexto(this.horaCita),
 
@@ -487,7 +485,6 @@ export class ModalAgregarviajeViaje implements OnInit {
 
       idEquipoIngreso: resolverNumero(this.idEquipoIngreso),
       idOperadorIngreso: resolverNumero(this.idOperadorIngreso),
-      ingreso: resolverFecha(this.ingreso),
       entrega: resolverFecha(this.entrega),
       envio: resolverTexto(this.envio),
 
