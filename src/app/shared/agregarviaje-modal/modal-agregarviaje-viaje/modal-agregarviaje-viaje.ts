@@ -94,8 +94,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   // Sección Ingreso
   idEquipoIngreso: number | undefined;
   idOperadorIngreso: number | undefined;
-  ingreso: string = '';
-  entrega: string = '';
+  ingreso: Date | undefined;
+  entrega: Date | undefined;
   envio: string = '';
 
   // ================= DATOS REALES (desde CatalogosViajeService) =================
@@ -294,8 +294,8 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     this.idEquipoIngreso = viaje.idEquipoIngreso;
     this.idOperadorIngreso = viaje.idOperadorIngreso;
-    this.ingreso = viaje.ingreso ?? '';
-    this.entrega = viaje.entrega ?? '';
+    this.ingreso = viaje.ingreso ? new Date(viaje.ingreso) : undefined;
+    this.entrega = viaje.entrega ? new Date(viaje.entrega) : undefined;
     this.envio = viaje.envio ?? '';
   }
 

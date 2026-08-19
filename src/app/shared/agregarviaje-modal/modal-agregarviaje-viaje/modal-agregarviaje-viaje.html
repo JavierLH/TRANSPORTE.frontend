@@ -549,11 +549,23 @@
         </div>
         <div>
           <label>Ingreso</label>
-          <input type="text" pInputText class="w-full" [(ngModel)]="ingreso" />
+          <p-datepicker
+            [(ngModel)]="ingreso"
+            [showTime]="true"
+            placeholder="Seleccione Fecha/Hora"
+            class="w-full"
+            appendTo="body"
+          />
         </div>
         <div>
           <label>Entrega</label>
-          <input type="text" pInputText class="w-full" [(ngModel)]="entrega" />
+          <p-datepicker
+            [(ngModel)]="entrega"
+            [showTime]="true"
+            placeholder="Seleccione Fecha/Hora"
+            class="w-full"
+            appendTo="body"
+          />
         </div>
         <div>
           <label>Envío de POD a Facturación</label>
