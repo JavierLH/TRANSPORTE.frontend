@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, inject } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +17,10 @@ import { ConvenioServices } from '../../../core/services/ConvenioService';
 import Convenio from '../../../core/models/Convenio';
 import { PanelModule } from 'primeng/panel';
 
+
+// Solo documentos: nada de imágenes ni videos
+const EXTENSIONES_PERMITIDAS = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+const TAMANO_MAXIMO_MB = 10;
 
 const ID_TIPO_EQUIPO_TRACTOCAMION = 3;
 const ID_TIPO_EQUIPO_RABON = 7;
@@ -189,7 +193,50 @@ export class ModalAgregarviajeViaje implements OnInit {
     });
   }
 
-  cargarDocumento() {}
+  @ViewChild('inputArchivo') inputArchivo!: ElementRef<HTMLInputElement>;
+
+  archivoSeleccionado: File | undefined;
+
+  cargarDocumento() {
+    this.inputArchivo.nativeElement.click();
+  }
+
+  onArchivoSeleccionado(evento: Event) {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+
+    if (!archivo) {
+      return;
+    }
+
+    const extension = archivo.name.split('.').pop()?.toLowerCase() ?? '';
+
+    if (!EXTENSIONES_PERMITIDAS.includes(extension)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Formato no permitido',
+        detail: `Solo se aceptan documentos: ${EXTENSIONES_PERMITIDAS.join(', ')}.`
+      });
+      input.value = '';
+      return;
+    }
+
+    if (archivo.size > TAMANO_MAXIMO_MB * 1024 * 1024) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Archivo muy grande',
+        detail: `El documento no debe superar los ${TAMANO_MAXIMO_MB} MB.`
+      });
+      input.value = '';
+      return;
+    }
+
+    this.archivoSeleccionado = archivo;
+    this.nombreArchivoCargado = archivo.name;
+
+    // Permite volver a elegir el mismo archivo (el evento change no dispara si no cambia el valor)
+    input.value = '';
+  }
 
   verDocumento() {}
 
