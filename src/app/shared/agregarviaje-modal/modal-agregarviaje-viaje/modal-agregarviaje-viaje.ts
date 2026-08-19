@@ -382,6 +382,24 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.onClose.emit();
   }
 
+
+  NoEsVisibleLaTemperatura : boolean = true;
+
+  mercanciaEsRefrigerada(event: SelectChangeEvent){
+
+    const tipoMercancia = this.mercancias.filter(e => e.idTipoMercancia === event.value)[0].descripcion;
+
+    if(tipoMercancia === "REFRIGERADA" || tipoMercancia
+       === "REFRIGERADA/PELIGROSA" || tipoMercancia === "REFRIGERADA/GENERAL"
+    ){
+      this.NoEsVisibleLaTemperatura = false;
+    }
+    else{
+      this.NoEsVisibleLaTemperatura = true;
+    }
+    
+  }
+
   private construirObjetoViaje(): ProgramacionViajes {
     const resolverNumero = (val: any): number | undefined => {
       if (val === null || val === undefined || val === '') return undefined;

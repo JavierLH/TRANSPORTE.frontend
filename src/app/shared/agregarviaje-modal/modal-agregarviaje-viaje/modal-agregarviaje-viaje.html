@@ -217,7 +217,13 @@
             optionValue="idTipoMercancia"
             placeholder="Seleccione Mercancía"
             class="w-full"
+            (onChange)="mercanciaEsRefrigerada($event)"
           />
+        </div>
+
+        <div [hidden]="NoEsVisibleLaTemperatura">
+          <label>Temperatura</label>
+          <input type="text" pInputText class="w-full" />
         </div>
 
         <div>
@@ -352,6 +358,7 @@
             class="w-full"
           />
         </div>
+
         <div>
           <label>Patio de Vacío/Terminal Expo (2)</label>
           <p-select
