@@ -67,6 +67,30 @@ export class ProgramacionViajesService {
     return this.http.get<ProgramacionViajes>(API.obtenerViajePorId(id));
   }
 
+  /**
+   * Sube el documento del viaje. El backend arma la ruta
+   * Documentos/EMPRESA/CLIENTE/AÑO/FOLIO_AÑO/archivo.ext
+   */
+  public subirDocumento(idProgramacion: number, archivo: File): Observable<ProgramacionViajes> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+
+    return this.http.post<ProgramacionViajes>(
+      API.subirDocumentoViaje(idProgramacion),
+      formData
+    );
+  }
+
+  /**
+   * Descarga el documento como blob. Se pide por HttpClient (no window.open)
+   * para que el interceptor adjunte el token del usuario.
+   */
+  public descargarDocumento(idProgramacion: number): Observable<Blob> {
+    return this.http.get(API.subirDocumentoViaje(idProgramacion), {
+      responseType: 'blob'
+    });
+  }
+
   public obtenerViajesFiltradosVistaPorCriterios(
       idEmpresa: number,
       fechaInicio?: string | null,

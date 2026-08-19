@@ -238,7 +238,43 @@ export class ModalAgregarviajeViaje implements OnInit {
     input.value = '';
   }
 
-  verDocumento() {}
+  verDocumento() {
+    if (!this.idProgramacion) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Guarda el viaje antes de consultar su documento.'
+      });
+      return;
+    }
+
+    if (!this.nombreArchivoCargado) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Sin documento',
+        detail: 'Este viaje no tiene ningún documento cargado.'
+      });
+      return;
+    }
+
+    this.viajesService.descargarDocumento(this.idProgramacion).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+
+        // Se libera la URL temporal una vez que el navegador ya la abrió
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      },
+      error: (err) => {
+        console.error('Error al obtener el documento:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo abrir el documento.'
+        });
+      }
+    });
+  }
 
   ngOnInit(): void {
     const idEmpresa = this.datosViajeCreacion?.idEmpresa;
@@ -339,6 +375,8 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     this.idEquipoIngreso = viaje.idEquipoIngreso;
     this.idOperadorIngreso = viaje.idOperadorIngreso;
+    this.nombreArchivoCargado = viaje.nombreArchivo ?? '';
+
     this.sIngreso = viaje.sIngreso ? new Date(viaje.sIngreso) : undefined;
     this.entrega = viaje.entrega ? new Date(viaje.entrega) : undefined;
     this.envio = viaje.envio ?? '';
@@ -361,11 +399,46 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.viajesService.insertarViaje(nuevoViaje).subscribe({
       next: (respuesta) => {
         console.log('Viaje creado con éxito:', respuesta);
+        // El folio recién existe aquí, así que el documento se sube después de insertar
+        this.subirDocumentoSiHay(respuesta.idProgramacion);
+      },
+      error: (err) => {
+        console.error('Error detallado del backend:', err.error?.errors);
+      }
+    });
+  }
+
+  /**
+   * Sube el documento seleccionado (si lo hay) y cierra el modal.
+   * Se llama después de guardar porque la ruta del archivo necesita el folio.
+   */
+  private subirDocumentoSiHay(idProgramacion: number | undefined) {
+    if (!this.archivoSeleccionado || !idProgramacion) {
+      this.onGuardado.emit();
+      this.cerrarModal();
+      return;
+    }
+
+    this.viajesService.subirDocumento(idProgramacion, this.archivoSeleccionado).subscribe({
+      next: (viaje) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Documento cargado',
+          detail: viaje.nombreArchivo ?? this.nombreArchivoCargado
+        });
+        this.archivoSeleccionado = undefined;
         this.onGuardado.emit();
         this.cerrarModal();
       },
       error: (err) => {
-        console.error('Error detallado del backend:', err.error?.errors);
+        console.error('Error al subir el documento:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'El viaje se guardó, pero el documento no',
+          detail: err.error?.mensaje ?? 'No se pudo cargar el documento.'
+        });
+        this.onGuardado.emit();
+        this.cerrarModal();
       }
     });
   }
@@ -394,8 +467,7 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.viajesService.actualizarViaje(this.idProgramacion, viajeActualizado).subscribe({
       next: (respuesta) => {
         console.log('Viaje actualizado con éxito:', respuesta);
-        this.onGuardado.emit();
-        this.cerrarModal();
+        this.subirDocumentoSiHay(this.idProgramacion);
       },
       error: (err) => {
         console.error('Error detallado del backend:', err.error?.errors);

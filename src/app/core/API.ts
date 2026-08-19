@@ -13,6 +13,7 @@ export const API = {
   insertarViaje: (): string => `${environment.host}/ProgramacionViajes`,
   actualizarViaje: (id: number): string => `${environment.host}/ProgramacionViajes/${id}`,
   eliminarViaje: (id: number): string => `${environment.host}/ProgramacionViajes/${id}`,
+  subirDocumentoViaje: (idProgramacion: number): string => `${environment.host}/ProgramacionViajes/${idProgramacion}/documento`,
 
   obtenerViajesFiltrados: (fechaInicio: string, fechaFin: string, idEmpresa: number): string =>
   `${environment.host}/ProgramacionViajes/filtrar?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&idEmpresa=${idEmpresa}`,
