@@ -43,6 +43,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   private messageService = inject(MessageService);
   private ConvenioServices = inject(ConvenioServices);
 
+  NoEsVisibleLaTemperatura : boolean = true;
+
   noViaje: string = '';
   datetime24h: Date | undefined;
   fecha: Date[] | undefined;
@@ -134,6 +136,9 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   mostrarModalNuevoConvenio = false;
   nuevoConvenioTexto: string = '';
+
+  conexiones : string = '';
+
 
   nuevoConvenio() {
     this.mostrarModalNuevoConvenio = true;
@@ -383,7 +388,6 @@ export class ModalAgregarviajeViaje implements OnInit {
   }
 
 
-  NoEsVisibleLaTemperatura : boolean = true;
 
   mercanciaEsRefrigerada(event: SelectChangeEvent){
 
@@ -396,8 +400,9 @@ export class ModalAgregarviajeViaje implements OnInit {
     }
     else{
       this.NoEsVisibleLaTemperatura = true;
+      this.conexiones = '';
     }
-    
+
   }
 
   private construirObjetoViaje(): ProgramacionViajes {
@@ -485,6 +490,8 @@ export class ModalAgregarviajeViaje implements OnInit {
       ingreso: resolverFecha(this.ingreso),
       entrega: resolverFecha(this.entrega),
       envio: resolverTexto(this.envio),
+
+      conexiones: this.conexiones,
 
       idUsuario: this.datosViajeCreacion?.idCreador || undefined,
       idEmpresa: this.datosViajeCreacion?.idEmpresa || undefined,

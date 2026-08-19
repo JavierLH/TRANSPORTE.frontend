@@ -208,6 +208,7 @@
             class="w-full"
           />
         </div>
+
         <div>
           <label>Mercancía</label>
           <p-select
@@ -223,7 +224,12 @@
 
         <div [hidden]="NoEsVisibleLaTemperatura">
           <label>Temperatura</label>
-          <input type="text" pInputText class="w-full" />
+          <input
+            type="text"
+            pInputText
+            class="w-full"
+            [(ngModel)]="conexiones"
+          />
         </div>
 
         <div>
