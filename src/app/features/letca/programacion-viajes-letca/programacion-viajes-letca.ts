@@ -157,10 +157,13 @@ private cdr = inject(ChangeDetectorRef);
       const idEjecutivo = datosDeLaCard.ejecutivos?.idEjecutivo ?? null;
       const rangoDeFechas: Date[] | undefined = datosDeLaCard?.fehas;
 
+      const idConvenio = datosDeLaCard.convenios?.idConvenio ?? null;
+
+
       const sinFechas = !rangoDeFechas?.[0];
 
       // Sin ningún criterio, se vuelve a la carga por defecto del mes.
-      if (idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
+      if (idConvenio === null && idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
         this.cargarViajes();
         return;
       }
@@ -186,7 +189,8 @@ private cdr = inject(ChangeDetectorRef);
         idOrigen,
         idEstatus,
         idCliente,
-        idEjecutivo
+        idEjecutivo,
+        idConvenio
       ).subscribe({
         next: (datos) => {
           this.viajesVista = datos;

@@ -49,9 +49,9 @@
         <div class="campo-filtro">
           <label>Estatus de convenio</label>
           <p-select
-            [options]="ejecutivos"
-            [(ngModel)]="selectedEjecutivo"
-            optionLabel="nombreEjecutivo"
+            [options]="convenios"
+            [(ngModel)]="selectedConvenio"
+            optionLabel="noConvenio"
             placeholder="Selecciona el Ejecutivo"
             class="w-full"
           />
@@ -103,8 +103,6 @@
           Aplicar Filtros
         </p-button>
       </div>
-
-      
     </div>
   </div>
 </div>

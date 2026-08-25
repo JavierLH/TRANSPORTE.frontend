@@ -1,4 +1,5 @@
 import { Cliente, Ejecutivo } from './CatalogosViajeDtos';
+import Convenio from './Convenio';
 
 export interface Origen {
   idOrigen: number | null;
@@ -16,4 +17,5 @@ export interface FiltroDeBusqueda {
   estatusViajes: EstatusViaje[];
   cliente: Cliente[];
   ejecutivos: Ejecutivo[];
+  convenios: Convenio[];
 }

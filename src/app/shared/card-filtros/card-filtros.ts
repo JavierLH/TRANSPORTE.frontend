@@ -6,6 +6,7 @@ import { Cliente, Ejecutivo } from '../../core/models/CatalogosViajeDtos';
 import { CatalogosViajeService } from '../../core/services/CatalogosViajesService';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Button } from "primeng/button";
+import Convenio from '../../core/models/Convenio';
 
 
 @Component({
@@ -23,10 +24,16 @@ export class CardFiltros implements OnInit{
     clientes: Cliente[] = [];
     ejecutivos: Ejecutivo[] = [];
 
+    convenios: Convenio[] = [];
+
+
     selectedOrigen: Origen | undefined;
     selectedEstatus: EstatusViaje | undefined;
     selectedCliente: Cliente | undefined;
     selectedEjecutivo: Ejecutivo | undefined;
+
+    selectedConvenio:  Convenio | undefined;
+
 
     rangeDates: Date[] | undefined;
 
@@ -60,6 +67,8 @@ export class CardFiltros implements OnInit{
         this.estatusViajes = filtros.estatusViajes;
         this.clientes = filtros.cliente;
         this.ejecutivos = filtros.ejecutivos;
+        this.convenios = filtros.convenios;
+
       }
 
 
@@ -70,6 +79,7 @@ export class CardFiltros implements OnInit{
         estatus : this.selectedEstatus,
         cliente : this.selectedCliente,
         ejecutivos : this.selectedEjecutivo,
+        convenios: this.selectedConvenio,
         fehas : this.rangeDates
       });
 
@@ -81,6 +91,9 @@ export class CardFiltros implements OnInit{
       this.selectedCliente = undefined;
       this.selectedEjecutivo = undefined;
       this.rangeDates = undefined;
+      this.selectedConvenio = undefined;
+
+      this.filtrar();
 
     }
 

@@ -171,10 +171,12 @@ export class ProgramacionViajesVikingo {
       const idCliente = datosDeLaCard.cliente?.idCliente ?? null;
       const idEjecutivo = datosDeLaCard.ejecutivos?.idEjecutivo ?? null;
       const rangoDeFechas: Date[] | undefined = datosDeLaCard?.fehas;
+      const idConvenio = datosDeLaCard.convenios?.idConvenio ?? null;
+      //idConvenio
 
       const sinFechas = !rangoDeFechas?.[0];
 
-      if (idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
+      if (idConvenio == null && idOrigen === null && idEstatus === null && idCliente === null && idEjecutivo === null && sinFechas) {
         this.cargarViajes();
         return;
       }
@@ -202,7 +204,9 @@ export class ProgramacionViajesVikingo {
         idOrigen,
         idEstatus,
         idCliente,
-        idEjecutivo
+        idEjecutivo,
+        idConvenio
+
       ).subscribe({
         next: (datos) => {
           this.viajesVista = datos;

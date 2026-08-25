@@ -43,7 +43,8 @@ export const API = {
     idOrigen?: number | null,
     idEstatus?: number | null,
     idCliente?: number | null,
-    idEjecutivo?: number | null
+    idEjecutivo?: number | null,
+    idConvenio?: number | null
   ): string => {
     let url = `${environment.host}/ProgramacionViajes/filtrar-vista?idEmpresa=${idEmpresa}`;
 
@@ -53,6 +54,7 @@ export const API = {
     if (idEstatus != null) url += `&idEstatus=${idEstatus}`;
     if (idCliente != null) url += `&idCliente=${idCliente}`;
     if (idEjecutivo != null) url += `&idEjecutivo=${idEjecutivo}`;
+    if (idConvenio != null) url+= `&idConvenio=${idConvenio}`;
 
     return url;
   },
