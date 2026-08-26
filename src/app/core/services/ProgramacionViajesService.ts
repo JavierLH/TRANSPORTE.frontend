@@ -5,6 +5,7 @@ import { API } from '../API';
 import { ProgramacionViajes } from '../models/ProgramacionViajesDto';
 import { ResultadoPaginado } from '../models/ResultadoPaginado';
 import { ProgramacionDeViajesVista } from '../models/ProgramacionDeViajesVista';
+import { EdicionBitacora } from '../models/BitacoraViaje';
 
 @Injectable({
   providedIn: 'root',
@@ -65,6 +66,14 @@ export class ProgramacionViajesService {
 
   public obtenerViajePorId(id: number): Observable<ProgramacionViajes> {
     return this.http.get<ProgramacionViajes>(API.obtenerViajePorId(id));
+  }
+
+  /**
+   * Historial de cambios del viaje, de la edición más reciente a la más antigua.
+   * Devuelve [] si el viaje existe pero nunca se ha editado.
+   */
+  public obtenerBitacoraDelViaje(id: number): Observable<EdicionBitacora[]> {
+    return this.http.get<EdicionBitacora[]>(API.obtenerBitacoraDelViaje(id));
   }
 
   /**

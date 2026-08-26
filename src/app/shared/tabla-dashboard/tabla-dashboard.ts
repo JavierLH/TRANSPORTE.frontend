@@ -19,6 +19,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { CrearNuevViajeDto } from '../../core/models/CrearNuevoViajeDto';
 import { ProgramacionViajesService } from '../../core/services/ProgramacionViajesService';
 import { ProgramacionViajes } from '../../core/models/ProgramacionViajesDto';
+import { EdicionBitacora } from '../../core/models/BitacoraViaje';
 
 /**
  * Definición de una columna de la tabla.
@@ -236,6 +237,126 @@ export class TablaDashboardComponent implements OnInit{
 viajeGuardadoConExito() {
     this.cerrarModal();
     this.recargarTabla.emit(); // Disparamos el aviso hacia el componente Padre (Principal)
+  }
+
+  mostrarDialogBitacora = false;
+  cargandoBitacora = false;
+  folioBitacora: number | null = null;
+  bitacora: EdicionBitacora[] = [];
+
+  /**
+   * Nombres técnicos de las columnas traducidos a lo que el usuario reconoce.
+   * La bitácora guarda el nombre de la propiedad de C# ("IdEquipoRemolque1"),
+   * que no le dice nada a nadie. Lo que no esté aquí se muestra tal cual.
+   */
+  private readonly etiquetasDeCampos: Record<string, string> = {
+    NoViaje: 'No. Viaje',
+    IdConvenio: 'Convenio',
+    Fecha: 'Fecha',
+    IdCliente: 'Cliente',
+    IdEjecutivo: 'Ejecutivo',
+    Turno: 'Turno',
+    IdEquipoRuta: 'Eco. Ruta',
+    IdOperador: 'Operador Ruta',
+    IdEquipoRetira: 'Eco. Retira',
+    IdOperadorRetira: 'Operador Retira',
+    IdTipoMercancia: 'Tipo Mercancía',
+    IdTipoOperacion: 'Operación',
+    CitaTerminal: 'Terminal',
+    Comentarios: 'Comentarios',
+    IdOrigen: 'Origen',
+    IdEstado: 'Destino',
+    IdCiudad: 'Ciudad',
+    Comision: 'Comisión',
+    Gasto: 'Gasto',
+    Costo: 'Costo',
+    Asignacion: 'Asignación',
+    Conexiones: 'Temperatura',
+    Estatus: 'Estatus',
+    IdEquipoIngreso: 'Eco. Ingresa',
+    IdOperadorIngreso: 'Operador Ingresa',
+    Ingreso: 'Ingreso',
+    Entrega: 'Entrega',
+    HoraCita: 'Horario Cita',
+    Envio: 'Envío POD',
+    EnvioAsignacion: 'Envío Asignación',
+    EnvioDocumentos: 'Envío Documentos',
+    EnvioCita: 'Envío Cita',
+    EnvioSeguimiento: 'Envío Datos',
+    EnvioCcp: 'Envío CCP',
+    SalidaPatio: 'Salida Patio',
+    LlegadaPlanta: 'Llegada Planta',
+    SalidaPlanta: 'Salida Planta',
+    LlegadaPatio: 'Llegada Patio',
+    EstatusCita: 'Estatus Cita',
+    CostoEstadias: 'Costo por Estadía',
+    Estadias: 'Estadías',
+    CostoToEstadias: 'Total Estadías',
+    ObservacionesMonitoreo: 'Observaciones Monitoreo',
+    IdEquipoRemolque1: 'Primer Remolque',
+    IdEquipoGenerador1: 'Primer Generador',
+    IdEquipoRemolque2: 'Segundo Remolque',
+    IdEquipoGenerador2: 'Segundo Generador',
+    IdEquipoDolly: 'Dolly',
+    ComentariosConvenio: 'Comentarios Convenio',
+    EstatusConvenio: 'Estatus Convenio'
+  };
+
+  etiquetaDelCampo(campo: string | null): string {
+    if (!campo) {
+      return '';
+    }
+
+    return this.etiquetasDeCampos[campo] ?? campo;
+  }
+
+  /** Un valor vacío se muestra explícito: "vacío → algo" también es un cambio. */
+  valorLegible(valor: string | null): string {
+    return valor === null || valor === '' ? '(vacío)' : valor;
+  }
+
+  gestionarBitacora() {
+    if (!this.filaSeleccionada) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Por favor, seleccione una fila para ver su bitácora.'
+      });
+      return;
+    }
+
+    // La tabla se alimenta de la vista, donde el id del viaje es `folio`.
+    const folio = this.filaSeleccionada.folio;
+
+    this.folioBitacora = folio;
+    this.bitacora = [];
+    this.cargandoBitacora = true;
+    this.mostrarDialogBitacora = true;
+    this.cdr.detectChanges();
+
+    this.viajesService.obtenerBitacoraDelViaje(folio).subscribe({
+      next: (ediciones) => {
+        this.bitacora = ediciones;
+        this.cargandoBitacora = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar la bitácora', err);
+        this.cargandoBitacora = false;
+        this.mostrarDialogBitacora = false;
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'No se pudo cargar',
+          detail: `No se obtuvo el historial del viaje ${folio}.`
+        });
+      }
+    });
+  }
+
+  cerrarDialogBitacora() {
+    this.mostrarDialogBitacora = false;
+    this.bitacora = [];
+    this.folioBitacora = null;
   }
 
   mostrarDialogEliminar = false;

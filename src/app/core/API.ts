@@ -31,6 +31,9 @@ export const API = {
   guardarPermisosDeRol: (idRol: number): string => `${environment.host}/Roles/${idRol}/permisos`,
   obtenerCatalogosViajeEmpresa: (idEmpresa: number): string => `${environment.host}/Empresas/${idEmpresa}/catalogos-viaje`,
   obtenerViajePorId: (idViajeProgramacion: number): string => `${environment.host}/ProgramacionViajes/${idViajeProgramacion}`,
+
+  obtenerBitacoraDelViaje: (idViajeProgramacion: number): string =>
+    `${environment.host}/ProgramacionViajes/${idViajeProgramacion}/bitacora`,
   obtenerCatalagosPorEmpresa: (idEmpresa: number): string => `${environment.host}/Empresas/${idEmpresa}/filtros-busqueda`,
 
   obtenerViajesFiltradosVista: (fechaInicio: string, fechaFin: string, idEmpresa: number): string =>
