@@ -533,6 +533,26 @@ export class ModalAgregarviajeViaje implements OnInit {
       return (val === null || val === undefined || val === '') ? undefined : String(val);
     };
 
+    /**
+     * Convierte la fecha a texto SIN tocar la zona horaria.
+     *
+     * Las columnas del backend son `datetime`, que no guarda zona: representan
+     * hora local. Usar toISOString() la convertía a UTC y le sumaba 6 horas en
+     * cada guardado, así que el valor se corría solo aunque nadie lo editara.
+     */
+    const aTextoLocal = (fecha: Date): string => {
+      const dosDigitos = (n: number) => String(n).padStart(2, '0');
+
+      const anio = fecha.getFullYear();
+      const mes = dosDigitos(fecha.getMonth() + 1);
+      const dia = dosDigitos(fecha.getDate());
+      const horas = dosDigitos(fecha.getHours());
+      const minutos = dosDigitos(fecha.getMinutes());
+      const segundos = dosDigitos(fecha.getSeconds());
+
+      return `${anio}-${mes}-${dia}T${horas}:${minutos}:${segundos}`;
+    };
+
     const resolverFecha = (val: any): string | undefined => {
       if (!val) return undefined;
 
@@ -540,17 +560,17 @@ export class ModalAgregarviajeViaje implements OnInit {
       if (!fecha) return undefined;
 
       if (fecha instanceof Date) {
-        return fecha.toISOString();
+        return aTextoLocal(fecha);
       }
 
       let fechaStr = String(fecha).trim();
       if (fechaStr.includes(' ') && !fechaStr.includes('T')) {
         fechaStr = fechaStr.replace(' ', 'T');
       }
-      if (!fechaStr.endsWith('Z')) {
-        fechaStr += 'Z';
-      }
-      return fechaStr;
+
+      // Se quita la marca de UTC en vez de agregarla: con la 'Z' el backend
+      // interpretaba la hora local como si fuera universal.
+      return fechaStr.replace(/Z$/, '');
     };
 
     const formatearHora = (dateObj: Date | undefined): string | undefined => {
