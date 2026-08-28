@@ -110,9 +110,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   mercancias: TipoMercancia[] = [];
   operaciones: Operacion[] = [];
 
-  // ================= ARREGLOS QUE SIGUEN SIENDO MOCK (sin endpoint todavía) =================
   tipos = [
-    { id: 1, nombre: 'Sencillo' }, { id: 2, nombre: 'Full' }
+    { id: 1, nombre: 'SENCILLO' }, { id: 2, nombre: 'FULL' }
   ];
 
   origenes: Origenes[] = [];

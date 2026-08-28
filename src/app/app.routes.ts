@@ -27,6 +27,10 @@ import { ClientesVikingo } from './features/vikingo/clientes-vikingo/clientes-vi
 import { ClientesKarve } from './features/karve/clientes-karve/clientes-karve';
 import { ClientesLetca } from './features/letca/clientes-letca/clientes-letca';
 import { ClientesDrakkar } from './features/drakkar/clientes-drakkar/clientes-drakkar';
+import { OperadoresVikingo } from './features/vikingo/operadores-vikingo/operadores-vikingo';
+import { OperadoresKarve } from './features/karve/operadores-karve/operadores-karve';
+import { OperadoresLetca } from './features/letca/operadores-letca/operadores-letca';
+import { OperadoresDrakkar } from './features/drakkar/operadores-drakkar/operadores-drakkar';
 
 export const routes: Routes = [
   {
@@ -207,6 +211,35 @@ export const routes: Routes = [
         component: ClientesDrakkar,
         canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/drakkar/trafico/catalogo/clientesfactura', brand: 'drakkar' }
+      },
+
+      // ─── Catálogos / Operadores ────────────────────────────────────
+      {
+        path: 'siil/vikingo/trafico/catalogo/operadores',
+        component: OperadoresVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/vikingo/trafico/catalogo/operadores', brand: 'vikingo' }
+      },
+
+      {
+        path: 'siil/karve/trafico/catalogo/operadores',
+        component: OperadoresKarve,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/karve/trafico/catalogo/operadores', brand: 'karve' }
+      },
+
+      {
+        path: 'siil/letca/trafico/catalogo/operadores',
+        component: OperadoresLetca,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/letca/trafico/catalogo/operadores', brand: 'letca' }
+      },
+
+      {
+        path: 'siil/drakkar/trafico/catalogo/operadores',
+        component: OperadoresDrakkar,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/drakkar/trafico/catalogo/operadores', brand: 'drakkar' }
       },
 
       {
