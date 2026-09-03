@@ -1,6 +1,6 @@
 .contenedor-principal {
   padding: 1.25rem 1.5rem 2rem;
-  background: #f3f5f9;
+  background: #ffffff;
   min-height: 0%;
   font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
 }
@@ -16,14 +16,14 @@
 
 .encabezado-pagina__debil {
   font-weight: 400;
-  color: #6b7280;
+  /*color: #6b7280;*/
   margin-left: 0.4rem;
 }
 
 .migas-de-pan {
   margin-top: 0.35rem;
   font-size: 0.85rem;
-  color: #6b7280;
+  /*color: #6b7280;*/
 }
 
 .migas-de-pan a {

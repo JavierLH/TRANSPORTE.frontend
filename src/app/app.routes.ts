@@ -31,6 +31,7 @@ import { OperadoresVikingo } from './features/vikingo/operadores-vikingo/operado
 import { OperadoresKarve } from './features/karve/operadores-karve/operadores-karve';
 import { OperadoresLetca } from './features/letca/operadores-letca/operadores-letca';
 import { OperadoresDrakkar } from './features/drakkar/operadores-drakkar/operadores-drakkar';
+import { AnaliticasDashboardVK } from './features/vikingo/reportes_analiticas/dashboard/analiticas-dashboard-vk/analiticas-dashboard-vk';
 
 export const routes: Routes = [
   {
@@ -240,6 +241,13 @@ export const routes: Routes = [
         component: OperadoresDrakkar,
         canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/drakkar/trafico/catalogo/operadores', brand: 'drakkar' }
+      },
+
+      {
+        path: 'siil/vikingo/reportes_analiticas/dashboard',
+        component: AnaliticasDashboardVK,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/vikingo/reportes_analiticas/dashboard', brand: 'vikingo' }
       },
 
       {

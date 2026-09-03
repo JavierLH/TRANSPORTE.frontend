@@ -1,5 +1,5 @@
 <div class="contenedor-principal" [ngClass]="'tema-' + temaEmpresa">
-  <div class="barra-seccion">Comparativa Anual</div>
+  <div class="barra-seccion" *ngIf="mostrarEncabezado">Comparativa Anual</div>
 
   <section class="tarjeta">
     <div class="tarjeta__encabezado">
@@ -21,7 +21,7 @@
           title="Actualizar"
           (click)="construirGrafico()"
         >
-        <i class="pi pi-refresh"></i>
+          <i class="pi pi-refresh"></i>
         </button>
         <button type="button" class="boton-icono" title="Descargar">
           <i class="pi pi-download"></i>

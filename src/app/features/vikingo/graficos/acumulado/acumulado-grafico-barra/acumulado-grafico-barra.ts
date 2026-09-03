@@ -23,7 +23,7 @@ export class AcumuladoGraficoBarra implements OnInit {
 
   ngOnInit(): void {
     this.pizarraService
-      .obtenerAcumuladoRangoPorCodigos(2022, 2024, ['30','31'])
+      .obtenerAcumuladoRangoPorCodigos(2022, 2026, ['30','31'])
       .subscribe((datos) => this.datosPorAnio = datos);
   }
 

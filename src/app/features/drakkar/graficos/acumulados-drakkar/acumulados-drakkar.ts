@@ -22,7 +22,7 @@ export class AcumuladosDrakkar implements OnInit{
 
     ngOnInit(): void {
       this.pizarraService
-        .obtenerAcumuladoRangoPorCodigos(2022, 2024, ['40','41'])
+        .obtenerAcumuladoRangoPorCodigos(2022, 2026, ['40','41'])
         .subscribe((datos) => this.datosPorAnio = datos);
     }
 

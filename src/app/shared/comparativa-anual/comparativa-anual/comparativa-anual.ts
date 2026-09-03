@@ -1,21 +1,21 @@
 import { Component, Input, OnChanges, SimpleChanges, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser, NgClass } from '@angular/common';
+import { isPlatformBrowser, NgClass, NgIf } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 
 const COLORES_POR_DEFECTO = [
-  '--p-cyan-500',
-  '--p-orange-500',
-  '--p-green-500',
-  '--p-purple-500',
   '--p-red-500',
-  '--p-blue-500',
-  '--p-yellow-500',
+  '--p-red-500',
+  '--p-red-500',
+  '--p-red-500',
+  '--p-red-500',
+  '--p-red-500',
+  '--p-red-500',
 ];
 
 @Component({
   selector: 'app-comparativa-anual',
   standalone: true,
-  imports: [ChartModule, NgClass],
+  imports: [ChartModule, NgClass, NgIf],
   templateUrl: './comparativa-anual.html',
   styleUrl: './comparativa-anual.css',
 })
@@ -27,6 +27,19 @@ export class ComparativaAnual implements OnChanges {
   @Input() colores: string[] = COLORES_POR_DEFECTO;
   @Input() datosPorAnio: { [anio: number]: number[] } = {};
   @Input() nombre_empresa : any;
+
+  @Input() tituloEncabezado : any;
+
+  @Input() mostrarEncabezado :  boolean = true;
+  @Input() coloresPorDefecto : string [] = [
+    '--p-red-500',
+    '--p-red-500',
+    '--p-red-500',
+    '--p-red-500',
+    '--p-red-500',
+    '--p-red-500',
+    '--p-red-500',
+  ]
 
   @Input() temaEmpresa: 'karve' | 'vikingo' | 'drakkar' | 'letca' = 'vikingo';
 
@@ -73,7 +86,7 @@ export class ComparativaAnual implements OnChanges {
     const anios = Object.keys(this.datosPorAnio).map(Number);
 
     const datasets = anios.map((anio, index) => {
-      const color = documentStyle.getPropertyValue(this.colores[index % this.colores.length]);
+      const color = documentStyle.getPropertyValue(this.coloresPorDefecto[index % this.coloresPorDefecto.length]);
       return {
         label: `Métricas ${anio}`,
         backgroundColor: color,
