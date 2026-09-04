@@ -1,0 +1,43 @@
+<div class="contenedor-principal" [ngClass]="'tema-' + temaEmpresa">
+  <div class="barra-seccion" *ngIf="mostrarEncabezado">Contenedores</div>
+
+  <section class="tarjeta">
+    <div class="tarjeta__encabezado">
+      <div>
+        <h2 class="tarjeta__titulo">Contenedores Sencillo vs Full</h2>
+        <p class="tarjeta__subtitulo">{{ empresa }}</p>
+      </div>
+
+      <div class="tarjeta__acciones">
+        <button
+          type="button"
+          class="boton-icono"
+          title="Actualizar"
+          [disabled]="cargando"
+          (click)="cargarDatos()"
+        >
+          <i class="pi" [ngClass]="cargando ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- La gráfica se mantiene en el DOM y se cubre con la capa de carga: si se
+         destruyera con *ngIf, Chart.js volvería a construir el canvas desde cero
+         en cada recarga y la tarjeta daría un salto de alto. -->
+    <div class="tarjeta__cuerpo">
+      <div class="grafico-contenedor">
+        <p-chart type="bar" [data]="data" [options]="options" class="grafico" />
+
+        <div class="capa-estado" *ngIf="cargando">
+          <i class="pi pi-spin pi-spinner capa-estado__icono"></i>
+          <span class="capa-estado__texto">Cargando información...</span>
+        </div>
+
+        <div class="capa-estado" *ngIf="sinDatos">
+          <i class="pi pi-chart-bar capa-estado__icono"></i>
+          <span class="capa-estado__texto">No hay información para el periodo.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

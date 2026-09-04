@@ -14,11 +14,21 @@ export class AcumuladoKarve implements OnInit{
 
     private pizarraService = inject(PizarraService);
     datosPorAnio: { [anio: number]: number[] } = {};
+    cargando = true;
 
     ngOnInit(): void {
       this.pizarraService
         .obtenerAcumuladoRangoPorCodigos(2025, 2026, ['10','11','12'])
-        .subscribe((datos) => this.datosPorAnio = datos);
+        .subscribe({
+          next: (datos) => {
+            this.datosPorAnio = datos;
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar el acumulado', err);
+            this.cargando = false;
+          }
+        });
     }
 
 }

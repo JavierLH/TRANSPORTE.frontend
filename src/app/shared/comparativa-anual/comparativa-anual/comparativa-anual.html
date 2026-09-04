@@ -19,9 +19,10 @@
           type="button"
           class="boton-icono"
           title="Actualizar"
+          [disabled]="mostrandoCarga"
           (click)="construirGrafico()"
         >
-          <i class="pi pi-refresh"></i>
+          <i class="pi" [ngClass]="mostrandoCarga ? 'pi-spin pi-spinner' : 'pi-refresh'"></i>
         </button>
         <button type="button" class="boton-icono" title="Descargar">
           <i class="pi pi-download"></i>
@@ -29,8 +30,23 @@
       </div>
     </div>
 
+    <!-- La gráfica se mantiene en el DOM y se cubre con la capa de carga: si se
+         destruyera con *ngIf, Chart.js volvería a construir el canvas desde cero
+         en cada recarga y la tarjeta daría un salto de alto. -->
     <div class="tarjeta__cuerpo">
-      <p-chart type="bar" [data]="data" [options]="options" class="grafico" />
+      <div class="grafico-contenedor">
+        <p-chart type="bar" [data]="data" [options]="options" class="grafico" />
+
+        <div class="capa-estado" *ngIf="mostrandoCarga">
+          <i class="pi pi-spin pi-spinner capa-estado__icono"></i>
+          <span class="capa-estado__texto">Cargando información...</span>
+        </div>
+
+        <div class="capa-estado" *ngIf="sinDatos">
+          <i class="pi pi-chart-bar capa-estado__icono"></i>
+          <span class="capa-estado__texto">No hay información para el periodo.</span>
+        </div>
+      </div>
     </div>
   </section>
 </div>

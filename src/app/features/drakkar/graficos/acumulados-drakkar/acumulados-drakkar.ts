@@ -14,6 +14,7 @@ export class AcumuladosDrakkar implements OnInit{
 
     private pizarraService = inject(PizarraService);
     datosPorAnio: { [anio: number]: number[] } = {};
+    cargando = true;
 
     /*ngOnInit(): void {
       this.pizarraService.obtenerAcumuladoRangoVikingo(2021, new Date().getFullYear())
@@ -23,7 +24,16 @@ export class AcumuladosDrakkar implements OnInit{
     ngOnInit(): void {
       this.pizarraService
         .obtenerAcumuladoRangoPorCodigos(2022, 2026, ['40','41'])
-        .subscribe((datos) => this.datosPorAnio = datos);
+        .subscribe({
+          next: (datos) => {
+            this.datosPorAnio = datos;
+            this.cargando = false;
+          },
+          error: (err) => {
+            console.error('Error al cargar el acumulado', err);
+            this.cargando = false;
+          }
+        });
     }
 
 }

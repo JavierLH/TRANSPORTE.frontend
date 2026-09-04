@@ -3,11 +3,19 @@
     empresa="Autotransportes Vikingo"
     temaEmpresa="vikingo"
     [datosPorAnio]="datosPorAnio"
+    [cargando]="cargando"
     [anioInicial]="2022"
     [anioFinal]="2022"
     [mostrarEncabezado]="false"
     [coloresPorDefecto]="['--p-red-500']"
   ></app-comparativa-anual>
 
-  <div>s</div>
+  <!-- Trae sus propios datos: no recibe datosPorAnio. Sin [anio] usa el actual. -->
+  <app-contenedores-comparativa-anual
+    empresa="Autotransportes Vikingo"
+    temaEmpresa="vikingo"
+    [prefijos]="['31', '32', '33', '34']"
+    [mostrarEncabezado]="false"
+    [coloresPorDefecto]="['--p-sky-500', '--p-red-500']"
+  ></app-contenedores-comparativa-anual>
 </div>

@@ -125,3 +125,34 @@
   height: 22rem;
   width: 100%;
 }
+
+/* ===== Capa de carga / sin datos ===== */
+
+/* Ancla la capa: se posiciona sobre la gráfica sin sacarla del flujo. */
+.grafico-contenedor {
+  position: relative;
+}
+
+.capa-estado {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  /* Semitransparente: se alcanza a ver la gráfica anterior mientras recarga,
+     así el cambio no se siente como si la tarjeta se vaciara. */
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+}
+
+.capa-estado__icono {
+  font-size: 1.6rem;
+  color: var(--color-cabecera, #9aa1ac);
+}
+
+.capa-estado__texto {
+  font-size: 0.85rem;
+  color: #6b7280;
+}

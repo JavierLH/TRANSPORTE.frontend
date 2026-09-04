@@ -43,6 +43,26 @@ export class ComparativaAnual implements OnChanges {
 
   @Input() temaEmpresa: 'karve' | 'vikingo' | 'drakkar' | 'letca' = 'vikingo';
 
+  /**
+   * Lo indica el padre, que es quien hace la petición. Si no lo manda se infiere
+   * de que todavía no hay datos, para que las pantallas que aún no lo pasan
+   * muestren algo en lugar de una gráfica en blanco.
+   */
+  @Input() cargando: boolean | null = null;
+
+  get hayDatos(): boolean {
+    return Object.keys(this.datosPorAnio ?? {}).length > 0;
+  }
+
+  get mostrandoCarga(): boolean {
+    return this.cargando ?? !this.hayDatos;
+  }
+
+  /** Sin carga en curso y sin datos: la consulta no devolvió nada. */
+  get sinDatos(): boolean {
+    return !this.mostrandoCarga && !this.hayDatos;
+  }
+
   platformId = inject(PLATFORM_ID);
 
   data: any;

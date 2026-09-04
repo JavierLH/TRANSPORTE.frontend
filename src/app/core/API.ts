@@ -62,25 +62,7 @@ export const API = {
     return url;
   },
 
-  obtenerAcumuladosVikingo: (anio : number): string => { return `${environment.host}/Pizarra/acumulado-anualVikingo?anio=${anio}` },
-
-  obtenerAcumuladoRangoVikingo: (anioInicial: number, anioFinal: number): string => {
-    return `${environment.host}/Pizarra/acumulado-rango-anual?anioInicial=${anioInicial}&anioFinal=${anioFinal}`;
-  },
-
-  obtenerAcumuladoRangoPorCodigos: (
-    anioInicial: number,
-    anioFinal: number,
-    codigos: string[]
-  ): string => {
-    let url = `${environment.host}/Pizarra/acumulado-rango-anual-codigos?anioInicial=${anioInicial}&anioFinal=${anioFinal}`;
-
-    codigos.forEach((codigo) => {
-      url += `&codigos=${codigo}`;
-    });
-
-    return url;
-  },
+  // Las URLs de Pizarra se movieron a APIPizarra.ts
 
   verificarPermisoRuta: (ruta: string): string =>
   `${environment.host}/UsuariosSistema/tiene-permiso?ruta=${encodeURIComponent(ruta)}`,
