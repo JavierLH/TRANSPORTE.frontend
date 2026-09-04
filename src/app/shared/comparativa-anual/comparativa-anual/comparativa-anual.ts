@@ -49,7 +49,9 @@ export class ComparativaAnual implements OnChanges {
   options: any;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['datosPorAnio']) {
+    // Se reconstruye también cuando cambian los colores: antes sólo se miraba
+    // datosPorAnio, así que pasar [coloresPorDefecto] no repintaba nada.
+    if (changes['datosPorAnio'] || changes['coloresPorDefecto']) {
       this.construirGrafico();
     }
 
@@ -73,6 +75,30 @@ export class ComparativaAnual implements OnChanges {
 
   }
 
+  /**
+   * Acepta tanto una variable CSS ('--p-blue-500') como un color literal
+   * ('#3b82f6', 'rgb(...)').
+   *
+   * getPropertyValue devuelve cadena vacía cuando la variable no existe en el
+   * tema, y Chart.js con una cadena vacía cae a su color por defecto sin avisar.
+   * Por eso, si no resuelve, se usa el valor tal cual: así un hex funciona
+   * directo y una variable mal escrita se nota en pantalla.
+   */
+  private resolverColor(valor: string, documentStyle: CSSStyleDeclaration): string {
+    if (!valor) {
+      return '';
+    }
+
+    if (!valor.startsWith('--')) {
+      return valor;
+    }
+
+    // getPropertyValue suele traer un espacio al inicio.
+    const resuelto = documentStyle.getPropertyValue(valor).trim();
+
+    return resuelto !== '' ? resuelto : valor;
+  }
+
   construirGrafico(): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -86,7 +112,9 @@ export class ComparativaAnual implements OnChanges {
     const anios = Object.keys(this.datosPorAnio).map(Number);
 
     const datasets = anios.map((anio, index) => {
-      const color = documentStyle.getPropertyValue(this.coloresPorDefecto[index % this.coloresPorDefecto.length]);
+      const colorConfigurado = this.coloresPorDefecto[index % this.coloresPorDefecto.length];
+      const color = this.resolverColor(colorConfigurado, documentStyle);
+
       return {
         label: `Métricas ${anio}`,
         backgroundColor: color,
