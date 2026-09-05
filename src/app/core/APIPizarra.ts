@@ -1,8 +1,9 @@
 import { environment } from "../environments/enviroments";
 
 /**
- * Arma la URL de los endpoints de contenedores. Los parámetros se van sumando
- * sólo si vienen, para no mandar `anio=undefined` ni un `prefijos=` vacío.
+ * Arma la URL de los endpoints que reciben año y prefijos. Los parámetros se
+ * van sumando sólo si vienen, para no mandar `anio=undefined` ni un
+ * `prefijos=` vacío.
  */
 function armarUrlContenedores(recurso: string, anio: number | undefined, prefijos: string[]): string {
   const parametros: string[] = [];
@@ -48,5 +49,9 @@ export const APIPizarra = {
 
   obtenerContenedoresFull: (anio?: number, prefijos: string[] = []): string =>
     armarUrlContenedores('contenedores-full', anio, prefijos),
+
+  // Devuelve las cinco mercancías en una sola llamada.
+  obtenerMercancias: (anio?: number, prefijos: string[] = []): string =>
+    armarUrlContenedores('mercancias', anio, prefijos),
 
 };

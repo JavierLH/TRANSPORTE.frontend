@@ -6,6 +6,13 @@ import { Observable } from "rxjs";
 /** Año → 12 valores, uno por mes. Es lo que consume app-comparativa-anual. */
 export type AcumuladoPorAnio = { [anio: number]: number[] };
 
+/**
+ * Mercancía → 12 valores. A diferencia de AcumuladoPorAnio, aquí la llave es el
+ * nombre de la mercancía: el año viene fijo en la petición y cada serie de la
+ * gráfica es una mercancía.
+ */
+export type AcumuladoPorMercancia = { [mercancia: string]: number[] };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -51,6 +58,17 @@ export class PizarraService {
   obtenerContenedoresFull(anio?: number, prefijos: string[] = []): Observable<AcumuladoPorAnio> {
     return this.httpClient.get<AcumuladoPorAnio>(
       APIPizarra.obtenerContenedoresFull(anio, prefijos)
+    );
+  }
+
+  /**
+   * Viajes por mercancía y por mes. Sin año se usa el actual.
+   * Trae las cinco mercancías en una sola petición: GENERAL,
+   * PELIGROSOREFRIGERADO, REFRIGERADO, PELIGROSO y COMPLEMENTO.
+   */
+  obtenerMercancias(anio?: number, prefijos: string[] = []): Observable<AcumuladoPorMercancia> {
+    return this.httpClient.get<AcumuladoPorMercancia>(
+      APIPizarra.obtenerMercancias(anio, prefijos)
     );
   }
 

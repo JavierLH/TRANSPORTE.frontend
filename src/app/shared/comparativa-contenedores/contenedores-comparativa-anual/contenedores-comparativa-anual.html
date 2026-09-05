@@ -26,7 +26,13 @@
          en cada recarga y la tarjeta daría un salto de alto. -->
     <div class="tarjeta__cuerpo">
       <div class="grafico-contenedor">
-        <p-chart type="bar" [data]="data" [options]="options" class="grafico" />
+        <p-chart
+          type="bar"
+          [data]="data"
+          [options]="options"
+          class="grafico"
+          [style.height]="alturaGrafica"
+        />
 
         <div class="capa-estado" *ngIf="cargando">
           <i class="pi pi-spin pi-spinner capa-estado__icono"></i>

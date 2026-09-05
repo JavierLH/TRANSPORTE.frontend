@@ -1,4 +1,5 @@
-<div class="grid grid-cols-2 p-[1%]">
+<!-- Separación por eje: gap-x entre columnas, gap-y entre renglones. -->
+<div class="grid grid-cols-2 gap-x-3 gap-y-1 p-3">
   <app-comparativa-anual
     empresa="Autotransportes Vikingo"
     temaEmpresa="vikingo"
@@ -17,6 +18,7 @@
       '--p-orange-700',
       '--p-rose-300',
     ]"
+    [alturaGrafica]="'25rem'"
   ></app-comparativa-anual>
 
   <!-- Trae sus propios datos: no recibe datosPorAnio. Sin [anio] usa el actual. -->
@@ -35,5 +37,22 @@
       '--p-orange-700',
       '--p-rose-300',
     ]"
+    [alturaGrafica]="'25rem'"
   ></app-contenedores-comparativa-anual>
+
+  <!-- Igual que la de contenedores: trae sus propios datos y sin [anio] usa el actual. -->
+  <app-mercancias-comparativa-anual
+    empresa="Autotransportes Vikingo"
+    temaEmpresa="vikingo"
+    [prefijos]="['31', '32', '33', '34']"
+    [mostrarEncabezado]="false"
+    [coloresPorDefecto]="[
+      '--p-red-500',
+      '--p-orange-400',
+      '--p-rose-600',
+      '--p-amber-300',
+      '--p-red-800',
+    ]"
+    [alturaGrafica]="'25rem'"
+  ></app-mercancias-comparativa-anual>
 </div>

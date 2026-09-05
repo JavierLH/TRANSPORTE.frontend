@@ -17,6 +17,12 @@ export class ContenedoresComparativaAnual implements OnInit, OnChanges {
   @Input() temaEmpresa: 'karve' | 'vikingo' | 'drakkar' | 'letca' = 'vikingo';
   @Input() mostrarEncabezado: boolean = true;
 
+  /**
+   * Alto del área de la gráfica. Cualquier unidad CSS válida: '14rem', '250px',
+   * '30vh'. Se aplica como estilo en línea, así que gana sobre el CSS.
+   */
+  @Input() alturaGrafica = '17rem';
+
   /** Sin año se usa el actual, que es el caso de uso por ahora. */
   @Input() anio: number | undefined;
 

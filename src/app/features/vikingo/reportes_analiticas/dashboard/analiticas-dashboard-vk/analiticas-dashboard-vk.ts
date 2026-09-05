@@ -1,11 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ComparativaAnual } from "../../../../../shared/comparativa-anual/comparativa-anual/comparativa-anual";
 import { ContenedoresComparativaAnual } from "../../../../../shared/comparativa-contenedores/contenedores-comparativa-anual/contenedores-comparativa-anual";
+
 import { PizarraService } from '../../../../../core/services/PizarraService';
+import { MercanciasComparativaAnual } from '../../../../../shared/comparativa-mercancias/mercancias-comparativa-anual/mercancias-comparativa-anual';
 
 @Component({
-  selector: 'app-analiticas-dashboard-vk',
-  imports: [ComparativaAnual, ContenedoresComparativaAnual],
+  imports: [ComparativaAnual, ContenedoresComparativaAnual, MercanciasComparativaAnual],
   templateUrl: './analiticas-dashboard-vk.html',
   styleUrl: './analiticas-dashboard-vk.css',
 })

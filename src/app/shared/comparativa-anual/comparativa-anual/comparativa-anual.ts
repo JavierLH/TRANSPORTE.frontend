@@ -44,6 +44,12 @@ export class ComparativaAnual implements OnChanges {
   @Input() temaEmpresa: 'karve' | 'vikingo' | 'drakkar' | 'letca' = 'vikingo';
 
   /**
+   * Alto del área de la gráfica. Cualquier unidad CSS válida: '14rem', '250px',
+   * '30vh'. Se aplica como estilo en línea, así que gana sobre el CSS.
+   */
+  @Input() alturaGrafica = '20rem';
+
+  /**
    * Lo indica el padre, que es quien hace la petición. Si no lo manda se infiere
    * de que todavía no hay datos, para que las pantallas que aún no lo pasan
    * muestren algo en lugar de una gráfica en blanco.
