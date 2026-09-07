@@ -32,6 +32,7 @@ import { OperadoresKarve } from './features/karve/operadores-karve/operadores-ka
 import { OperadoresLetca } from './features/letca/operadores-letca/operadores-letca';
 import { OperadoresDrakkar } from './features/drakkar/operadores-drakkar/operadores-drakkar';
 import { AnaliticasDashboardVK } from './features/vikingo/reportes_analiticas/dashboard/analiticas-dashboard-vk/analiticas-dashboard-vk';
+import { DashboardAnaliticasDrakkar } from './features/drakkar/Reportes_analiticas_drakkar/dashboard-analiticas-drakkar/dashboard-analiticas-drakkar';
 
 export const routes: Routes = [
   {
@@ -248,6 +249,13 @@ export const routes: Routes = [
         component: AnaliticasDashboardVK,
         canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/vikingo/reportes_analiticas/dashboard', brand: 'vikingo' }
+      },
+
+      {
+        path: 'siil/drakkar/reportes_analiticas/dashboard',
+        component: DashboardAnaliticasDrakkar,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/drakkar/reportes_analiticas/dashboard', brand: 'drakkar' }
       },
 
       {
