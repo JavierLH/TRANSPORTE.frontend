@@ -34,6 +34,7 @@ import { OperadoresDrakkar } from './features/drakkar/operadores-drakkar/operado
 import { AnaliticasDashboardVK } from './features/vikingo/reportes_analiticas/dashboard/analiticas-dashboard-vk/analiticas-dashboard-vk';
 import { DashboardAnaliticasDrakkar } from './features/drakkar/Reportes_analiticas_drakkar/dashboard-analiticas-drakkar/dashboard-analiticas-drakkar';
 import { RegistrosVikingo } from './features/vikingo/registros-vikingo/registros-vikingo';
+import { RegistrosDrakkar } from './features/drakkar/registros-drakkar/registros-drakkar/registros-drakkar';
 
 export const routes: Routes = [
   {
@@ -265,6 +266,29 @@ export const routes: Routes = [
         canActivate: [authGuard, permisoRutaGuard],
         data: { rutaModulo: 'siil/vikingo/reportes_analiticas/registros', brand: 'vikingo' }
       },
+
+      {
+        path: 'siil/karve/reportes_analiticas/registros',
+        component: RegistrosVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/karve/reportes_analiticas/registros', brand: 'karve' }
+      },
+
+      {
+        path: 'siil/letca/reportes_analiticas/registros',
+        component: RegistrosVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/letca/reportes_analiticas/registros', brand: 'letca' }
+      },
+
+      {
+        path: 'siil/drakkar/reportes_analiticas/registros',
+        component: RegistrosVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/drakkar/reportes_analiticas/registros', brand: 'drakkar' }
+      },
+
+      
 
       {
         path: 'siil/sin-permisos',

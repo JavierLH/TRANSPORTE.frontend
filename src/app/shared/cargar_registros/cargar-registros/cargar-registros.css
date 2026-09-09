@@ -1,0 +1,165 @@
+.contenedor-carga {
+  padding: 0.75rem;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+/* ===== Tarjetas ===== */
+
+.tarjeta {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.tarjeta--tabla {
+  margin-top: 0.75rem;
+}
+
+.tarjeta__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tarjeta__titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.tarjeta__titulo--chico {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.tarjeta__subtitulo {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: #9aa1ac;
+}
+
+.tarjeta__acciones {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ===== Archivo seleccionado ===== */
+
+.barra-archivo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #f1f3f6;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.barra-archivo__nombre {
+  font-weight: 600;
+  /* El nombre del archivo puede ser larguísimo; se recorta en vez de
+     desbordar la tarjeta. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-archivo__resumen {
+  margin-left: auto;
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.marca--nuevo {
+  color: #15803d;
+}
+
+.marca--existente {
+  color: #b91c1c;
+}
+
+.aviso-verificando {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.tarjeta__encabezado--tabla {
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+/* ===== Estados sin tabla ===== */
+
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  color: #9aa1ac;
+}
+
+.estado-vacio__icono {
+  font-size: 2rem;
+}
+
+.estado-vacio__texto {
+  font-size: 0.9rem;
+}
+
+/* ===== Tabla ===== */
+
+/* El archivo trae 44 columnas: se evita que el texto se parta en varios
+   renglones y la tabla se desplaza en horizontal. */
+.celda-encabezado,
+.celda {
+  white-space: nowrap;
+}
+
+.celda-encabezado {
+  font-size: 0.8rem;
+}
+
+.celda {
+  font-size: 0.8rem;
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.columna-estado {
+  width: 7rem;
+  min-width: 7rem;
+}
+
+/* ===== Resultado de la verificación =====
+   El color va en el renglón completo y no sólo en la etiqueta: con 44 columnas
+   el usuario se desplaza en horizontal y perdería de vista la marca de estatus.
+   Se usa !important porque PrimeNG pinta el fondo de las filas de la tabla. */
+
+.fila--existente > td {
+  background-color: #fef2f2 !important;
+}
+
+.fila--nueva > td {
+  background-color: #f0fdf4 !important;
+}

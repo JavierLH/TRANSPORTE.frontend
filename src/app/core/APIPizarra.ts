@@ -54,4 +54,9 @@ export const APIPizarra = {
   obtenerMercancias: (anio?: number, prefijos: string[] = []): string =>
     armarUrlContenedores('mercancias', anio, prefijos),
 
+  // POST: las guías van en el cuerpo porque un Excel puede traer cientos y no
+  // caben en un query string.
+  verificarGuiasExistentes: (): string =>
+    `${environment.host}/Pizarra/guias-existentes`,
+
 };

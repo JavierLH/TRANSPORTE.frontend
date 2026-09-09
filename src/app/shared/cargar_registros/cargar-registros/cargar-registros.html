@@ -1,1 +1,126 @@
-<p-button> Importar Excel </p-button>
+<p-toast></p-toast>
+
+<div class="contenedor-carga">
+  <section class="tarjeta">
+    <div class="tarjeta__encabezado">
+      <div>
+        <h2 class="tarjeta__titulo">Cargar registros</h2>
+        <p class="tarjeta__subtitulo">
+          Importa la pizarra de viajes desde un archivo de Excel.
+        </p>
+      </div>
+
+      <div class="tarjeta__acciones">
+        <p-button
+          label="Importar Excel"
+          icon="pi pi-file-excel"
+          styleClass="p-button-sm"
+          [loading]="leyendo"
+          (onClick)="abrirSelectorDeArchivo()"
+        ></p-button>
+
+        <p-button
+          label="Limpiar"
+          icon="pi pi-times"
+          severity="secondary"
+          styleClass="p-button-sm p-button-text"
+          [disabled]="!hayDatos || leyendo"
+          (onClick)="limpiar()"
+        ></p-button>
+      </div>
+    </div>
+
+    <!-- El input real va oculto: lo dispara el p-button para conservar el
+         estilo del resto del sistema. -->
+    <input
+      #selectorArchivo
+      type="file"
+      accept=".xlsx,.xls"
+      hidden
+      (change)="alSeleccionarArchivo($event)"
+    />
+
+    <div class="barra-archivo" *ngIf="nombreArchivo">
+      <i class="pi pi-paperclip"></i>
+      <span class="barra-archivo__nombre">{{ nombreArchivo }}</span>
+
+      <div class="barra-archivo__resumen" *ngIf="hayDatos">
+        <span class="marca marca--nuevo">
+          <i class="pi pi-check-circle"></i>
+          {{ totalNuevos }} por cargar
+        </span>
+        <span class="marca marca--existente">
+          <i class="pi pi-exclamation-circle"></i>
+          {{ totalExistentes }} ya registrados
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tarjeta tarjeta--tabla">
+    <div class="tarjeta__encabezado tarjeta__encabezado--tabla">
+      <h3 class="tarjeta__titulo tarjeta__titulo--chico">Vista previa</h3>
+
+      <span class="aviso-verificando" *ngIf="verificando">
+        <i class="pi pi-spin pi-spinner"></i> Verificando guías...
+      </span>
+    </div>
+
+    <!-- Sin archivo todavía: se explica qué hacer en lugar de mostrar una
+         tabla vacía sin encabezados. -->
+    <div class="estado-vacio" *ngIf="!hayDatos && !leyendo">
+      <i class="pi pi-file-excel estado-vacio__icono"></i>
+      <span class="estado-vacio__texto">
+        Aún no se ha cargado ningún archivo.
+      </span>
+    </div>
+
+    <div class="estado-vacio" *ngIf="leyendo">
+      <i class="pi pi-spin pi-spinner estado-vacio__icono"></i>
+      <span class="estado-vacio__texto">Leyendo el archivo...</span>
+    </div>
+
+    <p-table
+      *ngIf="hayDatos"
+      [value]="registros"
+      [columns]="columnas"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [showGridlines]="true"
+      [scrollable]="true"
+      scrollHeight="55vh"
+      styleClass="p-datatable-sm"
+    >
+      <!-- Las columnas se generan desde los encabezados del archivo: no están
+           fijas en la plantilla. -->
+      <ng-template pTemplate="header" let-columnas>
+        <tr>
+          <th class="celda-encabezado columna-estado">Estatus</th>
+          <th *ngFor="let columna of columnas" class="celda-encabezado">
+            {{ columna }}
+          </th>
+        </tr>
+      </ng-template>
+
+      <!-- El renglón entero se tiñe según exista o no la guía en la pizarra. -->
+      <ng-template pTemplate="body" let-registro let-columnas="columns">
+        <tr
+          [class.fila--existente]="registro.yaExiste"
+          [class.fila--nueva]="!registro.yaExiste"
+        >
+          <td class="celda columna-estado">
+            <p-tag
+              [value]="registro.yaExiste ? 'Ya existe' : 'Nueva'"
+              [severity]="registro.yaExiste ? 'danger' : 'success'"
+            ></p-tag>
+          </td>
+
+          <td *ngFor="let columna of columnas" class="celda">
+            {{ registro.datos[columna] }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+</div>

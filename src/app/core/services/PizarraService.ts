@@ -13,6 +13,12 @@ export type AcumuladoPorAnio = { [anio: number]: number[] };
  */
 export type AcumuladoPorMercancia = { [mercancia: string]: number[] };
 
+/** Respuesta de la verificación de guías contra la pizarra. */
+export interface GuiasVerificadas {
+  existentes: number[];
+  totalRevisadas: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +75,18 @@ export class PizarraService {
   obtenerMercancias(anio?: number, prefijos: string[] = []): Observable<AcumuladoPorMercancia> {
     return this.httpClient.get<AcumuladoPorMercancia>(
       APIPizarra.obtenerMercancias(anio, prefijos)
+    );
+  }
+
+  /**
+   * Revisa en una sola petición cuáles guías ya están en la pizarra.
+   * Devuelve únicamente las existentes; las que no vengan en la respuesta son
+   * nuevas.
+   */
+  verificarGuiasExistentes(guias: number[]): Observable<GuiasVerificadas> {
+    return this.httpClient.post<GuiasVerificadas>(
+      APIPizarra.verificarGuiasExistentes(),
+      { guias }
     );
   }
 
