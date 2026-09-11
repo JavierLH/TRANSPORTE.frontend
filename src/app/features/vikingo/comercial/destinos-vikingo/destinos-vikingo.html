@@ -1,3 +1,102 @@
+<p-toast></p-toast>
+
 <div class="p-4">
   <p-button (onClick)="AgregarDestino()"> Agregar destino</p-button>
+
+  <p-table
+    [value]="destinos"
+    [loading]="cargando"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showGridlines]="true"
+    [globalFilterFields]="['destinoEstadoCiudad', 'estado']"
+    styleClass="p-datatable-sm mt-3"
+    dataKey="idCiudad"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 8rem">Clave</th>
+        <th>Estado</th>
+        <th>Destino</th>
+      </tr>
+    </ng-template>
+
+    <!-- El estado viene ya resuelto desde el backend: la tabla no tiene que
+         cruzar nada contra el catálogo. -->
+    <ng-template pTemplate="body" let-destino>
+      <tr>
+        <td>{{ destino.idCiudad }}</td>
+        <td>{{ destino.estado }}</td>
+        <td>{{ destino.destinoEstadoCiudad }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3" class="text-center p-4">
+          No hay destinos registrados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<p-dialog
+  [header]="tituloFormulario"
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '35rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+  [draggable]="true"
+  (onHide)="cerrarModal()"
+>
+  <div class="p-3">
+    <div class="flex flex-col gap-2 mb-3">
+      <label for="estado">Estado</label>
+      <!-- appendTo="body": sin esto el panel se dibuja dentro del p-dialog y
+           el diálogo lo recorta, así que sólo se alcanzan a ver las primeras
+           opciones. Al colgarlo del body puede desbordar el modal. -->
+      <p-select
+        inputId="estado"
+        [options]="estados"
+        [(ngModel)]="formIdEstado"
+        optionLabel="destinoEstado1"
+        optionValue="idEstado"
+        placeholder="Selecciona el estado"
+        [filter]="true"
+        filterBy="destinoEstado1"
+        appendTo="body"
+        styleClass="w-full"
+      ></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="destino">Destino</label>
+      <input
+        id="destino"
+        type="text"
+        pInputText
+        class="w-full"
+        maxlength="100"
+        [(ngModel)]="formDestino"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      styleClass="p-button-text"
+      [disabled]="guardando"
+      (onClick)="cerrarModal()"
+    ></p-button>
+    <p-button
+      label="Guardar"
+      icon="pi pi-save"
+      [loading]="guardando"
+      (onClick)="guardar()"
+    ></p-button>
+  </ng-template>
+</p-dialog>
