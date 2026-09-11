@@ -35,6 +35,7 @@ import { AnaliticasDashboardVK } from './features/vikingo/reportes_analiticas/da
 import { DashboardAnaliticasDrakkar } from './features/drakkar/Reportes_analiticas_drakkar/dashboard-analiticas-drakkar/dashboard-analiticas-drakkar';
 import { RegistrosVikingo } from './features/vikingo/registros-vikingo/registros-vikingo';
 import { RegistrosDrakkar } from './features/drakkar/registros-drakkar/registros-drakkar/registros-drakkar';
+import { DestinosVikingo } from './features/vikingo/comercial/destinos-vikingo/destinos-vikingo';
 
 export const routes: Routes = [
   {
@@ -288,7 +289,14 @@ export const routes: Routes = [
         data: { rutaModulo: 'siil/drakkar/reportes_analiticas/registros', brand: 'drakkar' }
       },
 
-      
+      {
+
+        path: 'siil/vikingo/comercial/catalogo/destinos',
+        component: DestinosVikingo,
+        canActivate: [authGuard, permisoRutaGuard],
+        data: { rutaModulo: 'siil/vikingo/comercial/catalogo/destinos', brand: 'vikingo' }
+
+      },
 
       {
         path: 'siil/sin-permisos',
