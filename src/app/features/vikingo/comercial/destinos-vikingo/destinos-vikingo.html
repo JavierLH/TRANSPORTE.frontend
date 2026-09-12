@@ -19,6 +19,7 @@
         <th style="width: 8rem">Clave</th>
         <th>Estado</th>
         <th>Destino</th>
+        <th style="width: 6rem"></th>
       </tr>
     </ng-template>
 
@@ -29,12 +30,21 @@
         <td>{{ destino.idCiudad }}</td>
         <td>{{ destino.estado }}</td>
         <td>{{ destino.destinoEstadoCiudad }}</td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            styleClass="p-button-text p-button-sm"
+            pTooltip="Editar destino"
+            (onClick)="editarDestino(destino)"
+          ></p-button>
+        </td>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="3" class="text-center p-4">
+        <td colspan="4" class="text-center p-4">
           No hay destinos registrados.
         </td>
       </tr>

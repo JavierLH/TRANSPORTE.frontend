@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
@@ -6,6 +7,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { TarifarioService } from '../../../../core/services/TarifarioService';
@@ -22,6 +24,7 @@ import { Destino, DestinoNuevo, Estado } from '../../../../core/models/Tarifario
     InputText,
     SelectModule,
     TableModule,
+    TooltipModule,
     ToastModule,
   ],
   providers: [MessageService],
@@ -46,6 +49,9 @@ export class DestinosVikingo implements OnInit {
   /** Id del estado elegido en el selector. */
   public formIdEstado: number | undefined;
   public formDestino = '';
+
+  /** Sólo tiene valor al editar; en el alta queda indefinido. */
+  public formIdCiudad: number | undefined;
 
   ngOnInit(): void {
     this.cargarEstados();
@@ -80,9 +86,18 @@ export class DestinosVikingo implements OnInit {
   }
 
   public AgregarDestino(): void {
+    this.formIdCiudad = undefined;
     this.formIdEstado = undefined;
     this.formDestino = '';
     this.abrirModal('Agregar destino');
+  }
+
+  /** Mismo modal, precargado con el renglón y guardando con PUT. */
+  public editarDestino(destino: Destino): void {
+    this.formIdCiudad = destino.idCiudad ?? undefined;
+    this.formIdEstado = destino.idEstado ?? undefined;
+    this.formDestino = destino.destinoEstadoCiudad ?? '';
+    this.abrirModal('Editar destino');
   }
 
   abrirModal(titulo: string) {
@@ -112,17 +127,31 @@ export class DestinosVikingo implements OnInit {
 
     this.guardando = true;
 
-    // idCiudad va en null: la llave la calcula el backend, porque la columna
-    // tiene PRIMARY KEY pero no es IDENTITY.
+    const esEdicion = this.formIdCiudad != null;
+
+    // En el alta idCiudad va en null: la llave la calcula el backend, porque
+    // la columna tiene PRIMARY KEY pero no es IDENTITY. Al editar sí viaja,
+    // porque la ruta y el cuerpo tienen que coincidir.
     const destino: DestinoNuevo = {
-      idCiudad: null,
+      idCiudad: this.formIdCiudad ?? null,
       idEstado: this.formIdEstado,
       destinoEstadoCiudad1: nombre
     };
 
-    this.tarifarioService.crearDestino(destino).subscribe({
+    // Se anota el tipo: sin esto el ternario produce una unión de dos
+    // Observables distintos y TypeScript no puede llamar .subscribe().
+    const peticion: Observable<DestinoNuevo | void> = esEdicion
+      ? this.tarifarioService.actualizarDestino(destino)
+      : this.tarifarioService.crearDestino(destino);
+
+    peticion.subscribe({
       next: () => {
-        this.avisar('success', 'Destino creado', `${nombre} se guardó correctamente.`);
+        this.avisar(
+          'success',
+          esEdicion ? 'Destino actualizado' : 'Destino creado',
+          `${nombre} se guardó correctamente.`
+        );
+
         this.cerrarModal();
         this.cargarDestinos();
       },
