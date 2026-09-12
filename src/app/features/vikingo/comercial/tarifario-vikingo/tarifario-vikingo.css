@@ -1,0 +1,107 @@
+/* Bloque de un campo: etiqueta arriba, control abajo. */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.campo label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--p-text-muted-color);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Valores derivados: se ven como campo pero no se editan. */
+.calculado {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-md);
+  background: var(--p-content-hover-background);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.calculado--negativo {
+  color: var(--p-red-500);
+  font-weight: 600;
+}
+
+.calculado--destacado {
+  border-color: var(--p-primary-color);
+  font-weight: 700;
+}
+
+/* ─── Encabezado: origen, destino y recorrido ───────────────────── */
+
+.tarifario-encabezado {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+}
+
+/* ─── Tarjeta de mercancía ──────────────────────────────────────── */
+
+.tarifario-mercancia {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-lg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tarifario-mercancia__titulo {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  color: var(--p-primary-color);
+}
+
+/* ─── Sencillo y full, lado a lado ──────────────────────────────── */
+
+.tarifario-configuraciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tarifario-configuracion {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-md);
+  padding: 0.75rem;
+}
+
+/* Los campos de una configuración van a dos columnas para que la tarjeta
+   no se vuelva una tira larguísima. */
+.tarifario-configuracion__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Totales: ocupan el ancho completo de la columna. */
+.campo--ancho {
+  grid-column: 1 / -1;
+}
+
+.tarifario-configuracion__titulo {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+}
+
+/* En pantallas chicas todo se apila para que el modal siga siendo usable. */
+@media (max-width: 960px) {
+  .tarifario-encabezado,
+  .tarifario-configuraciones,
+  .tarifario-configuracion__campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

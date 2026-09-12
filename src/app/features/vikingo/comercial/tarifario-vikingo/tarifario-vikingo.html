@@ -1,1 +1,269 @@
-<p>tarifario-vikingo works!</p>
+<p-toast></p-toast>
+
+<div class="p-4">
+  <p-button (onClick)="abrirModal()"> +Agregar </p-button>
+</div>
+
+<p-dialog
+  header="Nuevo registro de tarifa"
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '72rem' }"
+  [breakpoints]="{ '1200px': '95vw' }"
+  [draggable]="true"
+  [maximizable]="true"
+  (onHide)="cerrarModal()"
+>
+  <!-- ─── Encabezado: aplica a las cuatro mercancías ─────────────── -->
+  <div class="tarifario-encabezado">
+    <div class="campo">
+      <label for="origen">Origen</label>
+      <!-- appendTo="body": dentro del p-dialog el panel se recorta. -->
+      <p-select
+        inputId="origen"
+        [options]="origenes"
+        [(ngModel)]="formIdOrigen"
+        optionLabel="origen1"
+        optionValue="idOrigen"
+        placeholder="Selecciona el origen"
+        [filter]="true"
+        filterBy="origen1"
+        appendTo="body"
+        styleClass="w-full"
+      ></p-select>
+    </div>
+
+    <div class="campo">
+      <label for="estado">Estado destino</label>
+      <p-select
+        inputId="estado"
+        [options]="estados"
+        [(ngModel)]="formIdEstado"
+        optionLabel="destinoEstado1"
+        optionValue="idEstado"
+        placeholder="Selecciona el estado"
+        [filter]="true"
+        filterBy="destinoEstado1"
+        appendTo="body"
+        styleClass="w-full"
+        (onChange)="alCambiarEstado()"
+      ></p-select>
+    </div>
+
+    <div class="campo">
+      <label for="ciudad">Destino</label>
+      <!-- Se habilita hasta elegir estado: la lista se filtra con él. -->
+      <p-select
+        inputId="ciudad"
+        [options]="destinosFiltrados"
+        [(ngModel)]="formIdCiudad"
+        optionLabel="destinoEstadoCiudad"
+        optionValue="idCiudad"
+        placeholder="Selecciona el destino"
+        [filter]="true"
+        filterBy="destinoEstadoCiudad"
+        [disabled]="formIdEstado == null"
+        appendTo="body"
+        styleClass="w-full"
+      ></p-select>
+    </div>
+
+    <!-- El único costo que se captura una sola vez para todo el registro. -->
+    <div class="campo">
+      <label for="diesel">$/LT Diesel</label>
+      <p-inputNumber
+        inputId="diesel"
+        [(ngModel)]="formPrecioLitroDiesel"
+        mode="currency"
+        currency="MXN"
+        locale="es-MX"
+        [min]="0"
+        styleClass="w-full"
+      ></p-inputNumber>
+    </div>
+  </div>
+
+  <!-- ─── Una tarjeta por mercancía, con sus dos configuraciones ──── -->
+  @for (bloque of bloques; track bloque.mercancia) {
+    <div class="tarifario-mercancia">
+      <div class="tarifario-mercancia__titulo">{{ bloque.mercancia }}</div>
+
+      <div class="tarifario-configuraciones">
+        <ng-container
+          *ngTemplateOutlet="
+            plantillaConfiguracion;
+            context: { $implicit: bloque.sencillo, etiqueta: 'Sencillo' }
+          "
+        ></ng-container>
+
+        <ng-container
+          *ngTemplateOutlet="
+            plantillaConfiguracion;
+            context: { $implicit: bloque.full, etiqueta: 'Full' }
+          "
+        ></ng-container>
+      </div>
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      styleClass="p-button-text"
+      (onClick)="cerrarModal()"
+    ></p-button>
+    <p-button
+      label="Guardar"
+      icon="pi pi-save"
+      (onClick)="guardar()"
+    ></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- Sencillo y full capturan exactamente los mismos campos, así que la
+     columna se escribe una vez y se instancia dos veces con el objeto de
+     costos que le toca. -->
+<ng-template #plantillaConfiguracion let-costos let-etiqueta="etiqueta">
+  <div class="tarifario-configuracion">
+    <div class="tarifario-configuracion__titulo">{{ etiqueta }}</div>
+
+    <div class="tarifario-configuracion__campos">
+      <div class="campo">
+        <label>RT (km)</label>
+        <p-inputNumber
+          [(ngModel)]="costos.recorridoTotal"
+          [min]="0"
+          [maxFractionDigits]="2"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>KMxL Rendimiento</label>
+        <p-inputNumber
+          [(ngModel)]="costos.kmPorLitro"
+          [min]="0"
+          [maxFractionDigits]="2"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>Total de LTS</label>
+        <div class="calculado">{{ totalLitros(costos) | number: '1.2-2' }}</div>
+      </div>
+
+      <div class="campo">
+        <label>Total diesel</label>
+        <div class="calculado">{{ totalDiesel(costos) | currency: 'MXN' }}</div>
+      </div>
+
+      <div class="campo">
+        <label>Casetas</label>
+        <p-inputNumber
+          [(ngModel)]="costos.casetas"
+          mode="currency"
+          currency="MXN"
+          locale="es-MX"
+          [min]="0"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>Comisión operador</label>
+        <p-inputNumber
+          [(ngModel)]="costos.comisionOperador"
+          mode="currency"
+          currency="MXN"
+          locale="es-MX"
+          [min]="0"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>Costo fijo para operador</label>
+        <p-inputNumber
+          [(ngModel)]="costos.costoFijoOperador"
+          mode="currency"
+          currency="MXN"
+          locale="es-MX"
+          [min]="0"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>Recarga diesel RF</label>
+        <p-inputNumber
+          [(ngModel)]="costos.recargaDieselRf"
+          mode="currency"
+          currency="MXN"
+          locale="es-MX"
+          [min]="0"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo campo--ancho">
+        <label>Total costos directos</label>
+        <div class="calculado">
+          {{ totalCostosDirectos(costos) | currency: 'MXN' }}
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Tarifa deseada / cliente</label>
+        <p-inputNumber
+          [(ngModel)]="costos.tarifaDeseada"
+          mode="currency"
+          currency="MXN"
+          locale="es-MX"
+          [min]="0"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>% Utilidad deseada</label>
+        <p-inputNumber
+          [(ngModel)]="costos.utilidadDeseada"
+          suffix=" %"
+          [min]="0"
+          [max]="99"
+          [maxFractionDigits]="2"
+          styleClass="w-full"
+        ></p-inputNumber>
+      </div>
+
+      <div class="campo">
+        <label>$ Utilidad</label>
+        <div
+          class="calculado"
+          [class.calculado--negativo]="utilidadPesos(costos) < 0"
+        >
+          {{ utilidadPesos(costos) | currency: 'MXN' }}
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>% Utilidad</label>
+        <div
+          class="calculado"
+          [class.calculado--negativo]="utilidadPorcentaje(costos) < 0"
+        >
+          {{ utilidadPorcentaje(costos) | number: '1.2-2' }} %
+        </div>
+      </div>
+
+      <div class="campo campo--ancho">
+        <label>Tarifa propuesta</label>
+        <div class="calculado calculado--destacado">
+          {{ tarifaPropuesta(costos) | currency: 'MXN' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
