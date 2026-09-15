@@ -130,6 +130,11 @@
 
     <div class="tarifario-configuracion__campos">
       <div class="campo">
+        <label>OW</label>
+        <input pInputText="" placeholder="0" />
+      </div>
+
+      <div class="campo">
         <label>RT (km)</label>
         <p-inputNumber
           [(ngModel)]="costos.recorridoTotal"
@@ -151,12 +156,12 @@
 
       <div class="campo">
         <label>Total de LTS</label>
-        <div class="calculado">{{ totalLitros(costos) | number: '1.2-2' }}</div>
+        <div class="calculado">{{ totalLitros(costos) | number: "1.2-2" }}</div>
       </div>
 
       <div class="campo">
         <label>Total diesel</label>
-        <div class="calculado">{{ totalDiesel(costos) | currency: 'MXN' }}</div>
+        <div class="calculado">{{ totalDiesel(costos) | currency: "MXN" }}</div>
       </div>
 
       <div class="campo">
@@ -171,14 +176,13 @@
         ></p-inputNumber>
       </div>
 
+      <!-- Son kilómetros, no pesos: por eso va como número simple. -->
       <div class="campo">
-        <label>Comisión operador</label>
+        <label>Kilómetros (Operador)</label>
         <p-inputNumber
-          [(ngModel)]="costos.comisionOperador"
-          mode="currency"
-          currency="MXN"
-          locale="es-MX"
+          [(ngModel)]="costos.kilometrosOperador"
           [min]="0"
+          [maxFractionDigits]="2"
           styleClass="w-full"
         ></p-inputNumber>
       </div>
@@ -210,7 +214,7 @@
       <div class="campo campo--ancho">
         <label>Total costos directos</label>
         <div class="calculado">
-          {{ totalCostosDirectos(costos) | currency: 'MXN' }}
+          {{ totalCostosDirectos(costos) | currency: "MXN" }}
         </div>
       </div>
 
@@ -244,7 +248,7 @@
           class="calculado"
           [class.calculado--negativo]="utilidadPesos(costos) < 0"
         >
-          {{ utilidadPesos(costos) | currency: 'MXN' }}
+          {{ utilidadPesos(costos) | currency: "MXN" }}
         </div>
       </div>
 
@@ -254,14 +258,14 @@
           class="calculado"
           [class.calculado--negativo]="utilidadPorcentaje(costos) < 0"
         >
-          {{ utilidadPorcentaje(costos) | number: '1.2-2' }} %
+          {{ utilidadPorcentaje(costos) | number: "1.2-2" }} %
         </div>
       </div>
 
       <div class="campo campo--ancho">
         <label>Tarifa propuesta</label>
         <div class="calculado calculado--destacado">
-          {{ tarifaPropuesta(costos) | currency: 'MXN' }}
+          {{ tarifaPropuesta(costos) | currency: "MXN" }}
         </div>
       </div>
     </div>

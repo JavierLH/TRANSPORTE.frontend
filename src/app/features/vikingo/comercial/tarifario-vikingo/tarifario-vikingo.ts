@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { TarifarioService } from '../../../../core/services/TarifarioService';
 import { Destino, Estado, Origen } from '../../../../core/models/Tarifario';
+import { InputText } from 'primeng/inputtext';
 
 /** Las cuatro mercancías que se cotizan. */
 const MERCANCIAS = ['GENERAL', 'DGR', 'REEFER', 'DGR & REEFER'];
@@ -22,7 +23,7 @@ export interface CostosConfiguracion {
   recorridoTotal: number;
   kmPorLitro: number;
   casetas: number;
-  comisionOperador: number;
+  kilometrosOperador: number;
   costoFijoOperador: number;
   recargaDieselRf: number;
   tarifaDeseada: number;
@@ -47,7 +48,8 @@ export interface BloqueMercancia {
     InputNumberModule,
     SelectModule,
     ToastModule,
-  ],
+    InputText
+],
   providers: [MessageService],
   templateUrl: './tarifario-vikingo.html',
   styleUrl: './tarifario-vikingo.css',
@@ -142,7 +144,7 @@ export class TarifarioVikingo implements OnInit {
       recorridoTotal: 0,
       kmPorLitro: 0,
       casetas: 0,
-      comisionOperador: 0,
+      kilometrosOperador: 0,
       costoFijoOperador: 0,
       recargaDieselRf: 0,
       tarifaDeseada: 0,
@@ -169,11 +171,16 @@ export class TarifarioVikingo implements OnInit {
     return this.totalLitros(costos) * this.formPrecioLitroDiesel;
   }
 
-  /** Diesel + casetas + comisión + costo fijo + recarga. */
+  /**
+   * Diesel + casetas + costo fijo + recarga.
+   *
+   * Los kilómetros del operador quedan fuera a propósito: son una distancia,
+   * no pesos, así que sumarlos aquí daría un total equivocado. Falta definir
+   * con qué tarifa por kilómetro se convierten a costo.
+   */
   public totalCostosDirectos(costos: CostosConfiguracion): number {
     return this.totalDiesel(costos)
       + costos.casetas
-      + costos.comisionOperador
       + costos.costoFijoOperador
       + costos.recargaDieselRf;
   }
