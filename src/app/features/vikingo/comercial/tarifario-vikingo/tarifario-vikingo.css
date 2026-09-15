@@ -44,6 +44,15 @@
   border-bottom: 1px solid var(--p-content-border-color);
 }
 
+/* Línea de estado mientras se consulta la ruta. */
+.tarifario-aviso {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--p-text-muted-color);
+}
+
 /* ─── Tarjeta de mercancía ──────────────────────────────────────── */
 
 .tarifario-mercancia {

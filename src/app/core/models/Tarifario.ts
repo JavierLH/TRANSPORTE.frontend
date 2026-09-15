@@ -30,3 +30,60 @@ export interface Origen {
   idOrigen: number | null;
   origen1: string | null;
 }
+
+/**
+ * Una ruta ya registrada en OrigenesDestinosTarifario, con los nombres
+ * resueltos por el backend.
+ */
+export interface RutaTarifario {
+  id: number;
+  idOrigen: number;
+  origen: string | null;
+  idEstado: number;
+  estado: string | null;
+  idCiudad: number;
+  destino: string | null;
+  ltDieselPrecio: number;
+  ow: number;
+  renglones: RenglonTarifario[];
+}
+
+/**
+ * Lo que responde GET /Tarifario/ruta. Que la ruta no exista no es un error,
+ * por eso llega como un 200 con `existe` en false y `ruta` en null.
+ */
+export interface ExistenciaRuta {
+  existe: boolean;
+  ruta: RutaTarifario | null;
+}
+
+/**
+ * Un renglón del tarifario: una mercancía en una configuración. No lleva
+ * claveCot ni folio; los genera la base.
+ */
+export interface RenglonTarifario {
+  idMercancia: number;
+  codigoConfiguracion: number;
+  kmxlRendimiento: number;
+  costoFijoOperador: number;
+  recargaDieselRf: number;
+  tarifaDeseadaCliente: number;
+  utilidadDeseada: number;
+  casetas: number;
+  kmOperador: number;
+  operadorMonto: number;
+}
+
+/**
+ * Lo que espera POST /Tarifario/ruta. No lleva id: la ruta se identifica por
+ * origen + estado + destino, y el backend decide si inserta o actualiza.
+ * Los renglones son uno por mercancía y configuración.
+ */
+export interface RutaNueva {
+  idOrigen: number;
+  idEstado: number;
+  idCiudad: number;
+  ltDieselPrecio: number;
+  ow: number;
+  renglones: RenglonTarifario[];
+}

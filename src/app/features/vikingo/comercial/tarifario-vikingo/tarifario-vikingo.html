@@ -30,6 +30,7 @@
         filterBy="origen1"
         appendTo="body"
         styleClass="w-full"
+        (onChange)="verificarRuta()"
       ></p-select>
     </div>
 
@@ -65,10 +66,12 @@
         [disabled]="formIdEstado == null"
         appendTo="body"
         styleClass="w-full"
+        (onChange)="verificarRuta()"
       ></p-select>
     </div>
 
-    <!-- El único costo que se captura una sola vez para todo el registro. -->
+    <!-- Diesel y OW viven en la ruta, no en cada mercancía: se capturan una
+         sola vez y se precargan si la ruta ya estaba dada de alta. -->
     <div class="campo">
       <label for="diesel">$/LT Diesel</label>
       <p-inputNumber
@@ -81,7 +84,38 @@
         styleClass="w-full"
       ></p-inputNumber>
     </div>
+
+    <div class="campo">
+      <label for="ow">OW (km de ida)</label>
+      <p-inputNumber
+        inputId="ow"
+        [(ngModel)]="formOw"
+        [min]="0"
+        [maxFractionDigits]="2"
+        styleClass="w-full"
+      ></p-inputNumber>
+    </div>
   </div>
+
+  <!-- Resultado de la consulta a OrigenesDestinosTarifario. -->
+  @if (buscandoRuta) {
+    <div class="tarifario-aviso">
+      <p-progressSpinner
+        [style]="{ width: '1.25rem', height: '1.25rem' }"
+        strokeWidth="6"
+      ></p-progressSpinner>
+      <span>Consultando si la ruta ya está registrada…</span>
+    </div>
+  } @else if (rutaExistente) {
+    <p-message severity="info" styleClass="w-full mb-3">
+      Esta ruta ya está registrada (clave {{ rutaExistente.id }}). Se
+      precargaron el precio del diesel y el OW que tenía guardados.
+    </p-message>
+  } @else if (formIdOrigen != null && formIdEstado != null && formIdCiudad != null) {
+    <p-message severity="success" styleClass="w-full mb-3">
+      La ruta no existe todavía: se va a dar de alta con este registro.
+    </p-message>
+  }
 
   <!-- ─── Una tarjeta por mercancía, con sus dos configuraciones ──── -->
   @for (bloque of bloques; track bloque.mercancia) {
@@ -111,11 +145,13 @@
       label="Cancelar"
       severity="secondary"
       styleClass="p-button-text"
+      [disabled]="guardando"
       (onClick)="cerrarModal()"
     ></p-button>
     <p-button
-      label="Guardar"
+      [label]="rutaExistente ? 'Actualizar' : 'Guardar'"
       icon="pi pi-save"
+      [loading]="guardando"
       (onClick)="guardar()"
     ></p-button>
   </ng-template>
@@ -129,11 +165,6 @@
     <div class="tarifario-configuracion__titulo">{{ etiqueta }}</div>
 
     <div class="tarifario-configuracion__campos">
-      <div class="campo">
-        <label>OW</label>
-        <input pInputText="" placeholder="0" />
-      </div>
-
       <div class="campo">
         <label>RT (km)</label>
         <p-inputNumber

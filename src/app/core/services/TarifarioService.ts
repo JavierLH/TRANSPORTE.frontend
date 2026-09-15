@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { APITarifario } from "../APITarifario";
-import { Destino, DestinoNuevo, Estado, Origen } from "../models/Tarifario";
+import { Destino, DestinoNuevo, Estado, ExistenciaRuta, Origen, RutaNueva, RutaTarifario } from "../models/Tarifario";
 
 @Injectable({ providedIn: 'root' })
 export class TarifarioService {
@@ -65,6 +65,23 @@ export class TarifarioService {
 
   eliminarOrigen(idOrigen: number): Observable<void> {
     return this.http.delete<void>(APITarifario.eliminarOrigen(idOrigen));
+  }
+
+  // ─── Tarifario ─────────────────────────────────────────────────────
+
+  /**
+   * Dice si la combinación origen + estado + destino ya tiene tarifario.
+   * Responde por `next` en los dos casos: revisa el flag `existe`.
+   */
+  buscarRuta(idOrigen: number, idEstado: number, idCiudad: number): Observable<ExistenciaRuta> {
+    return this.http.get<ExistenciaRuta>(
+      APITarifario.buscarRuta(idOrigen, idEstado, idCiudad)
+    );
+  }
+
+  /** Da de alta la ruta o actualiza la que ya existía. */
+  guardarRuta(ruta: RutaNueva): Observable<RutaTarifario> {
+    return this.http.post<RutaTarifario>(APITarifario.guardarRuta(), ruta);
   }
 
 }
