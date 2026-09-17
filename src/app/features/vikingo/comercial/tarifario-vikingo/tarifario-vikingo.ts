@@ -11,6 +11,8 @@ import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TarifarioService } from '../../../../core/services/TarifarioService';
 import { Destino, Estado, Origen, RenglonTarifario, RutaTarifario } from '../../../../core/models/Tarifario';
+import { ModalTarifarioVkKv } from '../../../../shared/modal-tarifario-vk-kv/modal-tarifario-vk-kv';
+import { environment, IDsEmpresas } from '../../../../environments/enviroments';
 
 /**
  * Las cuatro mercancías que se cotizan, con el código del catálogo Mercancias
@@ -64,12 +66,15 @@ export interface BloqueMercancia {
     ToastModule,
     MessageModule,
     ProgressSpinnerModule,
+    ModalTarifarioVkKv
 ],
   providers: [MessageService],
   templateUrl: './tarifario-vikingo.html',
   styleUrl: './tarifario-vikingo.css',
 })
 export class TarifarioVikingo implements OnInit {
+
+  public IDsEmpresas: number = IDsEmpresas.VIKINGO;
 
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);

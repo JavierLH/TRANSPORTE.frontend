@@ -44,8 +44,19 @@ export const APITarifario = {
   buscarRuta: (idOrigen: number, idEstado: number, idCiudad: number): string =>
     `${environment.host}/Tarifario/ruta?idOrigen=${idOrigen}&idEstado=${idEstado}&idCiudad=${idCiudad}`,
 
+  // Clon de buscarRuta acotado a una empresa: VK y KV pueden tener la misma
+  // combinación origen + estado + destino, así que la empresa forma parte de
+  // la consulta y viene de vuelta en la ruta.
+  buscarRutaPorEmpresa: (idOrigen: number, idEstado: number, idCiudad: number, idEmpresa: number): string =>
+    `${environment.host}/Tarifario/ruta-empresa?idOrigen=${idOrigen}&idEstado=${idEstado}&idCiudad=${idCiudad}&idEmpresa=${idEmpresa}`,
+
   // Mismo endpoint para alta y edición: el backend decide cuál aplica.
   guardarRuta: (): string =>
     `${environment.host}/Tarifario/ruta`,
+
+  // Clon de guardarRuta que sí persiste la empresa: la ruta se identifica por
+  // origen + estado + destino + empresa, así VK y KV no se pisan.
+  guardarRutaPorEmpresa: (): string =>
+    `${environment.host}/Tarifario/ruta-empresa`,
 
 };

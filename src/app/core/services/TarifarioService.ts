@@ -79,9 +79,28 @@ export class TarifarioService {
     );
   }
 
+  /**
+   * Igual que buscarRuta pero acotado a una empresa. La ruta que responde trae
+   * el idEmpresa que le corresponde.
+   */
+  buscarRutaPorEmpresa(idOrigen: number, idEstado: number, idCiudad: number, idEmpresa: number): Observable<ExistenciaRuta> {
+    return this.http.get<ExistenciaRuta>(
+      APITarifario.buscarRutaPorEmpresa(idOrigen, idEstado, idCiudad, idEmpresa)
+    );
+  }
+
   /** Da de alta la ruta o actualiza la que ya existía. */
   guardarRuta(ruta: RutaNueva): Observable<RutaTarifario> {
     return this.http.post<RutaTarifario>(APITarifario.guardarRuta(), ruta);
+  }
+
+  /**
+   * Igual que guardarRuta pero persiste la empresa. La ruta se identifica por
+   * origen + estado + destino + empresa; el `ruta` que se envíe debe traer
+   * `idEmpresa`.
+   */
+  guardarRutaPorEmpresa(ruta: RutaNueva): Observable<RutaTarifario> {
+    return this.http.post<RutaTarifario>(APITarifario.guardarRutaPorEmpresa(), ruta);
   }
 
 }

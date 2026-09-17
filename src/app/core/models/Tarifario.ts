@@ -43,6 +43,7 @@ export interface RutaTarifario {
   estado: string | null;
   idCiudad: number;
   destino: string | null;
+  idEmpresa: number;
   ltDieselPrecio: number;
   ow: number;
   renglones: RenglonTarifario[];
@@ -83,6 +84,12 @@ export interface RutaNueva {
   idOrigen: number;
   idEstado: number;
   idCiudad: number;
+
+  /**
+   * Empresa dueña de la ruta. Opcional: sólo la manda el flujo que guarda por
+   * empresa (modal compartido VK/KV); el alta original no la usa.
+   */
+  idEmpresa?: number;
   ltDieselPrecio: number;
   ow: number;
   renglones: RenglonTarifario[];
