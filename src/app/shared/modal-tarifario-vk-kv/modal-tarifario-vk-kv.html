@@ -114,6 +114,380 @@
     </p-message>
   }
 
+  <!-- ─── Una tarjeta por mercancía ──────────────────────────────────
+       El @for recorre MERCANCIAS, así que agregar o quitar una mercancía es
+       un renglón en el arreglo del .ts, no un bloque de HTML.
+
+       Se trackea por `codigo` y no por $index: el código identifica a la
+       mercancía esté en la posición que esté, así que si algún día filtras
+       o reordenas la lista, cada tarjeta se lleva sus valores. -->
+  @for (mercancia of MERCANCIAS; track mercancia.codigo) {
+    <div class="tarifario-mercancia">
+      <div class="tarifario-mercancia__titulo">{{ mercancia.nombre }}</div>
+
+      <div class="tarifario-configuraciones">
+
+        <!-- ── SENCILLO ─────────────────────────────────────────── -->
+        <div class="tarifario-configuracion">
+          <div class="tarifario-configuracion__titulo">Sencillo</div>
+
+          <div class="tarifario-configuracion__campos">
+            <div class="campo">
+              <label>RT (km)</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.RT"
+                [name]="'rt-s-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>KMxL Rendimiento</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.KMxL"
+                [name]="'kmxl-s-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Total de LTS</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.TotalLTS"
+                [name]="'lts-s-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Total Diesel</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.TotalDiesel"
+                [name]="'diesel-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Casetas</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.Casetas"
+                [name]="'casetas-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <!-- Son kilómetros, no pesos: por eso va como número simple. -->
+            <div class="campo">
+              <label>KM Operador</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.KMOperador"
+                [name]="'kmop-s-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Costo fijo operador</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.CostoFijoOperador"
+                [name]="'fijo-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Recarga diesel RF</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.RecargaDieselRF"
+                [name]="'rf-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo campo--ancho">
+              <label>Total de costos directos</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.TotalDeCostosDirectos"
+                [name]="'directos-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Tarifa deseada / cliente</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.TarifaDeseadaCliente"
+                [name]="'tarifa-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>% Utilidad deseada</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.UtilidadDeseada"
+                [name]="'utildes-s-' + mercancia.codigo"
+                suffix=" %"
+                [min]="0"
+                [max]="99"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>$ Utilidad</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.UtilidadPesos"
+                [name]="'utilpes-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>% Utilidad</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.UtilidadPorcentajes"
+                [name]="'utilpor-s-' + mercancia.codigo"
+                suffix=" %"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo campo--ancho">
+              <label>Tarifa propuesta</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaSencillo.TarifaPropuesta"
+                [name]="'propuesta-s-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── FULL ─────────────────────────────────────────────── -->
+        <div class="tarifario-configuracion">
+          <div class="tarifario-configuracion__titulo">Full</div>
+
+          <div class="tarifario-configuracion__campos">
+            <div class="campo">
+              <label>RT (km)</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.RT"
+                [name]="'rt-f-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>KMxL Rendimiento</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.KMxL"
+                [name]="'kmxl-f-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Total de LTS</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.TotalLTS"
+                [name]="'lts-f-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Total Diesel</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.TotalDiesel"
+                [name]="'diesel-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Casetas</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.Casetas"
+                [name]="'casetas-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>KM Operador</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.KMOperador"
+                [name]="'kmop-f-' + mercancia.codigo"
+                [min]="0"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Costo fijo operador</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.CostoFijoOperador"
+                [name]="'fijo-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Recarga diesel RF</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.RecargaDieselRF"
+                [name]="'rf-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo campo--ancho">
+              <label>Total de costos directos</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.TotalDeCostosDirectos"
+                [name]="'directos-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>Tarifa deseada / cliente</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.TarifaDeseadaCliente"
+                [name]="'tarifa-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>% Utilidad deseada</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.UtilidadDeseada"
+                [name]="'utildes-f-' + mercancia.codigo"
+                suffix=" %"
+                [min]="0"
+                [max]="99"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>$ Utilidad</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.UtilidadPesos"
+                [name]="'utilpes-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo">
+              <label>% Utilidad</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.UtilidadPorcentajes"
+                [name]="'utilpor-f-' + mercancia.codigo"
+                suffix=" %"
+                [maxFractionDigits]="2"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+
+            <div class="campo campo--ancho">
+              <label>Tarifa propuesta</label>
+              <p-inputNumber
+                [(ngModel)]="mercancia.bloqueMercanciaFull.TarifaPropuesta"
+                [name]="'propuesta-f-' + mercancia.codigo"
+                mode="currency"
+                currency="MXN"
+                locale="es-MX"
+                [min]="0"
+                styleClass="w-full"
+              ></p-inputNumber>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
   <div class="grid p-2 grid-cols-2">
     <p-button (onClick)="guardarDatos()">Guardar</p-button>
   </div>

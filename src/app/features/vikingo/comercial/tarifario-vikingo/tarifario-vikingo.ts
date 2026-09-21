@@ -19,7 +19,9 @@ import { environment, IDsEmpresas } from '../../../../environments/enviroments';
  * de la base. Son fijas: la tabla se siembra con estos mismos códigos.
  */
 const MERCANCIAS = [
-  { codigo: 1, nombre: 'GRAL' },
+  { codigo: 1,
+    nombre: 'GRAL'
+  },
   { codigo: 2, nombre: 'DGR' },
   { codigo: 3, nombre: 'REEFER' },
   { codigo: 4, nombre: 'DGR&REEFER' },

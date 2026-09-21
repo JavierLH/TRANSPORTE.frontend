@@ -12,6 +12,23 @@ import { MessageService } from 'primeng/api';
 import { TarifarioService } from '../../core/services/TarifarioService';
 import { Destino, Estado, Origen, RutaTarifario } from '../../core/models/Tarifario';
 
+export interface BloqueMercancia {
+  RT : number ,
+  KMxL : number ,
+  TotalLTS : number  ,
+  TotalDiesel: number,
+  Casetas: number ,
+  KMOperador: number,
+  CostoFijoOperador: number,
+  RecargaDieselRF: number,
+  TotalDeCostosDirectos: number,
+  TarifaDeseadaCliente: number,
+  UtilidadDeseada: number,
+  UtilidadPesos: number,
+  UtilidadPorcentajes: number,
+  TarifaPropuesta: number
+};
+
 /**
  * Modal de captura de tarifario compartido entre Vikingo (VK) y KV. Lo único
  * que cambia entre las dos empresas es a quién pertenece la ruta, por eso el
@@ -72,12 +89,144 @@ export class ModalTarifarioVkKv implements OnInit {
 
   public buscandoRuta = false;
 
-  /**
-   * Identifica la consulta en vuelo. Si el usuario cambia de destino antes de
-   * que llegue la respuesta anterior, esa respuesta ya no aplica y se descarta:
-   * sin esto una petición lenta puede pisar los datos de la selección nueva.
-   */
   private consultaEnCurso = '';
+
+  public MERCANCIAS = [
+    { codigo: 1, nombre: 'GRAL',
+      bloqueMercanciaSencillo: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    },
+    bloqueMercanciaFull: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    }
+  },
+    { codigo: 2, nombre: 'DGR', bloqueMercanciaSencillo: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    },
+    bloqueMercanciaFull: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    }
+  },
+    { codigo: 3, nombre: 'REEFER', bloqueMercanciaSencillo: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    },
+    bloqueMercanciaFull : {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    }
+
+  },
+  { codigo: 4, nombre: 'DGR&REEFER', bloqueMercanciaSencillo: {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    },
+    bloqueMercanciaFull : {
+        RT : 0 ,
+        KMxL : 0 ,
+        TotalLTS : 0  ,
+        TotalDiesel: 0,
+        Casetas: 0 ,
+        KMOperador: 0,
+        CostoFijoOperador: 0,
+        RecargaDieselRF: 0,
+        TotalDeCostosDirectos: 0,
+        TarifaDeseadaCliente: 0,
+        UtilidadDeseada: 0,
+        UtilidadPesos: 0,
+        UtilidadPorcentajes: 0,
+        TarifaPropuesta: 0
+    }
+  },
+  ];
 
   ngOnInit(): void {
     this.cargarCatalogos();
@@ -100,7 +249,10 @@ export class ModalTarifarioVkKv implements OnInit {
       next: (destinos) => (this.todosLosDestinos = destinos),
       error: (err) => console.error('Error al cargar los destinos', err)
     });
+
   }
+
+
 
   public abrirModal(): void {
     this.formIdOrigen = undefined;
@@ -201,11 +353,55 @@ export class ModalTarifarioVkKv implements OnInit {
       });
   }
 
-  public guardarDatos(){
-
-    console.log('Cambios guardados');
-
-
+public guardarDatos(): void {
+  if (this.formIdOrigen == null || this.formIdEstado == null || this.formIdCiudad == null) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Atención',
+      detail: 'Selecciona el origen, el estado y el destino.'
+    });
+    return;
   }
+
+  const eraExistente = this.rutaExistente != null;
+
+  this.tarifarioService.guardarRutaPorEmpresa({
+    idOrigen: this.formIdOrigen,
+    idEstado: this.formIdEstado,
+    idCiudad: this.formIdCiudad,
+    idEmpresa: this.idEmpresa,           // el @Input del modal
+    ltDieselPrecio: this.formPrecioLitroDiesel,
+    ow: this.formOw,
+    renglones: []                        // por ahora sólo el encabezado
+  }).subscribe({
+    next: (ruta) => {
+      // Queda marcada como existente: un segundo guardado ya actualiza.
+      this.rutaExistente = ruta;
+
+      this.messageService.add({
+        severity: 'success',
+        summary: eraExistente ? 'Ruta actualizada' : 'Ruta registrada',
+        detail: `${ruta.origen} → ${ruta.destino} se guardó correctamente.`
+      });
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error al guardar la ruta', err);
+
+      const detalle = err?.status === 422
+        ? err?.error?.mensaje ?? 'Los datos de la ruta no son válidos.'
+        : 'No se pudo guardar la ruta.';
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al guardar',
+        detail: detalle
+      });
+
+      this.cdr.detectChanges();
+    }
+  });
+}
 
 }

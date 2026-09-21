@@ -33,9 +33,64 @@
   color: var(--p-text-muted-color);
 }
 
+/* ─── Tarjeta de mercancía ──────────────────────────────────────── */
+
+.tarifario-mercancia {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-lg);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tarifario-mercancia__titulo {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  color: var(--p-primary-color);
+}
+
+/* ─── Sencillo y full, lado a lado ──────────────────────────────── */
+
+.tarifario-configuraciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.tarifario-configuracion {
+  border: 1px solid var(--p-content-border-color);
+  border-radius: var(--p-border-radius-md);
+  padding: 0.75rem;
+}
+
+.tarifario-configuracion__titulo {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+}
+
+/* Los campos de una configuración van a dos columnas para que la tarjeta
+   no se vuelva una tira larguísima. */
+.tarifario-configuracion__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Totales: ocupan el ancho completo de la columna. */
+.campo--ancho {
+  grid-column: 1 / -1;
+}
+
 /* En pantallas chicas todo se apila para que el modal siga siendo usable. */
 @media (max-width: 960px) {
-  .tarifario-encabezado {
+  .tarifario-encabezado,
+  .tarifario-configuraciones,
+  .tarifario-configuracion__campos {
     grid-template-columns: minmax(0, 1fr);
   }
 }

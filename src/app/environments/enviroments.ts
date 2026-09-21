@@ -6,8 +6,8 @@ export const environment = {
 };
 
 export const IDsEmpresas = {
-  KARVE: 10,
-  VIKINGO: 30,
-  DRAKKAR: 40,
-  LETCA: 50
+  KARVE: 1,
+  VIKINGO: 2,
+  DRAKKAR: 3,
+  LETCA: 4
 }
