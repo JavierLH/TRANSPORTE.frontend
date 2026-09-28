@@ -1,3 +1,17 @@
+/* Botones a la izquierda, buscador a la derecha. */
+.barra-controles {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.grupo-botones {
+    display: flex;
+    gap: 0.5rem;
+}
+
 /* Contenedor del buscador a la derecha */
 .buscador-container {
     display: flex;
@@ -44,4 +58,72 @@
 
 .texto-apoyo {
     color: #2196F3; /* Azul estilo PrimeNG */
+}
+
+/* ─── Modal de alta y edición ──────────────────────────────────── */
+
+.formulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.campo label {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Ocupa el ancho completo de las dos columnas. */
+.campo--ancho {
+    grid-column: 1 / -1;
+}
+
+.linea-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.linea-checkbox label {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ─── Accesos por empresa ──────────────────────────────────────── */
+
+.seccion-accesos {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--p-content-border-color);
+}
+
+.titulo-seccion {
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Empresa a la izquierda, su rol a la derecha. */
+.renglon-acceso {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .formulario,
+    .renglon-acceso {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

@@ -1,78 +1,42 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, Observable, of } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 import { Usuarios, UsuarioSistemaDTO } from '../../../core/services/usuarios';
+import { UsuariosService } from '../../../core/services/UsuariosService';
+import { Role } from '../../../core/models/Role';
+import { EmpresaAsociada, UsuarioTabla as UsuarioDelBackend } from '../../../core/models/Usuario';
 
 export interface UsuarioTabla {
     idUsuario: number;
     nombreCompleto: string;
+    usuario: string;
     // Diccionario dinámico: idEmpresa -> true/false
-    // Ejemplo: { 1: true, 2: false, 3: true, 4: false }
     accesos: { [idEmpresa: number]: boolean };
+    // Se guarda el par empresa/rol tal como vino, para poder editarlo.
+    empresasAsociadas: EmpresaAsociada[];
+}
+
+/** Una empresa dentro del modal, con su rol elegido. */
+export interface AsignacionDeEmpresa {
+    idEmpresa: number;
+    nombre: string;
+    seleccionada: boolean;
+    idRol: number | undefined;
+    roles: Role[];
 }
 
 @Component({
     selector: 'app-usuarios-empresas',
-    template: `
-        <div class="card">
-            <p-table
-                #dt
-                [value]="usuariosTabla"
-                [globalFilterFields]="['nombreCompleto']"
-                [tableStyle]="{ 'min-width': '50rem' }"
-                [paginator]="true"
-                [rows]="5"
-                [rowsPerPageOptions]="[5, 10, 20]">
-
-                <!-- CABECERA DE CONTROLES -->
-                <ng-template pTemplate="caption">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <button
-                            pButton
-                            type="button"
-                            label="Guardar Cambios"
-                            icon="pi pi-save"
-                            class="p-button-success"
-                            (click)="guardarDatos()">
-                        </button>
-
-                        <span class="p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por usuario..." />
-                        </span>
-                    </div>
-                </ng-template>
-
-                <!-- CABECERAS DE COLUMNAS (DINÁMICAS) -->
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: 20%;">Nombre</th>
-                        <!-- Iteramos sobre nuestro catálogo de empresas para crear los <th> -->
-                        <th *ngFor="let col of columnasEmpresas" style="width: 20%; text-align: center;">
-                            {{ col.nombre }}
-                        </th>
-                    </tr>
-                </ng-template>
-
-                <!-- CUERPO DE LA TABLA (DINÁMICO) -->
-                <ng-template pTemplate="body" let-usuario>
-                    <tr>
-                        <td style="font-weight: bold;">{{ usuario.nombreCompleto }}</td>
-                        <!-- Iteramos nuevamente para crear un checkbox por cada empresa -->
-                        <td *ngFor="let col of columnasEmpresas" style="text-align: center;">
-                            <!-- Mapeo bidireccional usando el diccionario y el ID de la empresa -->
-                            <p-checkbox [(ngModel)]="usuario.accesos[col.idEmpresa]" [binary]="true"></p-checkbox>
-                        </td>
-                    </tr>
-                </ng-template>
-
-            </p-table>
-        </div>
-    `,
     standalone: true,
     imports: [
         CommonModule,
@@ -80,80 +44,328 @@ export interface UsuarioTabla {
         TableModule,
         CheckboxModule,
         InputTextModule,
-        ButtonModule
-    ]
+        ButtonModule,
+        DialogModule,
+        SelectModule,
+        ToastModule,
+        TooltipModule
+    ],
+    providers: [MessageService],
+    templateUrl: './usuarios-empresas.html',
+    styleUrl: './usuarios-empresas.css'
 })
 export class UsuariosEmpresas implements OnInit {
 
-    usuariosTabla: UsuarioTabla[] = [];
+    private cdr = inject(ChangeDetectorRef);
+    private messageService = inject(MessageService);
     private usuariosService = inject(Usuarios);
+    private usuariosCrud = inject(UsuariosService);
 
+    public usuariosTabla: UsuarioTabla[] = [];
+    public columnasEmpresas: { idEmpresa: number, nombre: string }[] = [];
 
+    /** Los roles de cada empresa, cargados una sola vez. */
+    private rolesPorEmpresa: { [idEmpresa: number]: Role[] } = {};
 
-    columnasEmpresas: { idEmpresa: number, nombre: string }[] = [];
+    // ─── Modal ───────────────────────────────────────────────────────
 
-   ngOnInit() {
-    // 1. Cargamos el catálogo de empresas primero
-    this.usuariosService.obtenerTodasLasEmpresas().subscribe(empresas => {
-        // Mapeamos los campos reales de tu entidad Empresa (ej: idEmpresa, nombreEmpresa)
-        this.columnasEmpresas = empresas.map(e => ({
-            idEmpresa: e.idEmpresa,
-            nombre: e.nombreEmpresa
-        }));
+    public mostrarModal = false;
+    public tituloFormulario = '';
+    public guardando = false;
 
-        // 2. Una vez que tenemos las columnas, cargamos los usuarios
-        this.cargarUsuariosDesdeBD();
-    });
-}
+    /** Sólo tiene valor al editar; en el alta queda indefinido. */
+    public formIdUsuario: number | undefined;
 
-    cargarUsuariosDesdeBD() {
+    public formNombre = '';
+    public formApPaterno = '';
+    public formApMaterno = '';
+    public formUsuario = '';
+    public formContrasena = '';
+    public formEsAdministrador = false;
+
+    public asignaciones: AsignacionDeEmpresa[] = [];
+
+    // ─── Modal de contraseña ─────────────────────────────────────────
+
+    public mostrarModalContrasena = false;
+    public usuarioDeLaContrasena: UsuarioTabla | undefined;
+    public formContrasenaNueva = '';
+
+    ngOnInit(): void {
+        this.usuariosService.obtenerTodasLasEmpresas().subscribe({
+            next: (empresas) => {
+                this.columnasEmpresas = empresas.map(e => ({
+                    idEmpresa: e.idEmpresa,
+                    nombre: e.nombreEmpresa
+                }));
+
+                this.cargarRolesDeLasEmpresas();
+                this.cargarUsuariosDesdeBD();
+            },
+            error: (err) => console.error('Error al cargar las empresas', err)
+        });
+    }
+
+    /**
+     * Los roles se traen por empresa, así que se piden todos de un jalón al
+     * inicio y se guardan. Así abrir el modal no dispara cuatro peticiones.
+     */
+    private cargarRolesDeLasEmpresas(): void {
+        const peticiones: Observable<Role[]>[] = this.columnasEmpresas
+            .map(col => this.usuariosCrud.obtenerRolesPorEmpresa(col.idEmpresa));
+
+        if (peticiones.length === 0) {
+            return;
+        }
+
+        forkJoin(peticiones).subscribe({
+            next: (respuestas) => {
+                respuestas.forEach((roles, indice) => {
+                    this.rolesPorEmpresa[this.columnasEmpresas[indice].idEmpresa] = roles;
+                });
+            },
+            error: (err) => console.error('Error al cargar los roles', err)
+        });
+    }
+
+    public cargarUsuariosDesdeBD(): void {
         this.usuariosService.obtenerTodosLosUsuarios().subscribe({
             next: (data: UsuarioSistemaDTO[]) => {
-
-                // Transformamos la respuesta del backend para que la tabla la entienda
                 this.usuariosTabla = data.map(user => {
-
-                    // Inicializamos el diccionario de accesos vacío
                     const mapaDeAccesos: { [idEmpresa: number]: boolean } = {};
 
-                    // Recorremos las columnas y verificamos si el usuario tiene ese idEmpresa
                     this.columnasEmpresas.forEach(col => {
-                        // .some() busca si existe el ID en el JSON que mandó el backend. Si sí, devuelve true.
-                        const tieneAcceso = user.empresasAsociadas.some(e => e.idEmpresa === col.idEmpresa);
-                        mapaDeAccesos[col.idEmpresa] = tieneAcceso;
+                        mapaDeAccesos[col.idEmpresa] = user.empresasAsociadas
+                            .some(e => e.idEmpresa === col.idEmpresa);
                     });
 
                     return {
                         idUsuario: user.idUsuario,
                         nombreCompleto: user.nombreCompleto,
-                        accesos: mapaDeAccesos
+                        usuario: user.usuario,
+                        accesos: mapaDeAccesos,
+                        empresasAsociadas: user.empresasAsociadas
                     };
                 });
+
+                this.cdr.detectChanges();
             },
+            error: (err) => console.error('Error al cargar los usuarios', err)
+        });
+    }
+
+    public guardarDatos(): void {
+        const datosParaBackend = this.usuariosTabla.map(user => ({
+            idUsuario: user.idUsuario,
+            empresasSeleccionadas: this.columnasEmpresas
+                .filter(col => user.accesos[col.idEmpresa] === true)
+                .map(col => col.idEmpresa)
+        }));
+
+        this.usuariosService.guardarPermisos(datosParaBackend).subscribe({
+            next: () => this.avisar('success', 'Guardado', 'Los accesos se actualizaron.'),
             error: (err) => {
-                console.error("Error al cargar los usuarios:", err);
+                console.error('Error al guardar', err);
+                this.avisar('error', 'Error al guardar', 'No se pudieron guardar los accesos.');
             }
         });
     }
 
-guardarDatos() {
-    const datosParaBackend = this.usuariosTabla.map(user => ({
-        idUsuario: user.idUsuario,
-        empresasSeleccionadas: this.columnasEmpresas
-            .filter(col => user.accesos[col.idEmpresa] === true)
-            .map(col => col.idEmpresa)
-    }));
+    // ─── Alta y edición ──────────────────────────────────────────────
 
-    console.log(datosParaBackend);
+    public crearUsuario(): void {
+        this.formIdUsuario = undefined;
+        this.formNombre = '';
+        this.formApPaterno = '';
+        this.formApMaterno = '';
+        this.formUsuario = '';
+        this.formContrasena = '';
+        this.formEsAdministrador = false;
 
-    this.usuariosService.guardarPermisos(datosParaBackend).subscribe({
-        next: () => {
-            alert('¡Cambios guardados exitosamente!');
-        },
-        error: (err) => {
-            console.error('Error al guardar:', err);
-            alert('Ocurrió un error al guardar los permisos');
+        this.asignaciones = this.armarAsignaciones([]);
+
+        this.abrirModal('Crear nuevo usuario');
+    }
+
+    public editarUsuario(usuario: UsuarioTabla): void {
+        this.formIdUsuario = usuario.idUsuario;
+
+        // El backend manda el nombre ya concatenado, así que se reparte en
+        // los tres campos. El resto de las partes se pegan al segundo
+        // apellido para no perder nada al guardar.
+        const partes = usuario.nombreCompleto.split(' ').filter(p => p.length > 0);
+        this.formNombre = partes[0] ?? '';
+        this.formApPaterno = partes[1] ?? '';
+        this.formApMaterno = partes.slice(2).join(' ');
+
+        this.formUsuario = usuario.usuario;
+        this.formContrasena = '';
+        this.formEsAdministrador = false;
+
+        this.asignaciones = this.armarAsignaciones(usuario.empresasAsociadas);
+
+        this.abrirModal('Editar usuario');
+    }
+
+    /** Una fila por empresa, marcando las que el usuario ya tiene. */
+    private armarAsignaciones(actuales: EmpresaAsociada[]): AsignacionDeEmpresa[] {
+        return this.columnasEmpresas.map(col => {
+            const asignada = actuales.find(a => a.idEmpresa === col.idEmpresa);
+
+            return {
+                idEmpresa: col.idEmpresa,
+                nombre: col.nombre,
+                seleccionada: asignada != null,
+                idRol: asignada?.idRol,
+                roles: this.rolesPorEmpresa[col.idEmpresa] ?? []
+            };
+        });
+    }
+
+    private abrirModal(titulo: string): void {
+        this.tituloFormulario = titulo;
+        this.mostrarModal = true;
+        this.guardando = false;
+        this.cdr.detectChanges();
+    }
+
+    public cerrarModal(): void {
+        this.mostrarModal = false;
+        this.guardando = false;
+        this.cdr.detectChanges();
+    }
+
+    public guardarUsuario(): void {
+        const nombre = this.formNombre.trim();
+        const nombreDeUsuario = this.formUsuario.trim();
+        const esEdicion = this.formIdUsuario != null;
+
+        if (!nombre || !nombreDeUsuario) {
+            this.avisar('warn', 'Atención', 'El nombre y el usuario son obligatorios.');
+            return;
         }
-    });
-}
+
+        if (!esEdicion && this.formContrasena.length < 8) {
+            this.avisar('warn', 'Atención', 'La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+
+        // Una empresa marcada sin rol no se puede guardar: el backend espera
+        // el par completo y rechazaría la petición con un 422.
+        const sinRol = this.asignaciones.find(a => a.seleccionada && a.idRol == null);
+
+        if (sinRol != null) {
+            this.avisar('warn', 'Atención', `Selecciona el rol para ${sinRol.nombre}.`);
+            return;
+        }
+
+        const empresasAsociadas: EmpresaAsociada[] = this.asignaciones
+            .filter(a => a.seleccionada)
+            .map(a => ({ idEmpresa: a.idEmpresa, idRol: a.idRol! }));
+
+        this.guardando = true;
+
+        // Se anota el tipo: sin esto el ternario produce una unión de dos
+        // Observables distintos y TypeScript no puede llamar .subscribe().
+        const peticion: Observable<UsuarioDelBackend | void> = esEdicion
+            ? this.usuariosCrud.actualizarUsuario({
+                idUsuario: this.formIdUsuario!,
+                nombre,
+                apPaterno: this.formApPaterno.trim() || null,
+                apMaterno: this.formApMaterno.trim() || null,
+                usuario: nombreDeUsuario,
+                roladministrador: this.formEsAdministrador,
+                empresasAsociadas
+            })
+            : this.usuariosCrud.crearUsuario({
+                nombre,
+                apPaterno: this.formApPaterno.trim() || null,
+                apMaterno: this.formApMaterno.trim() || null,
+                usuario: nombreDeUsuario,
+                contrasena: this.formContrasena,
+                roladministrador: this.formEsAdministrador,
+                empresasAsociadas
+            });
+
+        peticion.subscribe({
+            next: () => {
+                this.avisar(
+                    'success',
+                    esEdicion ? 'Usuario actualizado' : 'Usuario creado',
+                    `${nombreDeUsuario} se guardó correctamente.`
+                );
+
+                this.cerrarModal();
+                this.cargarUsuariosDesdeBD();
+            },
+            error: (err) => {
+                this.guardando = false;
+                console.error('Error al guardar el usuario', err);
+                this.avisar('error', 'Error al guardar', this.detalleDelError(err, nombreDeUsuario));
+            }
+        });
+    }
+
+    // ─── Cambio de contraseña ────────────────────────────────────────
+
+    public abrirModalContrasena(usuario: UsuarioTabla): void {
+        this.usuarioDeLaContrasena = usuario;
+        this.formContrasenaNueva = '';
+        this.mostrarModalContrasena = true;
+        this.cdr.detectChanges();
+    }
+
+    public cerrarModalContrasena(): void {
+        this.mostrarModalContrasena = false;
+        this.guardando = false;
+        this.cdr.detectChanges();
+    }
+
+    public guardarContrasena(): void {
+        if (this.usuarioDeLaContrasena == null) {
+            return;
+        }
+
+        if (this.formContrasenaNueva.length < 8) {
+            this.avisar('warn', 'Atención', 'La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+
+        this.guardando = true;
+
+        // Va sin contrasenaActual: es un administrador reseteando la de otro,
+        // no la conoce.
+        this.usuariosCrud.cambiarContrasena(this.usuarioDeLaContrasena.idUsuario, {
+            contrasenaActual: null,
+            contrasenaNueva: this.formContrasenaNueva
+        }).subscribe({
+            next: () => {
+                this.avisar('success', 'Contraseña actualizada', 'La contraseña se cambió correctamente.');
+                this.cerrarModalContrasena();
+            },
+            error: (err) => {
+                this.guardando = false;
+                console.error('Error al cambiar la contraseña', err);
+                this.avisar('error', 'Error', 'No se pudo cambiar la contraseña.');
+            }
+        });
+    }
+
+    private detalleDelError(err: any, nombreDeUsuario: string): string {
+        // 409: el backend rechaza nombres de acceso repetidos.
+        if (err?.status === 409) {
+            return `Ya existe un usuario llamado ${nombreDeUsuario}.`;
+        }
+
+        if (err?.status === 422) {
+            return err?.error?.mensaje ?? 'Los datos del usuario no son válidos.';
+        }
+
+        return 'No se pudo guardar el usuario.';
+    }
+
+    private avisar(severity: string, summary: string, detail: string): void {
+        this.messageService.add({ severity, summary, detail });
+    }
+
 }

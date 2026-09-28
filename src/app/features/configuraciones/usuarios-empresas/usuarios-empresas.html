@@ -1,20 +1,45 @@
+<p-toast></p-toast>
+
 <div class="card">
   <p-table
     #dt
-    [value]="usuarios"
-    dataKey="id"
-    [globalFilterFields]="['nombre']"
-    [tableStyle]="{ 'min-width': '60rem' }"
+    [value]="usuariosTabla"
+    [globalFilterFields]="['nombreCompleto', 'usuario']"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    dataKey="idUsuario"
   >
-    <!-- ==================== BUSCADOR ==================== -->
+    <!-- ==================== CABECERA DE CONTROLES ==================== -->
     <ng-template pTemplate="caption">
-      <div class="buscador-container">
+      <div class="barra-controles">
+        <div class="grupo-botones">
+          <button
+            pButton
+            type="button"
+            label="Guardar Cambios"
+            icon="pi pi-save"
+            class="p-button-success"
+            (click)="guardarDatos()"
+          ></button>
+
+          <button
+            pButton
+            type="button"
+            label="Crear nuevo usuario"
+            icon="pi pi-user-plus"
+            (click)="crearUsuario()"
+          ></button>
+        </div>
+
         <span class="input-con-icono">
           <i class="pi pi-search"></i>
-          <!-- Usamos $any($event.target) para evitar errores del modo estricto de Angular -->
           <input
             pInputText
             type="text"
+            name="buscadorUsuarios"
+            autocomplete="off"
             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
             placeholder="Buscar por usuario..."
           />
@@ -25,64 +50,254 @@
     <!-- ==================== CABECERAS ==================== -->
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 4rem"></th>
-        <th>Nombre del Usuario</th>
-        <th class="col-centrada">VIKINGO</th>
-        <th class="col-centrada">DRAKKAR</th>
-        <th class="col-centrada">KARVE</th>
-        <th class="col-centrada">LETCA</th>
+        <th style="width: 20%">Nombre</th>
+        <th style="width: 12%">Usuario</th>
+        <th
+          *ngFor="let col of columnasEmpresas"
+          class="col-centrada"
+        >
+          {{ col.nombre }}
+        </th>
+        <th style="width: 7rem"></th>
       </tr>
     </ng-template>
 
-    <!-- ==================== FILA PRINCIPAL ==================== -->
-    <!-- ==================== FILA PRINCIPAL ==================== -->
-    <ng-template pTemplate="body" let-usuario let-expanded="expanded">
+    <!-- ==================== CUERPO ==================== -->
+    <ng-template pTemplate="body" let-usuario>
       <tr>
-        <td>
-          <!-- Cambiamos el icono por un texto de [Abrir] / [Cerrar] para que lo veas sí o sí -->
-          <button
-            type="button"
-            pButton
-            pRipple
-            [pRowToggler]="usuario"
-            class="p-button-text p-button-plain texto-negrita"
-          >
-            {{ expanded ? "[-] Ocultar" : "[+] Expandir" }}
-          </button>
+        <td class="texto-negrita">{{ usuario.nombreCompleto }}</td>
+        <td>{{ usuario.usuario }}</td>
+
+        <td *ngFor="let col of columnasEmpresas" class="col-centrada">
+          <p-checkbox
+            [(ngModel)]="usuario.accesos[col.idEmpresa]"
+            [name]="'acceso-' + usuario.idUsuario + '-' + col.idEmpresa"
+            [binary]="true"
+          ></p-checkbox>
         </td>
-        <td class="texto-negrita">{{ usuario.nombre }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+
+        <td class="col-centrada">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="p-button-text p-button-sm"
+            pTooltip="Editar usuario"
+            (click)="editarUsuario(usuario)"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-key"
+            class="p-button-text p-button-sm"
+            pTooltip="Cambiar contraseña"
+            (click)="abrirModalContrasena(usuario)"
+          ></button>
+        </td>
       </tr>
     </ng-template>
 
-    <!-- ==================== FILA EXPANDIDA (CHECKBOXES) ==================== -->
-    <ng-template pTemplate="rowexpansion" let-usuario>
-      <tr class="fila-expandida">
-        <td colspan="2" class="col-derecha texto-negrita texto-apoyo">
-          Asignar accesos para {{ usuario.nombre }}:
-        </td>
-        <td class="col-centrada">
-          <p-checkbox
-            [(ngModel)]="usuario.vikingo"
-            [binary]="true"
-          ></p-checkbox>
-        </td>
-        <td class="col-centrada">
-          <p-checkbox
-            [(ngModel)]="usuario.drakkar"
-            [binary]="true"
-          ></p-checkbox>
-        </td>
-        <td class="col-centrada">
-          <p-checkbox [(ngModel)]="usuario.karve" [binary]="true"></p-checkbox>
-        </td>
-        <td class="col-centrada">
-          <p-checkbox [(ngModel)]="usuario.letca" [binary]="true"></p-checkbox>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="columnasEmpresas.length + 3" class="col-centrada">
+          No hay usuarios registrados.
         </td>
       </tr>
     </ng-template>
   </p-table>
 </div>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+<p-dialog
+  [header]="tituloFormulario"
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '46rem' }"
+  [breakpoints]="{ '768px': '95vw' }"
+  [draggable]="true"
+  (onHide)="cerrarModal()"
+>
+  <div class="formulario">
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        type="text"
+        pInputText
+        class="w-full"
+        maxlength="50"
+        name="nombre"
+        [(ngModel)]="formNombre"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="apPaterno">Apellido paterno</label>
+      <input
+        id="apPaterno"
+        type="text"
+        pInputText
+        class="w-full"
+        maxlength="50"
+        name="apPaterno"
+        [(ngModel)]="formApPaterno"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="apMaterno">Apellido materno</label>
+      <input
+        id="apMaterno"
+        type="text"
+        pInputText
+        class="w-full"
+        maxlength="50"
+        name="apMaterno"
+        [(ngModel)]="formApMaterno"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="usuario">Usuario</label>
+      <input
+        id="usuario"
+        type="text"
+        pInputText
+        class="w-full"
+        maxlength="50"
+        name="usuario"
+        autocomplete="off"
+        [(ngModel)]="formUsuario"
+      />
+    </div>
+
+    <!-- Sólo en el alta: al editar, la contraseña se cambia desde su propio
+         botón, para que una edición de datos no pueda tocar el hash. -->
+    @if (formIdUsuario == null) {
+      <div class="campo">
+        <label for="contrasena">Contraseña</label>
+        <input
+          id="contrasena"
+          type="password"
+          pInputText
+          class="w-full"
+          name="contrasena"
+          autocomplete="new-password"
+          [(ngModel)]="formContrasena"
+        />
+        <small class="texto-apoyo">Mínimo 8 caracteres.</small>
+      </div>
+    }
+
+    <div class="campo campo--ancho">
+      <div class="linea-checkbox">
+        <p-checkbox
+          inputId="esAdmin"
+          name="esAdmin"
+          [(ngModel)]="formEsAdministrador"
+          [binary]="true"
+        ></p-checkbox>
+        <label for="esAdmin">Es administrador</label>
+      </div>
+      <small class="texto-apoyo">
+        Un administrador ve todo el sistema sin importar sus asignaciones.
+      </small>
+    </div>
+  </div>
+
+  <!-- Accesos: el backend espera el par empresa + rol, así que marcar la
+       empresa obliga a elegir el rol. -->
+  <div class="seccion-accesos">
+    <p class="titulo-seccion">Accesos por empresa</p>
+
+    @for (asignacion of asignaciones; track asignacion.idEmpresa) {
+      <div class="renglon-acceso">
+        <div class="linea-checkbox">
+          <p-checkbox
+            [inputId]="'empresa-' + asignacion.idEmpresa"
+            [name]="'empresa-' + asignacion.idEmpresa"
+            [(ngModel)]="asignacion.seleccionada"
+            [binary]="true"
+          ></p-checkbox>
+          <label [for]="'empresa-' + asignacion.idEmpresa">{{ asignacion.nombre }}</label>
+        </div>
+
+        <p-select
+          [options]="asignacion.roles"
+          [(ngModel)]="asignacion.idRol"
+          [name]="'rol-' + asignacion.idEmpresa"
+          optionLabel="nombreRol"
+          optionValue="idRol"
+          placeholder="Selecciona el rol"
+          [disabled]="!asignacion.seleccionada"
+          appendTo="body"
+          styleClass="w-full"
+        ></p-select>
+      </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      class="p-button-text"
+      [disabled]="guardando"
+      (click)="cerrarModal()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Guardar"
+      icon="pi pi-save"
+      [loading]="guardando"
+      (click)="guardarUsuario()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ==================== MODAL DE CONTRASEÑA ==================== -->
+<p-dialog
+  header="Cambiar contraseña"
+  [(visible)]="mostrarModalContrasena"
+  [modal]="true"
+  [style]="{ width: '28rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+  (onHide)="cerrarModalContrasena()"
+>
+  <div class="campo">
+    <label for="contrasenaNueva">
+      Nueva contraseña para {{ usuarioDeLaContrasena?.usuario }}
+    </label>
+    <input
+      id="contrasenaNueva"
+      type="password"
+      pInputText
+      class="w-full"
+      name="contrasenaNueva"
+      autocomplete="new-password"
+      [(ngModel)]="formContrasenaNueva"
+    />
+    <small class="texto-apoyo">Mínimo 8 caracteres.</small>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancelar"
+      class="p-button-text"
+      [disabled]="guardando"
+      (click)="cerrarModalContrasena()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Cambiar"
+      icon="pi pi-key"
+      [loading]="guardando"
+      (click)="guardarContrasena()"
+    ></button>
+  </ng-template>
+</p-dialog>

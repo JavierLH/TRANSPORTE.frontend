@@ -126,7 +126,8 @@ export class ModalTarifarioVkKv implements OnInit {
         TarifaPropuesta: 0
     }
   },
-    { codigo: 2, nombre: 'DGR', bloqueMercanciaSencillo: {
+    { codigo: 2, nombre: 'DGR',
+      bloqueMercanciaSencillo: {
         RT : 0 ,
         KMxL : 0 ,
         TotalLTS : 0  ,
@@ -159,7 +160,8 @@ export class ModalTarifarioVkKv implements OnInit {
         TarifaPropuesta: 0
     }
   },
-    { codigo: 3, nombre: 'REEFER', bloqueMercanciaSencillo: {
+    { codigo: 3, nombre: 'REEFER',
+      bloqueMercanciaSencillo: {
         RT : 0 ,
         KMxL : 0 ,
         TotalLTS : 0  ,
@@ -251,8 +253,6 @@ export class ModalTarifarioVkKv implements OnInit {
     });
 
   }
-
-
 
   public abrirModal(): void {
     this.formIdOrigen = undefined;
@@ -382,6 +382,19 @@ public guardarDatos(): void {
         severity: 'success',
         summary: eraExistente ? 'Ruta actualizada' : 'Ruta registrada',
         detail: `${ruta.origen} → ${ruta.destino} se guardó correctamente.`
+      });
+
+      this.MERCANCIAS.forEach((mercancia) => {
+
+        const configuraciones = [
+          { codigo: 1, nombre: 'SENCILLO', bloque: mercancia.bloqueMercanciaSencillo },
+          { codigo: 2, nombre: 'FULL',     bloque: mercancia.bloqueMercanciaFull },
+        ];
+
+        configuraciones.forEach((configuracion) => {
+          console.log(mercancia.nombre, configuracion.nombre, configuracion.bloque);
+        });
+
       });
 
       this.cdr.detectChanges();
