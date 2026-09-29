@@ -583,10 +583,18 @@
   </div>
 
   <div class="footer-botones">
-    <p-button label="Cancelar" severity="danger" (onClick)="cerrarModal()" />
+    <p-button
+      label="Cancelar"
+      severity="danger"
+      [disabled]="guardando"
+      (onClick)="cerrarModal()"
+    />
+    <!-- [loading] evita el doble guardado: sin esto, dos clics seguidos
+         mandan dos altas y se crean dos viajes. -->
     <p-button
       label="{{ label }}"
       severity="success"
+      [loading]="guardando"
       (onClick)="guardarDatos()"
     />
   </div>

@@ -10,6 +10,34 @@
   height: 100%;
 }
 
+/* ─── Renglón recién guardado ─────────────────────────────────────
+   Parpadea en verde y se va apagando. La barra de la izquierda se queda
+   fija mientras dura el resaltado: el color solo puede pasar inadvertido
+   si el usuario está mirando otra parte de la pantalla. */
+
+:host ::ng-deep tr.fila-recien-guardada > td {
+  animation: destelloGuardado 6s ease-out forwards;
+}
+
+:host ::ng-deep tr.fila-recien-guardada > td:first-child {
+  box-shadow: inset 3px 0 0 0 #16a34a;
+}
+
+@keyframes destelloGuardado {
+  0%   { background-color: rgba(22, 163, 74, 0.35); }
+  15%  { background-color: rgba(22, 163, 74, 0.35); }
+  100% { background-color: transparent; }
+}
+
+/* Respeta a quien pidió menos movimiento: se queda el color fijo, sin
+   transición. */
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep tr.fila-recien-guardada > td {
+    animation: none;
+    background-color: rgba(22, 163, 74, 0.18);
+  }
+}
+
 /*
 :host ::ng-deep .p-datatable {
   border-radius: 6px;

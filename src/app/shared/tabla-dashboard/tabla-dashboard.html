@@ -123,7 +123,13 @@
     </ng-template>
 
     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
-      <tr [pSelectableRow]="item" [pSelectableRowIndex]="rowIndex">
+      <!-- El renglón recién guardado se marca unos segundos para que el
+           usuario lo ubique entre las 49 columnas y la paginación. -->
+      <tr
+        [pSelectableRow]="item"
+        [pSelectableRowIndex]="rowIndex"
+        [class.fila-recien-guardada]="folioResaltado != null && item?.folio === folioResaltado"
+      >
         <ng-container
           *ngTemplateOutlet="bodyTemplate; context: { $implicit: item }"
         ></ng-container>
@@ -154,7 +160,7 @@
         [datosViajeCreacion]="datosEmpresa"
         [filaSeleccionada]="filaSeleccionada"
         (onClose)="cerrarModal()"
-        (onGuardado)="viajeGuardadoConExito()"
+        (onGuardado)="viajeGuardadoConExito($event)"
       ></app-modal-agregarviaje-viaje>
     }
   </p-dialog>

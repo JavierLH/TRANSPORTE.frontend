@@ -37,7 +37,13 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   @Input() datosViajeCreacion: CrearNuevViajeDto | undefined;
   @Output() onClose = new EventEmitter<void>();
-  @Output() onGuardado = new EventEmitter<void>();
+
+  /**
+   * Lleva el folio del viaje guardado para que la tabla pueda resaltarlo al
+   * recargar: con 49 columnas y paginación, sin eso el usuario no sabe cuál
+   * de todos los renglones acaba de crear.
+   */
+  @Output() onGuardado = new EventEmitter<number | undefined>();
   @Input() viajeAEditar: ProgramacionViajes | undefined;
 
   @Input() filaSeleccionada: any;
@@ -46,6 +52,9 @@ export class ModalAgregarviajeViaje implements OnInit {
   private catalogosService = inject(CatalogosViajeService);
   private messageService = inject(MessageService);
   private ConvenioServices = inject(ConvenioServices);
+
+  /** Bloquea el botón mientras la petición está en vuelo, para no guardar dos veces. */
+  public guardando = false;
 
   NoEsVisibleLaTemperatura : boolean = true;
 
@@ -395,14 +404,30 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     console.log('Objeto limpio enviado al API:', nuevoViaje);
 
+    this.guardando = true;
+
     this.viajesService.insertarViaje(nuevoViaje).subscribe({
       next: (respuesta) => {
-        console.log('Viaje creado con éxito:', respuesta);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Viaje creado',
+          detail: `Se registró el viaje con folio ${respuesta.idProgramacion}.`
+        });
+
         // El folio recién existe aquí, así que el documento se sube después de insertar
         this.subirDocumentoSiHay(respuesta.idProgramacion);
       },
       error: (err) => {
+        this.guardando = false;
         console.error('Error detallado del backend:', err.error?.errors);
+
+        // Sin esto el usuario se quedaba viendo el modal abierto sin saber
+        // que el guardado había fallado.
+        this.messageService.add({
+          severity: 'error',
+          summary: 'No se pudo crear el viaje',
+          detail: err?.error?.mensaje ?? 'El servidor rechazó el registro.'
+        });
       }
     });
   }
@@ -413,7 +438,8 @@ export class ModalAgregarviajeViaje implements OnInit {
    */
   private subirDocumentoSiHay(idProgramacion: number | undefined) {
     if (!this.archivoSeleccionado || !idProgramacion) {
-      this.onGuardado.emit();
+      this.guardando = false;
+      this.onGuardado.emit(idProgramacion);
       this.cerrarModal();
       return;
     }
@@ -426,7 +452,8 @@ export class ModalAgregarviajeViaje implements OnInit {
           detail: viaje.nombreArchivo ?? this.nombreArchivoCargado
         });
         this.archivoSeleccionado = undefined;
-        this.onGuardado.emit();
+        this.guardando = false;
+        this.onGuardado.emit(idProgramacion);
         this.cerrarModal();
       },
       error: (err) => {
@@ -436,7 +463,8 @@ export class ModalAgregarviajeViaje implements OnInit {
           summary: 'El viaje se guardó, pero el documento no',
           detail: err.error?.mensaje ?? 'No se pudo cargar el documento.'
         });
-        this.onGuardado.emit();
+        this.guardando = false;
+        this.onGuardado.emit(idProgramacion);
         this.cerrarModal();
       }
     });
@@ -463,13 +491,27 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     const viajeActualizado = this.construirObjetoViaje();
 
+    this.guardando = true;
+
     this.viajesService.actualizarViaje(this.idProgramacion, viajeActualizado).subscribe({
       next: (respuesta) => {
-        console.log('Viaje actualizado con éxito:', respuesta);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Viaje actualizado',
+          detail: `Se guardaron los cambios del folio ${this.idProgramacion}.`
+        });
+
         this.subirDocumentoSiHay(this.idProgramacion);
       },
       error: (err) => {
+        this.guardando = false;
         console.error('Error detallado del backend:', err.error?.errors);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'No se pudo actualizar el viaje',
+          detail: err?.error?.mensaje ?? 'El servidor rechazó los cambios.'
+        });
       }
     });
   }

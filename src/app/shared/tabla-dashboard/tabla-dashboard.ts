@@ -1,4 +1,4 @@
-import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit } from '@angular/core';
+import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule, Table } from 'primeng/table';
@@ -55,7 +55,12 @@ export interface ColumnaTabla {
   templateUrl: './tabla-dashboard.html',
   styleUrl: './tabla-dashboard.css',
 })
-export class TablaDashboardComponent implements OnInit{
+export class TablaDashboardComponent implements OnInit, OnDestroy {
+
+  ngOnDestroy(): void {
+    clearTimeout(this.temporizadorResaltado);
+  }
+
 
   @Input() data: any[] = [];
   @Input() loading: boolean = false;
@@ -234,9 +239,42 @@ export class TablaDashboardComponent implements OnInit{
     }
   }
 
-viajeGuardadoConExito() {
+  /**
+   * Folio del viaje que se acaba de guardar. Mientras tenga valor, su
+   * renglón se pinta distinto en la tabla.
+   */
+  folioResaltado: number | null = null;
+
+  private temporizadorResaltado: any;
+
+  /** Cuánto dura el resaltado antes de apagarse solo. */
+  private static readonly DuracionDelResaltado = 6000;
+
+  viajeGuardadoConExito(folio?: number) {
     this.cerrarModal();
+
+    // La tabla trae 49 columnas y paginación: sin marcar el renglón, el
+    // usuario no tiene forma de ubicar el viaje que acaba de guardar.
+    this.resaltarFolio(folio);
+
     this.recargarTabla.emit(); // Disparamos el aviso hacia el componente Padre (Principal)
+  }
+
+  private resaltarFolio(folio?: number) {
+    if (folio == null) {
+      return;
+    }
+
+    // Si se guardan dos viajes seguidos, el temporizador anterior apagaría
+    // el resaltado del nuevo antes de tiempo.
+    clearTimeout(this.temporizadorResaltado);
+
+    this.folioResaltado = folio;
+
+    this.temporizadorResaltado = setTimeout(() => {
+      this.folioResaltado = null;
+      this.cdr.detectChanges();
+    }, TablaDashboardComponent.DuracionDelResaltado);
   }
 
   mostrarDialogBitacora = false;
