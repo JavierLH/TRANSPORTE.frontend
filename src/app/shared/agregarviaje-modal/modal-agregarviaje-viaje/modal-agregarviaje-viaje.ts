@@ -349,6 +349,15 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.idTipoOperacion = viaje.idTipoOperacion;
     this.idTipoMercancia = viaje.idTipoMercancia;
 
+    // La temperatura se guarda en conexiones. Sin esta línea el campo se
+    // mostraba vacío aunque la base trajera el valor, y al actualizar se
+    // volvía a guardar en blanco.
+    this.conexiones = viaje.conexiones ?? '';
+
+    // Y sin esto, un viaje guardado como refrigerado abre con la temperatura
+    // escondida: la visibilidad sólo se recalculaba al mover el selector.
+    this.actualizarVisibilidadDeTemperatura(viaje.idTipoMercancia);
+
     // Igual que datetime24h: citaTerminal se muestra en un p-datepicker, así que necesita un Date
     this.citaTerminal = viaje.citaTerminal ? (new Date(viaje.citaTerminal) as any) : '';
 
@@ -549,18 +558,36 @@ export class ModalAgregarviajeViaje implements OnInit {
 
   mercanciaEsRefrigerada(event: SelectChangeEvent){
 
-    const tipoMercancia = this.mercancias.filter(e => e.idTipoMercancia === event.value)[0].descripcion;
+    this.actualizarVisibilidadDeTemperatura(event.value);
 
-    if(tipoMercancia === "REFRIGERADA" || tipoMercancia
-       === "REFRIGERADA/PELIGROSA" || tipoMercancia === "REFRIGERADA/GENERAL"
-    ){
-      this.NoEsVisibleLaTemperatura = false;
-    }
-    else{
-      this.NoEsVisibleLaTemperatura = true;
+    // La temperatura sólo se limpia cuando el usuario cambia la mercancía a una
+    // que no la lleva. Al precargar un viaje no se toca, porque ahí el valor
+    // viene de la base y borrarlo sería perder el dato guardado.
+    if (this.NoEsVisibleLaTemperatura) {
       this.conexiones = '';
     }
 
+  }
+
+  /**
+   * Decide si el campo de temperatura se muestra, a partir del id de mercancía.
+   *
+   * Vive aparte del (onChange) porque también hace falta al precargar un viaje
+   * en modo EDITAR: si sólo se evaluara al cambiar el selector, un viaje
+   * guardado como refrigerado abriría con la temperatura escondida.
+   */
+  private actualizarVisibilidadDeTemperatura(idTipoMercancia: number | undefined | null): void {
+    // find en vez de filter[0]: un viaje viejo puede traer la mercancía en null
+    // o con un id que ya no está en el catálogo, y ahí filter[0] truena.
+    const descripcion = this.mercancias
+      .find(mercancia => mercancia.idTipoMercancia === idTipoMercancia)
+      ?.descripcion;
+
+    this.NoEsVisibleLaTemperatura = !(
+      descripcion === "REFRIGERADA"
+      || descripcion === "REFRIGERADA/PELIGROSA"
+      || descripcion === "REFRIGERADA/GENERAL"
+    );
   }
 
   private construirObjetoViaje(): ProgramacionViajes {
