@@ -1,4 +1,4 @@
-import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, ContentChild, TemplateRef, ChangeDetectorRef, inject, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule, Table } from 'primeng/table';
@@ -55,10 +55,20 @@ export interface ColumnaTabla {
   templateUrl: './tabla-dashboard.html',
   styleUrl: './tabla-dashboard.css',
 })
-export class TablaDashboardComponent implements OnInit, OnDestroy {
+export class TablaDashboardComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy(): void {
     clearTimeout(this.temporizadorResaltado);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Después de guardar, el padre recarga y manda un arreglo nuevo. Hasta
+    // que ese arreglo llega no hay en qué buscar el folio guardado.
+    if (changes['data'] && this.folioPorUbicar != null) {
+      // Se difiere un ciclo: p-table recibe el [value] nuevo después de este
+      // hook, y hasta entonces no ha aplicado orden ni filtro.
+      setTimeout(() => this.irAlFolioGuardado());
+    }
   }
 
 
@@ -250,6 +260,58 @@ export class TablaDashboardComponent implements OnInit, OnDestroy {
   /** Cuánto dura el resaltado antes de apagarse solo. */
   private static readonly DuracionDelResaltado = 6000;
 
+  @ViewChild('dt') private tabla?: Table;
+
+  private host = inject(ElementRef);
+
+  /** Índice del primer renglón visible; enlazado a [(first)] del p-table. */
+  primerRegistro = 0;
+
+  /**
+   * Folio guardado que todavía falta ubicar en la tabla. Se llena al guardar
+   * y se consume cuando llega la recarga; separado de folioResaltado porque
+   * ése controla el color y dura más.
+   */
+  private folioPorUbicar: number | null = null;
+
+  /**
+   * Lleva la tabla a la página donde quedó el viaje guardado y lo trae a la
+   * vista. Sin esto el resaltado funciona, pero si el renglón cae en otra
+   * página el usuario no lo ve.
+   */
+  private irAlFolioGuardado(): void {
+    const folio = this.folioPorUbicar;
+    this.folioPorUbicar = null;
+
+    if (folio == null || !this.tabla) {
+      return;
+    }
+
+    // Lo que la tabla muestra de verdad: con texto en el buscador es
+    // filteredValue; si no, value. Ambos ya vienen con el orden aplicado.
+    const filas: any[] = this.tabla.filteredValue ?? this.tabla.value ?? [];
+    const indice = filas.findIndex(fila => fila?.[this.dataKey] === folio);
+
+    if (indice === -1) {
+      // Pasa cuando el viaje queda fuera del rango de fechas cargado o no
+      // coincide con lo escrito en el buscador.
+      this.avisar('info', 'Viaje guardado', `El folio ${folio} no aparece con los filtros actuales.`);
+      return;
+    }
+
+    const filasPorPagina = this.tabla.rows ?? 10;
+    this.primerRegistro = Math.floor(indice / filasPorPagina) * filasPorPagina;
+    this.cdr.detectChanges();
+
+    // Ya está en la página visible; falta traerlo al centro del scroll de la
+    // tabla, que con 25 o 50 filas por página lo deja fuera de vista.
+    setTimeout(() => {
+      this.host.nativeElement
+        .querySelector('tr.fila-recien-guardada')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
   viajeGuardadoConExito(folio?: number) {
     this.cerrarModal();
 
@@ -270,6 +332,7 @@ export class TablaDashboardComponent implements OnInit, OnDestroy {
     clearTimeout(this.temporizadorResaltado);
 
     this.folioResaltado = folio;
+    this.folioPorUbicar = folio;
 
     this.temporizadorResaltado = setTimeout(() => {
       this.folioResaltado = null;
