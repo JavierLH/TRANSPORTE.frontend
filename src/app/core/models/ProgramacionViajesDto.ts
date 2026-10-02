@@ -10,6 +10,8 @@ export interface ProgramacionViajes {
   noConvenio?: string;
   idTipoOperacion?: number;
   idTipoMercancia?: number;
+  /** Sencillo (1) o full (2), del catálogo Configuracion. */
+  codigoConfiguracion?: number;
   citaTerminal?: string;
   comentarios?: string;
   comision?: number;

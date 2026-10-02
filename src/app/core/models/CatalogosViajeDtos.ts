@@ -49,6 +49,12 @@ export interface Operacion {
   tipoOperacion: string | null;
 }
 
+/** Sencillo o full: el catálogo Configuracion, el mismo del tarifario. */
+export interface Configuracion {
+  codigoConfiguracion: number;
+  nombre: string | null;
+}
+
 export interface Origenes {
   idOrigen : number | null;
   origen1 : number | null;
@@ -83,6 +89,7 @@ export interface CatalogosViaje {
   clientes: Cliente[];
   tipoMercancia: TipoMercancia[];
   operaciones: Operacion[];
+  configuraciones: Configuracion[];
   origenes: Origenes[];
   destinoEstados: DestinoEstados[];
   destinoEstadoCiudades: DestinoEstadoCiudades[];   // <-- antes decía "destinosEstadosCuidades", no coincidía con el JSON real

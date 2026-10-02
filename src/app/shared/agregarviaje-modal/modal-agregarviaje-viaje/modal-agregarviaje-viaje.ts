@@ -10,7 +10,7 @@ import { ProgramacionViajes } from '../../../core/models/ProgramacionViajesDto';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectChangeEvent, SelectModule } from 'primeng/select';
 import { CatalogosViajeService } from '../../../core/services/CatalogosViajesService';
-import { Cliente, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, Patios, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
+import { Cliente, Configuracion, DestinoEstadoCiudades, DestinoEstados, Ejecutivo, Equipo, Operacion, Operador, Origenes, Patios, TipoMercancia } from '../../../core/models/CatalogosViajeDtos';
 import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { ConvenioServices } from '../../../core/services/ConvenioService';
@@ -72,7 +72,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   idOperadorRetira: number | undefined;
   idEquipoRetira: number | undefined;
 
-  idTipo: number | undefined; // <-- Creado para "Tipo" (antes chocaba con Operacion)
+  /** Combo "Tipo": sencillo o full. Se guarda como CodigoConfiguracion. */
+  codigoConfiguracion: number | undefined;
   idTipoOperacion: number | undefined; // <-- Usado para "Operación"
   idTipoMercancia: number | undefined;
 
@@ -119,9 +120,8 @@ export class ModalAgregarviajeViaje implements OnInit {
   mercancias: TipoMercancia[] = [];
   operaciones: Operacion[] = [];
 
-  tipos = [
-    { id: 1, nombre: 'SENCILLO' }, { id: 2, nombre: 'FULL' }
-  ];
+  /** Sencillo y full; llegan del backend con el resto de los catálogos. */
+  configuraciones: Configuracion[] = [];
 
   origenes: Origenes[] = [];
   destinos: DestinoEstados[] = [];
@@ -311,6 +311,7 @@ export class ModalAgregarviajeViaje implements OnInit {
         this.clientes = data.clientes;
         this.mercancias = data.tipoMercancia;
         this.operaciones = data.operaciones;
+        this.configuraciones = data.configuraciones ?? [];
         this.origenes = data.origenes;
         this.destinos = data.destinoEstados;
         this.todasLasCiudades = data.destinoEstadoCiudades;
@@ -348,6 +349,7 @@ export class ModalAgregarviajeViaje implements OnInit {
 
     this.idTipoOperacion = viaje.idTipoOperacion;
     this.idTipoMercancia = viaje.idTipoMercancia;
+    this.codigoConfiguracion = viaje.codigoConfiguracion;
 
     // La temperatura se guarda en conexiones. Sin esta línea el campo se
     // mostraba vacío aunque la base trajera el valor, y al actualizar se
@@ -672,6 +674,7 @@ export class ModalAgregarviajeViaje implements OnInit {
       idEquipoRetira: resolverNumero(this.idEquipoRetira),
       idTipoOperacion: resolverNumero(this.idTipoOperacion),
       idTipoMercancia: resolverNumero(this.idTipoMercancia),
+      codigoConfiguracion: resolverNumero(this.codigoConfiguracion),
 
       idOrigen: resolverNumero(this.idOrigen),
 

@@ -208,10 +208,10 @@
         <div>
           <label>Tipo</label>
           <p-select
-            [options]="tipos"
-            [(ngModel)]="idTipo"
+            [options]="configuraciones"
+            [(ngModel)]="codigoConfiguracion"
             optionLabel="nombre"
-            optionValue="id"
+            optionValue="codigoConfiguracion"
             placeholder="Seleccione Tipo"
             class="w-full"
           />

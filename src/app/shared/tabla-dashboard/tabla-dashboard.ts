@@ -300,6 +300,7 @@ export class TablaDashboardComponent implements OnInit, OnDestroy {
     IdOperadorRetira: 'Operador Retira',
     IdTipoMercancia: 'Tipo Mercancía',
     IdTipoOperacion: 'Operación',
+    CodigoConfiguracion: 'Tipo',
     CitaTerminal: 'Terminal',
     Comentarios: 'Comentarios',
     IdOrigen: 'Origen',
