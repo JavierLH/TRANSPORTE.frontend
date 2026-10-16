@@ -253,12 +253,14 @@
         </div>
         <div>
           <label>Cita Terminal</label>
-          <p-datepicker
+          <!-- Campo de texto, no selector de fecha: en la base es varchar y
+               guarda cosas como "ICAVE 00 A 02 AM". -->
+          <input
+            type="text"
+            pInputText
             [(ngModel)]="citaTerminal"
-            [showTime]="true"
-            placeholder="Seleccione Fecha/Hora"
+            placeholder="Ej. ICAVE 00 A 02 AM"
             class="w-full"
-            appendTo="body"
           />
         </div>
         <div>

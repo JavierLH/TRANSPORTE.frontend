@@ -8,7 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import ClienteService from '../../../core/services/ClienteServices';
-import { Cliente } from '../../../core/models/CatalogosViajeDtos';
+import { Cliente, ClienteMaestro } from '../../../core/models/CatalogosViajeDtos';
 
 @Component({
   selector: 'app-clientes-letca',
@@ -65,12 +65,61 @@ export class ClientesLetca implements OnInit {
 
   }
 
-  nuevoCliente(): void {
-    this.clienteSeleccionado = null;
-    this.formIdCliente = undefined;
-    this.formNombre = '';
-    this.mostrarDialog = true;
-    this.seGuardaElCliente = true;
+  // ─── Anexar desde el catálogo maestro ────────────────────────────
+
+  mostrarDialogAnexar = false;
+  maestrosDisponibles: ClienteMaestro[] = [];
+  cargandoMaestros = false;
+
+  /** Renglón que se está anexando, para mostrar su botón cargando. */
+  anexandoId: number | null = null;
+
+  abrirAnexar(): void {
+    this.maestrosDisponibles = [];
+    this.mostrarDialogAnexar = true;
+    this.cargandoMaestros = true;
+
+    // Se consulta cada vez que se abre: si otro usuario anexó un cliente
+    // mientras tanto, ya no debe aparecer en la lista.
+    this.clienteService.obtenerMaestrosDisponibles(this.idEmpresa).subscribe({
+      next: (maestros) => {
+        this.maestrosDisponibles = maestros;
+        this.cargandoMaestros = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar el catálogo maestro', error);
+        this.cargandoMaestros = false;
+        this.imprimirMensaje('error', 'Error', 'No se pudo cargar el catálogo maestro.');
+      }
+    });
+  }
+
+  cerrarAnexar(): void {
+    this.mostrarDialogAnexar = false;
+  }
+
+  anexarCliente(maestro: ClienteMaestro): void {
+    this.anexandoId = maestro.idClienteMaestro;
+
+    this.clienteService.anexarCliente(maestro.idClienteMaestro, this.idEmpresa).subscribe({
+      next: (cliente) => {
+        this.anexandoId = null;
+
+        // Sale de la tabla en cuanto se anexa, igual que los que ya estaban:
+        // así no se puede anexar dos veces y el modal sigue abierto por si se
+        // quieren anexar varios seguidos.
+        this.maestrosDisponibles = this.maestrosDisponibles
+          .filter(m => m.idClienteMaestro !== maestro.idClienteMaestro);
+
+        this.imprimirMensaje('success', 'Cliente anexado', `${cliente.nombreCliente} se anexó a la empresa.`);
+        this.cargarDatos();
+      },
+      error: (error) => {
+        this.anexandoId = null;
+        // 409: otro usuario lo anexó mientras tanto.
+        this.imprimirMensaje('error', 'No se pudo anexar', error?.error?.mensaje ?? 'Error al anexar el cliente.');
+      }
+    });
   }
 
   editarCliente(cliente: Cliente): void {

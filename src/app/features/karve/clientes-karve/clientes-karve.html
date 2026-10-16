@@ -31,9 +31,9 @@
           <button
             pButton
             type="button"
-            label="Nuevo cliente"
+            label="Anexar nuevo cliente"
             icon="pi pi-plus"
-            (click)="nuevoCliente()"
+            (click)="abrirAnexar()"
             class=""
           ></button>
         </div>
@@ -101,6 +101,82 @@
       label="Guardar"
       icon="pi pi-save"
       (click)="guardarCliente()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  header="Anexar cliente del catálogo maestro"
+  [(visible)]="mostrarDialogAnexar"
+  [modal]="true"
+  [style]="{ width: '48rem' }"
+  [breakpoints]="{ '800px': '95vw' }"
+>
+  <p-table
+    #dtMaestros
+    [value]="maestrosDisponibles"
+    [loading]="cargandoMaestros"
+    [paginator]="true"
+    [rows]="10"
+    [globalFilterFields]="['razonSocial', 'rfc']"
+    dataKey="idClienteMaestro"
+    styleClass="p-datatable-sm"
+  >
+    <ng-template pTemplate="caption">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search mr-2"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Buscar por nombre o RFC..."
+          (input)="dtMaestros.filterGlobal($any($event.target).value, 'contains')"
+        />
+      </span>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Razón social</th>
+        <th style="width: 10rem">RFC</th>
+        <th style="width: 8rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-maestro>
+      <tr>
+        <td>{{ maestro.razonSocial }}</td>
+        <td>{{ maestro.rfc ?? '—' }}</td>
+        <td>
+          <button
+            pButton
+            type="button"
+            label="Anexar"
+            icon="pi pi-link"
+            class="p-button-sm"
+            [loading]="anexandoId === maestro.idClienteMaestro"
+            [disabled]="anexandoId !== null"
+            (click)="anexarCliente(maestro)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3" class="text-center p-4">
+          No hay clientes por anexar: esta empresa ya tiene todos los del catálogo maestro.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cerrar"
+      class="p-button-text"
+      (click)="cerrarAnexar()"
     ></button>
   </ng-template>
 </p-dialog>

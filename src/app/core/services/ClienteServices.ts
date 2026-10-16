@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Cliente } from "../models/CatalogosViajeDtos";
+import { Cliente, ClienteMaestro } from "../models/CatalogosViajeDtos";
 import { APIClientes } from "../APIClientes";
 import { Observable } from "rxjs";
 
@@ -34,5 +34,15 @@ export default class ClienteService {
 
   eliminarCliente(idCliente: number): Observable<void> {
     return this.http.delete<void>(APIClientes.eliminarClientePorId(idCliente));
+  }
+
+  // ─── Catálogo maestro ──────────────────────────────────────────────
+
+  obtenerMaestrosDisponibles(idEmpresa: number): Observable<ClienteMaestro[]> {
+    return this.http.get<ClienteMaestro[]>(APIClientes.obtenerMaestrosDisponibles(idEmpresa));
+  }
+
+  anexarCliente(idClienteMaestro: number, idEmpresa: number): Observable<Cliente> {
+    return this.http.post<Cliente>(APIClientes.anexarCliente(), { idClienteMaestro, idEmpresa });
   }
 }

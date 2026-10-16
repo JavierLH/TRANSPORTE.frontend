@@ -360,8 +360,10 @@ export class ModalAgregarviajeViaje implements OnInit {
     // escondida: la visibilidad sólo se recalculaba al mover el selector.
     this.actualizarVisibilidadDeTemperatura(viaje.idTipoMercancia);
 
-    // Igual que datetime24h: citaTerminal se muestra en un p-datepicker, así que necesita un Date
-    this.citaTerminal = viaje.citaTerminal ? (new Date(viaje.citaTerminal) as any) : '';
+    // CitaTerminal es varchar en la base y guarda texto libre del tipo
+    // "ICAVE 00 A 02 AM", no una fecha. Pasarlo por new Date() daba Invalid
+    // Date y el campo se pintaba como NaN/NaN/NaN NaN:NaN.
+    this.citaTerminal = viaje.citaTerminal ?? '';
 
     this.comentarios = viaje.comentarios ?? '';
     this.idOrigen = viaje.idOrigen;
@@ -652,7 +654,9 @@ export class ModalAgregarviajeViaje implements OnInit {
       noViaje: resolverTexto(this.noViaje),
       fecha: resolverFecha(this.datetime24h),
       turno: resolverTexto(this.turno),
-      citaTerminal: resolverFecha(this.citaTerminal),
+      // Texto libre, no fecha: con resolverFecha se guardaba una fecha
+      // inválida encima de lo que el usuario había escrito.
+      citaTerminal: resolverTexto(this.citaTerminal),
       comentarios: resolverTexto(this.comentarios),
       idPatio: resolverNumero(this.idPatio),
       asignacion: resolverTexto(this.asignacion),

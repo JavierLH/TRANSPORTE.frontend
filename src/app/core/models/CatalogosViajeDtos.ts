@@ -36,6 +36,15 @@ export interface Cliente {
   idCliente: number | null;
   idEmpresa: number | null;
   nombreCliente: string | null;
+  /** El cliente real del catálogo maestro al que corresponde. */
+  idClienteMaestro?: number | null;
+}
+
+/** Un cliente del catálogo maestro, para elegir cuál anexar a una empresa. */
+export interface ClienteMaestro {
+  idClienteMaestro: number;
+  rfc: string | null;
+  razonSocial: string | null;
 }
 
 export interface TipoMercancia {

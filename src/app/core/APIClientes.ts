@@ -15,6 +15,14 @@ export const APIClientes = {
 
   obtenerClientesPorEmpresa: (idEmpresa : number) => {
     return `${environment.host}/Cliente/${idEmpresa}/clientes`
-  }
+  },
+
+  // ─── Catálogo maestro ──────────────────────────────────────────────
+
+  // Sólo los que esa empresa todavía no tiene anexados.
+  obtenerMaestrosDisponibles: (idEmpresa: number) =>
+    `${environment.host}/Cliente/${idEmpresa}/maestros-disponibles`,
+
+  anexarCliente: () => `${environment.host}/Cliente/anexar`,
 
 };
