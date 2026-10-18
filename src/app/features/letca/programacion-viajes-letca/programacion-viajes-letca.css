@@ -1,0 +1,21 @@
+/*
+ * La tabla se contiene en lugar de empujar la página hacia abajo.
+ *
+ * El p-table usa scrollHeight="flex", que mide contra el alto de su
+ * contenedor: si algún ancestro no tiene alto acotado, no hay contra qué
+ * medir y la tabla crece sin límite.
+ */
+.contenedor-principal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* min-height: 0 es necesario en flex: sin él, el hijo no puede encogerse
+   por debajo de su contenido y el overflow nunca aparece. */
+.contenedor-tabla-viajes {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
