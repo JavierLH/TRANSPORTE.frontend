@@ -1,0 +1,317 @@
+/* Alto acotado para que la tabla haga su propio scroll en vez de
+   empujar la página, igual que en programación de viajes. */
+.contenedor-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.contenedor-tabla-viajes {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ─── Filtros ──────────────────────────────────────────────────── */
+
+.card-filtros {
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.card-header {
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.grid-filtros {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.campo-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.campo-filtro label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2d3d;
+  white-space: nowrap;
+}
+
+/* El botón no tiene etiqueta arriba: se empuja para alinearse con los
+   selectores de al lado. */
+.campo-filtro--boton {
+  justify-content: flex-end;
+}
+
+/* ─── Contadores ───────────────────────────────────────────────── */
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tarjeta-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px 15px;
+}
+
+/* El de pendientes resalta: es la cola de trabajo, lo que hay que atender. */
+.tarjeta-resumen--pendiente {
+  border-color: #f59e0b;
+  border-left-width: 4px;
+}
+
+.tarjeta-resumen__etiqueta {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.tarjeta-resumen__numero {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2d3d;
+  line-height: 1.2;
+}
+
+.tarjeta-resumen--pendiente .tarjeta-resumen__numero {
+  color: #b45309;
+}
+
+/* ─── Barra de la tabla ────────────────────────────────────────── */
+
+.barra-tabla {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.barra-tabla__izquierda,
+.barra-tabla__derecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contador-seleccion {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ─── Chips ────────────────────────────────────────────────────── */
+
+.chip-empresa,
+.chip-estatus {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Un color por empresa, por IdEmpresa. Estos son provisionales: cuando
+   llegue la paleta de la diseñadora, aquí se cambian. */
+.chip-empresa--1 { background-color: #dbeafe; color: #1e40af; }  /* Karve   */
+.chip-empresa--2 { background-color: #ede9fe; color: #5b21b6; }  /* Vikingo */
+.chip-empresa--3 { background-color: #ccfbf1; color: #115e59; }  /* Drakkar */
+.chip-empresa--4 { background-color: #ffedd5; color: #9a3412; }  /* Letca   */
+
+/* El estatus lleva palabra además de color: el color solo es ambiguo
+   —rojo podría ser "rechazado" o "falta capturar"— y además deja fuera
+   a quien no distingue bien los colores. */
+.chip-estatus--pendiente { background-color: #fef3c7; color: #92400e; }
+.chip-estatus--validado  { background-color: #d1fae5; color: #065f46; }
+.chip-estatus--rechazado { background-color: #fee2e2; color: #991b1b; }
+
+.celda-folio {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.sin-convenio {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* El renglón se abre al hacer clic; el cursor lo anuncia. */
+.fila-clicable {
+  cursor: pointer;
+}
+
+/* ─── Modal de validación ──────────────────────────────────────── */
+
+.encabezado-modal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.encabezado-modal__titulo {
+  font-weight: 600;
+}
+
+.encabezado-modal__folio {
+  font-variant-numeric: tabular-nums;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.seccion {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.seccion__titulo {
+  background-color: #eef2ff;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2d3d;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.seccion__cuerpo {
+  padding: 15px;
+}
+
+/* Convenio y vencimiento se llevan el espacio; los tres botones van
+   al final con el ancho que necesitan. */
+.rejilla-comercial {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr auto auto auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.rejilla-comentarios {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rejilla-general {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.campo label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2d3d;
+  white-space: nowrap;
+}
+
+.campo--centrado {
+  align-items: center;
+}
+
+.obligatorio {
+  color: #991b1b;
+  font-weight: 500;
+}
+
+/* Los campos de Información general son de consulta: se ven apagados
+   para que nadie intente capturar ahí. */
+.rejilla-general input[readonly] {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  cursor: default;
+}
+
+.linea-documento {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.etiqueta-archivo {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.archivo-ok {
+  font-size: 13px;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.archivo-falta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.pie-modal {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .grid-filtros {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rejilla-general {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-filtros,
+  .resumen,
+  .rejilla-comercial,
+  .rejilla-comentarios,
+  .rejilla-general {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

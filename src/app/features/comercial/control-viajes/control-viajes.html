@@ -1,1 +1,478 @@
-<p>control-viajes works!</p>
+<p-toast></p-toast>
+
+<div class="contenedor-principal">
+
+  <!-- ─── Filtros ──────────────────────────────────────────────────
+       Mismo patrón que card-filtros, con Empresa al frente porque es
+       la que define el alcance de todo lo demás. -->
+  <div class="card-filtros">
+    <div class="card-header">
+      <h3>Control de viajes &mdash; Comercial grupo</h3>
+    </div>
+
+    <div class="card-body">
+      <div class="grid-filtros">
+        <div class="campo-filtro">
+          <label>Empresa</label>
+          <p-select
+            [options]="empresas"
+            [(ngModel)]="filtroIdEmpresa"
+            optionLabel="nombreEmpresa"
+            optionValue="idEmpresa"
+            placeholder="Todas las empresas"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro">
+          <label>Estatus de convenio</label>
+          <p-select
+            [options]="estatusDeConvenio"
+            [(ngModel)]="filtroEstatus"
+            optionLabel="nombre"
+            optionValue="valor"
+            placeholder="Todos"
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro">
+          <label>Origen</label>
+          <p-select
+            [options]="origenes"
+            [(ngModel)]="filtroIdOrigen"
+            optionLabel="origen1"
+            optionValue="idOrigen"
+            placeholder="Selecciona el origen"
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro">
+          <label>Cliente</label>
+          <p-select
+            [options]="clientes"
+            [(ngModel)]="filtroIdCliente"
+            optionLabel="nombreCliente"
+            optionValue="idCliente"
+            placeholder="Selecciona el cliente"
+            [filter]="true"
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro">
+          <label>Ejecutivo</label>
+          <p-select
+            [options]="ejecutivos"
+            [(ngModel)]="filtroIdEjecutivo"
+            optionLabel="nombreEjecutivo"
+            optionValue="idEjecutivo"
+            placeholder="Selecciona el ejecutivo"
+            [filter]="true"
+            [showClear]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro">
+          <label>Rango de fechas</label>
+          <p-datepicker
+            [(ngModel)]="filtroRangoFechas"
+            selectionMode="range"
+            [readonlyInput]="true"
+            appendTo="body"
+            class="w-full"
+          />
+        </div>
+
+        <div class="campo-filtro campo-filtro--boton">
+          <p-button
+            severity="secondary"
+            styleClass="w-full"
+            (onClick)="limpiarFiltros()"
+          >
+            Limpiar filtros
+          </p-button>
+        </div>
+      </div>
+
+      <div class="flex w-full">
+        <p-button class="w-full" styleClass="w-full" (onClick)="aplicarFiltros()">
+          Aplicar Filtros
+        </p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Contadores ───────────────────────────────────────────────
+       Dicen de un vistazo el tamaño de la cola de trabajo. -->
+  <div class="resumen">
+    <div class="tarjeta-resumen tarjeta-resumen--pendiente">
+      <span class="tarjeta-resumen__etiqueta">Por validar</span>
+      <span class="tarjeta-resumen__numero">{{ totalPendientes }}</span>
+    </div>
+
+    <div class="tarjeta-resumen">
+      <span class="tarjeta-resumen__etiqueta">Validados hoy</span>
+      <span class="tarjeta-resumen__numero">{{ totalValidadosHoy }}</span>
+    </div>
+
+    <div class="tarjeta-resumen">
+      <span class="tarjeta-resumen__etiqueta">Rechazados</span>
+      <span class="tarjeta-resumen__numero">{{ totalRechazados }}</span>
+    </div>
+  </div>
+
+  <!-- ─── Tabla ────────────────────────────────────────────────────
+       scrollHeight="flex" + el alto acotado del contenedor: la tabla
+       hace su propio scroll en vez de empujar la página. -->
+  <div class="contenedor-tabla-viajes">
+    <p-table
+      #dt
+      [value]="viajes"
+      dataKey="folio"
+      [loading]="cargando"
+      [paginator]="true"
+      [rows]="15"
+      [rowsPerPageOptions]="[15, 30, 50]"
+      [paginatorDropdownAppendTo]="'body'"
+      [showGridlines]="true"
+      [globalFilterFields]="camposDeBusqueda"
+      [(selection)]="seleccionados"
+      [scrollable]="true"
+      scrollHeight="flex"
+      styleClass="p-datatable-sm"
+      sortMode="multiple"
+    >
+      <ng-template pTemplate="caption">
+        <div class="barra-tabla">
+          <div class="barra-tabla__izquierda">
+            <p-iconfield iconPosition="left">
+              <p-inputicon>
+                <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input
+                pInputText
+                type="text"
+                name="buscadorConvenios"
+                autocomplete="off"
+                class="p-inputtext-sm"
+                style="width: 260px"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar folio, convenio o cliente..."
+              />
+            </p-iconfield>
+
+            @if (seleccionados.length > 0) {
+              <span class="contador-seleccion">
+                {{ seleccionados.length }} seleccionados
+              </span>
+            }
+          </div>
+
+          <div class="barra-tabla__derecha">
+            <p-button
+              label="Validar"
+              icon="pi pi-check"
+              severity="success"
+              styleClass="p-button-sm"
+              [disabled]="seleccionados.length === 0"
+              (onClick)="validarSeleccionados()"
+            ></p-button>
+
+            <p-button
+              label="Rechazar"
+              icon="pi pi-times"
+              severity="danger"
+              styleClass="p-button-sm"
+              [disabled]="seleccionados.length === 0"
+              (onClick)="rechazarSeleccionados()"
+            ></p-button>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="folio">Folio <p-sortIcon field="folio"></p-sortIcon></th>
+          <th pSortableColumn="empresa">Empresa <p-sortIcon field="empresa"></p-sortIcon></th>
+          <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
+          <th pSortableColumn="numeroConvenio">No. Convenio <p-sortIcon field="numeroConvenio"></p-sortIcon></th>
+          <th pSortableColumn="cliente">Cliente <p-sortIcon field="cliente"></p-sortIcon></th>
+          <th pSortableColumn="ejecutivo">Ejecutivo <p-sortIcon field="ejecutivo"></p-sortIcon></th>
+          <th pSortableColumn="tipo">Tipo <p-sortIcon field="tipo"></p-sortIcon></th>
+          <th pSortableColumn="mercancia">Mercancía <p-sortIcon field="mercancia"></p-sortIcon></th>
+          <th pSortableColumn="origen">Origen <p-sortIcon field="origen"></p-sortIcon></th>
+          <th pSortableColumn="destino">Destino <p-sortIcon field="destino"></p-sortIcon></th>
+          <th pSortableColumn="ciudad">Ciudad <p-sortIcon field="ciudad"></p-sortIcon></th>
+          <th pSortableColumn="estatusConvenio">Estatus <p-sortIcon field="estatusConvenio"></p-sortIcon></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-viaje>
+        <tr class="fila-clicable" (click)="abrirModal(viaje)">
+          <!-- stopPropagation: marcar la casilla no debe abrir el modal,
+               son dos acciones distintas sobre el mismo renglón. -->
+          <td (click)="$event.stopPropagation()">
+            <p-tableCheckbox [value]="viaje"></p-tableCheckbox>
+          </td>
+          <td class="celda-folio">{{ viaje.folio }}</td>
+          <td>
+            <span [class]="claseDeEmpresa(viaje.idEmpresa)">{{ viaje.empresa }}</span>
+          </td>
+          <td>{{ viaje.fecha }}</td>
+
+          <!-- Sin convenio es el caso que comercial busca: se marca. -->
+          <td>
+            @if (viaje.numeroConvenio) {
+              {{ viaje.numeroConvenio }}
+            } @else {
+              <span class="sin-convenio">Sin convenio</span>
+            }
+          </td>
+
+          <td>{{ viaje.cliente }}</td>
+          <td>{{ viaje.ejecutivo }}</td>
+          <td>{{ viaje.tipo }}</td>
+          <td>{{ viaje.mercancia }}</td>
+          <td>{{ viaje.origen }}</td>
+          <td>{{ viaje.destino }}</td>
+          <td>{{ viaje.ciudad }}</td>
+          <td>
+            <span [class]="claseDeEstatus(viaje.estatusConvenio)">
+              {{ textoDeEstatus(viaje.estatusConvenio) }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="13" class="text-center p-4">
+            No hay convenios que coincidan con los filtros.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>
+
+<!-- ═══ Modal de validación ══════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="mostrarModal"
+  [modal]="true"
+  [style]="{ width: '62rem' }"
+  [breakpoints]="{ '1100px': '95vw' }"
+  [draggable]="true"
+  (onHide)="cerrarModal()"
+>
+  <!-- El folio y la empresa van en el encabezado: con las cuatro juntas,
+       no puede quedar duda de cuál se está validando. -->
+  <ng-template pTemplate="header">
+    <div class="encabezado-modal">
+      <span class="encabezado-modal__titulo">Edición de registro</span>
+      @if (viajeAbierto) {
+        <span class="encabezado-modal__folio">Folio {{ viajeAbierto.folio }}</span>
+        <span [class]="claseDeEmpresa(viajeAbierto.idEmpresa)">{{ viajeAbierto.empresa }}</span>
+      }
+    </div>
+  </ng-template>
+
+  @if (viajeAbierto) {
+    <!-- ─── Lo que comercial sí edita ──────────────────────────── -->
+    <div class="seccion">
+      <div class="seccion__titulo">Ejecutivos &mdash; Comercial</div>
+
+      <div class="seccion__cuerpo">
+        <div class="rejilla-comercial">
+          <div class="campo">
+            <label>No. convenio</label>
+            <p-select
+              [options]="conveniosDisponibles"
+              [(ngModel)]="formNumeroConvenio"
+              optionLabel="noConvenio"
+              optionValue="noConvenio"
+              placeholder="Selecciona el convenio"
+              [filter]="true"
+              [showClear]="true"
+              appendTo="body"
+              class="w-full"
+            />
+          </div>
+
+          <div class="campo">
+            <label>Fecha de vencimiento</label>
+            <p-datepicker
+              [(ngModel)]="formFechaVencimiento"
+              dateFormat="yy/mm/dd"
+              [showIcon]="true"
+              appendTo="body"
+              class="w-full"
+            />
+          </div>
+
+          <div class="campo campo--centrado">
+            <label>Nuevo</label>
+            <p-button
+              icon="pi pi-plus"
+              severity="info"
+              pTooltip="Dar de alta un convenio"
+              (onClick)="agregarConvenio()"
+            ></p-button>
+          </div>
+
+          <!-- Marcan el estatus sin cerrar: el cambio se aplica al Guardar,
+               así que un clic por error se deshace con Cancelar. -->
+          <div class="campo campo--centrado">
+            <label>Aceptar</label>
+            <p-button
+              icon="pi pi-check"
+              severity="success"
+              [outlined]="formEstatus !== 'VALIDADO'"
+              pTooltip="Marcar como validado"
+              (onClick)="marcarEstatus('VALIDADO')"
+            ></p-button>
+          </div>
+
+          <div class="campo campo--centrado">
+            <label>Rechazar</label>
+            <p-button
+              icon="pi pi-times"
+              severity="danger"
+              [outlined]="formEstatus !== 'RECHAZADO'"
+              pTooltip="Marcar como rechazado"
+              (onClick)="marcarEstatus('RECHAZADO')"
+            ></p-button>
+          </div>
+        </div>
+
+        <div class="rejilla-comentarios">
+          <div class="campo">
+            <label>
+              Comentarios
+              @if (formEstatus === 'RECHAZADO') {
+                <span class="obligatorio">&mdash; motivo del rechazo</span>
+              }
+            </label>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="formComentarios"
+              class="w-full"
+              placeholder="Observaciones para el ejecutivo"
+            />
+          </div>
+
+          <div class="campo">
+            <label>Horas estadías</label>
+            <p-inputNumber
+              [(ngModel)]="formHorasEstadias"
+              [min]="0"
+              styleClass="w-full"
+            ></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="linea-documento">
+          <p-button
+            label="Ver documento"
+            icon="pi pi-eye"
+            severity="info"
+            styleClass="p-button-sm"
+            [disabled]="!viajeAbierto.nombreArchivo"
+            (onClick)="verDocumento()"
+          ></p-button>
+
+          <span class="etiqueta-archivo">Archivo cargado:</span>
+
+          @if (viajeAbierto.nombreArchivo) {
+            <span class="archivo-ok">
+              <i class="pi pi-check-circle"></i> {{ viajeAbierto.nombreArchivo }}
+            </span>
+          } @else {
+            <span class="archivo-falta">
+              <i class="pi pi-exclamation-triangle"></i> No existe ningún archivo cargado
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Lo que sólo se consulta ────────────────────────────── -->
+    <div class="seccion">
+      <div class="seccion__titulo">Información general</div>
+
+      <div class="seccion__cuerpo">
+        <div class="rejilla-general">
+          <div class="campo">
+            <label>No. viaje</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.numeroViaje ?? ''" readonly />
+          </div>
+          <div class="campo">
+            <label>Cliente</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.cliente" readonly />
+          </div>
+          <div class="campo">
+            <label>Tipo</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.tipo" readonly />
+          </div>
+          <div class="campo">
+            <label>Mercancía</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.mercancia" readonly />
+          </div>
+          <div class="campo">
+            <label>Origen</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.origen" readonly />
+          </div>
+          <div class="campo">
+            <label>Destino</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.destino" readonly />
+          </div>
+          <div class="campo">
+            <label>Ciudad</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.ciudad" readonly />
+          </div>
+          <div class="campo">
+            <label>Ejecutivo</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.ejecutivo" readonly />
+          </div>
+          <div class="campo">
+            <label>Operación</label>
+            <input type="text" pInputText class="w-full" [value]="viajeAbierto.operacion" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="pie-modal">
+      <p-button
+        label="Cancelar"
+        severity="danger"
+        styleClass="p-button-text"
+        (onClick)="cerrarModal()"
+      ></p-button>
+
+      <p-button
+        label="Guardar"
+        icon="pi pi-save"
+        severity="success"
+        (onClick)="guardarDesdeModal()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>
