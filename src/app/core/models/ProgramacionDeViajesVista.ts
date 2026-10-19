@@ -39,4 +39,12 @@ export interface ProgramacionDeViajesVista {
   operadorRetira?: string;
   citaTerminal?: string;
   comentarios?: string;
+
+  /** Observaciones del convenio; las captura comercial, no tráfico. */
+  comentariosConvenio?: string;
+
+  idConvenio?: number;
+
+  /** 1 aceptado, 0 rechazado, undefined o null todavía sin revisar. */
+  estatusConvenio?: number | null;
 }

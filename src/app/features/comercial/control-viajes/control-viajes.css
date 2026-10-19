@@ -175,6 +175,27 @@
   cursor: pointer;
 }
 
+/* El color va en los <td> y no en el <tr>: PrimeNG pinta el fondo en las
+   celdas, así que pintar el renglón quedaría tapado. */
+:host ::ng-deep .p-datatable tbody > tr.fila-clicable > td {
+  transition: background-color 0.12s ease;
+}
+
+:host ::ng-deep .p-datatable tbody > tr.fila-clicable:hover > td {
+  background-color: #eff6ff;
+}
+
+/* El último renglón abierto se queda marcado aunque se cierre el modal:
+   al volver a la tabla, el usuario ve en cuál iba. Va después del hover
+   para que gane y no se "apague" al pasar el mouse encima. */
+:host ::ng-deep .p-datatable tbody > tr.fila-abierta > td {
+  background-color: #dbeafe;
+}
+
+:host ::ng-deep .p-datatable tbody > tr.fila-abierta > td:first-child {
+  box-shadow: inset 3px 0 0 0 #2563eb;
+}
+
 /* ─── Modal de validación ──────────────────────────────────────── */
 
 .encabezado-modal {
@@ -212,11 +233,11 @@
   padding: 15px;
 }
 
-/* Convenio y vencimiento se llevan el espacio; los tres botones van
-   al final con el ancho que necesitan. */
+/* El convenio se lleva el espacio; los tres botones van al final con el
+   ancho que necesitan. */
 .rejilla-comercial {
   display: grid;
-  grid-template-columns: 2fr 1.5fr auto auto auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 12px;
@@ -255,6 +276,12 @@
 .obligatorio {
   color: #991b1b;
   font-weight: 500;
+}
+
+.texto-empresa {
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: none;
 }
 
 /* Los campos de Información general son de consulta: se ven apagados

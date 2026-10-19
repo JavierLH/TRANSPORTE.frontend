@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -13,6 +14,37 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageService } from 'primeng/api';
+import { ComercialService } from '../../../core/services/ComercialService';
+import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeViajesVista';
+import Convenio from '../../../core/models/Convenio';
+
+/**
+ * La vista sólo devuelve `idEmpresa`, no el nombre. Como las cuatro son
+ * fijas, se resuelve aquí en vez de pedirle el join al backend.
+ */
+const NOMBRES_DE_EMPRESA: { [idEmpresa: number]: string } = {
+  1: 'Karve',
+  2: 'Vikingo',
+  3: 'Drakkar',
+  4: 'Letca',
+};
+
+/**
+ * En la base, EstatusConvenio es 1 aceptado, 0 rechazado y null sin
+ * revisar. Aquí se maneja con texto porque un 0 y un null en el template
+ * se confunden solos.
+ */
+function aEstatusDeTexto(valor: number | null | undefined): EstatusConvenio {
+  if (valor === 1) return 'VALIDADO';
+  if (valor === 0) return 'RECHAZADO';
+  return 'PENDIENTE';
+}
+
+function aNumeroDeEstatus(estatus: EstatusConvenio): number | null {
+  if (estatus === 'VALIDADO') return 1;
+  if (estatus === 'RECHAZADO') return 0;
+  return null;
+}
 
 /** Los tres estados por los que pasa un convenio. */
 export type EstatusConvenio = 'PENDIENTE' | 'VALIDADO' | 'RECHAZADO';
@@ -30,7 +62,6 @@ export interface ViajeConvenio {
   fecha: string;
   cliente: string;
   ejecutivo: string;
-  tipo: string;
   mercancia: string;
   origen: string;
   estatusConvenio: EstatusConvenio;
@@ -40,10 +71,11 @@ export interface ViajeConvenio {
   destino: string;
   ciudad: string;
   operacion: string;
-  fechaVencimiento: string | null;
-  comentarios: string | null;
-  horasEstadias: number | null;
+  comentariosConvenio: string | null;
   nombreArchivo: string | null;
+
+  /** La llave; `numeroConvenio` es sólo el texto que se muestra. */
+  idConvenio: number | null;
 }
 
 @Component({
@@ -70,7 +102,10 @@ export interface ViajeConvenio {
 })
 export class ControlViajes implements OnInit {
 
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private comercialService: ComercialService
+  ) {}
 
   // ─── Catálogos de los filtros ────────────────────────────────────
   //
@@ -119,6 +154,14 @@ export class ControlViajes implements OnInit {
     'origen', 'destino', 'ciudad'
   ];
 
+  /** Quién está validando; viaja en cada guardado para la bitácora. */
+  private idUsuario: number | null = this.leerIdUsuario();
+
+  private leerIdUsuario(): number | null {
+    const guardado = localStorage.getItem('usuario');
+    return guardado ? JSON.parse(guardado).idUsuario ?? null : null;
+  }
+
   // ─── Contadores ──────────────────────────────────────────────────
 
   public totalPendientes = 0;
@@ -130,9 +173,58 @@ export class ControlViajes implements OnInit {
   }
 
   public cargarViajes(): void {
-    // Datos de ejemplo mientras no existe el endpoint transversal.
-    this.viajes = this.datosDeEjemplo();
-    this.recalcularContadores();
+    this.cargando = true;
+
+    // Sin idEmpresa: el backend devuelve las cuatro empresas.
+    this.comercialService.obtenerViajes().subscribe({
+      next: (datos) => {
+        this.viajes = datos.map(viaje => this.aViajeConvenio(viaje));
+        this.recalcularContadores();
+        this.cargando = false;
+      },
+      error: (err) => {
+        this.cargando = false;
+        console.error('Error al cargar los viajes', err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al cargar',
+          detail: 'No se pudieron traer los viajes.'
+        });
+      }
+    });
+  }
+
+  /** Aplana la fila de la vista a lo que necesita esta pantalla. */
+  private aViajeConvenio(viaje: ProgramacionDeViajesVista): ViajeConvenio {
+    const idEmpresa = viaje.idEmpresa ?? 0;
+
+    return {
+      folio: viaje.folio,
+      idEmpresa,
+      empresa: NOMBRES_DE_EMPRESA[idEmpresa] ?? 'Sin empresa',
+      numeroConvenio: viaje.numeroConvenio ?? null,
+      fecha: viaje.fecha ?? '',
+      cliente: viaje.cliente ?? '',
+      ejecutivo: viaje.ejecutivo ?? '',
+      mercancia: viaje.mercanciaDescripcion ?? '',
+      origen: viaje.nombreOrigen ?? '',
+      destino: viaje.nombreDestino ?? '',
+      ciudad: viaje.destinosEstadosCuidad ?? '',
+
+      estatusConvenio: aEstatusDeTexto(viaje.estatusConvenio),
+      idConvenio: viaje.idConvenio ?? null,
+
+      numeroViaje: viaje.numeroViaje ?? null,
+      operacion: viaje.operacion ?? '',
+
+      // Los del convenio, no los del viaje: `comentarios` son las notas de
+      // tráfico y aquí no tienen nada que hacer.
+      comentariosConvenio: viaje.comentariosConvenio ?? null,
+
+      // Pendiente de definir con el backend.
+      nombreArchivo: null
+    };
   }
 
   public aplicarFiltros(): void {
@@ -158,15 +250,11 @@ export class ControlViajes implements OnInit {
 
   // ─── Acciones ────────────────────────────────────────────────────
 
+  /**
+   * Valida en lote. Sólo aplica a aceptar: rechazar exige el motivo, que
+   * no se puede capturar desde la barra de la tabla.
+   */
   public validarSeleccionados(): void {
-    this.cambiarEstatusDeSeleccionados('VALIDADO', 'validaron');
-  }
-
-  public rechazarSeleccionados(): void {
-    this.cambiarEstatusDeSeleccionados('RECHAZADO', 'rechazaron');
-  }
-
-  private cambiarEstatusDeSeleccionados(estatus: EstatusConvenio, verbo: string): void {
     if (this.seleccionados.length === 0) {
       this.messageService.add({
         severity: 'warn',
@@ -176,17 +264,51 @@ export class ControlViajes implements OnInit {
       return;
     }
 
-    // Sólo cambia la pantalla: falta el endpoint que lo persista.
-    this.seleccionados.forEach(viaje => (viaje.estatusConvenio = estatus));
+    const aValidar = [...this.seleccionados];
 
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Listo',
-      detail: `Se ${verbo} ${this.seleccionados.length} convenios.`
+    // Una petición por viaje: el endpoint trabaja sobre un folio. Con
+    // forkJoin todas salen juntas y se espera a que terminen.
+    forkJoin(
+      aValidar.map(viaje =>
+        this.comercialService.validarConvenio(viaje.folio, {
+          idConvenio: viaje.idConvenio,
+          comentariosConvenio: viaje.comentariosConvenio,
+          estatusConvenio: 1,
+          idUsuario: this.idUsuario
+        })
+      )
+    ).subscribe({
+      next: () => {
+        aValidar.forEach(viaje => (viaje.estatusConvenio = 'VALIDADO'));
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Listo',
+          detail: `Se validaron ${aValidar.length} convenios.`
+        });
+
+        this.seleccionados = [];
+        this.recalcularContadores();
+      },
+      error: (err) => {
+        console.error('Error al validar en lote', err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al validar',
+          detail: 'No se pudieron validar todos los convenios. Recarga para ver cuáles sí.'
+        });
+      }
     });
+  }
 
-    this.seleccionados = [];
-    this.recalcularContadores();
+  public rechazarSeleccionados(): void {
+    // Rechazar sin motivo no se permite, y el motivo se escribe por viaje.
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Abre el registro',
+      detail: 'Rechazar requiere capturar el motivo, así que se hace uno por uno.'
+    });
   }
 
   // ─── Modal de validación ─────────────────────────────────────────
@@ -196,40 +318,65 @@ export class ControlViajes implements OnInit {
   /** El renglón que se abrió; null mientras el modal está cerrado. */
   public viajeAbierto: ViajeConvenio | null = null;
 
+  /**
+   * Folio del último renglón abierto. A diferencia de viajeAbierto, éste
+   * NO se limpia al cerrar: deja marcado en qué iba el usuario cuando
+   * regresa a la tabla, que con 15 renglones por página se pierde fácil.
+   */
+  public folioUltimoAbierto: number | null = null;
+
   // Campos editables del modal. Se copian del renglón al abrir y se
   // vuelcan de regreso al guardar: así cancelar no deja cambios a medias.
-  public formNumeroConvenio: string | null = null;
-  public formFechaVencimiento: Date | undefined;
+  public formIdConvenio: number | null = null;
   public formComentarios = '';
-  public formHorasEstadias: number | null = null;
   public formEstatus: EstatusConvenio = 'PENDIENTE';
 
-  /** Convenios disponibles para el cliente del viaje abierto. */
-  public conveniosDisponibles: { noConvenio: string }[] = [];
+  public guardando = false;
+
+  /** Los convenios de la empresa del renglón abierto. */
+  public conveniosDisponibles: Convenio[] = [];
+  public cargandoConvenios = false;
 
   public abrirModal(viaje: ViajeConvenio): void {
     this.viajeAbierto = viaje;
+    this.folioUltimoAbierto = viaje.folio;
 
-    this.formNumeroConvenio = viaje.numeroConvenio;
-    this.formFechaVencimiento = viaje.fechaVencimiento
-      ? new Date(viaje.fechaVencimiento)
-      : undefined;
-    this.formComentarios = viaje.comentarios ?? '';
-    this.formHorasEstadias = viaje.horasEstadias;
+    this.formIdConvenio = viaje.idConvenio;
+    this.formComentarios = viaje.comentariosConvenio ?? '';
     this.formEstatus = viaje.estatusConvenio;
 
-    // Mientras no exista el endpoint, se arma la lista con lo que trae
-    // el propio viaje para que el selector no salga vacío.
-    this.conveniosDisponibles = viaje.numeroConvenio
-      ? [{ noConvenio: viaje.numeroConvenio }]
-      : [];
+    // Cada renglón puede ser de una empresa distinta, así que la lista se
+    // pide al abrir y no se puede precargar como en el modal de viajes.
+    this.cargarConveniosDeLaEmpresa(viaje.idEmpresa);
 
     this.mostrarModal = true;
+  }
+
+  private cargarConveniosDeLaEmpresa(idEmpresa: number): void {
+    this.conveniosDisponibles = [];
+
+    if (!idEmpresa) {
+      return;
+    }
+
+    this.cargandoConvenios = true;
+
+    this.comercialService.obtenerConveniosDeEmpresa(idEmpresa).subscribe({
+      next: (convenios) => {
+        this.conveniosDisponibles = convenios;
+        this.cargandoConvenios = false;
+      },
+      error: (err) => {
+        this.cargandoConvenios = false;
+        console.error('Error al cargar los convenios', err);
+      }
+    });
   }
 
   public cerrarModal(): void {
     this.mostrarModal = false;
     this.viajeAbierto = null;
+    this.guardando = false;
   }
 
   /** Marca el convenio sin cerrar: todavía hay que dar Guardar. */
@@ -244,6 +391,7 @@ export class ControlViajes implements OnInit {
 
     // Rechazar sin explicar por qué deja al ejecutivo sin saber qué
     // corregir, así que el comentario se vuelve obligatorio en ese caso.
+    // El backend lo valida igual; esto es para avisar antes de la petición.
     if (this.formEstatus === 'RECHAZADO' && this.formComentarios.trim().length === 0) {
       this.messageService.add({
         severity: 'warn',
@@ -253,22 +401,60 @@ export class ControlViajes implements OnInit {
       return;
     }
 
-    this.viajeAbierto.numeroConvenio = this.formNumeroConvenio;
-    this.viajeAbierto.comentarios = this.formComentarios.trim() || null;
-    this.viajeAbierto.horasEstadias = this.formHorasEstadias;
-    this.viajeAbierto.estatusConvenio = this.formEstatus;
-    this.viajeAbierto.fechaVencimiento = this.formFechaVencimiento
-      ? this.aTextoDeFecha(this.formFechaVencimiento)
-      : null;
+    const viaje = this.viajeAbierto;
+    const comentarios = this.formComentarios.trim() || null;
+    const estatus = this.formEstatus;
+    const idConvenio = this.formIdConvenio;
 
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Guardado',
-      detail: `Se actualizó el convenio del folio ${this.viajeAbierto.folio}.`
+    this.guardando = true;
+
+    this.comercialService.validarConvenio(viaje.folio, {
+      idConvenio,
+      comentariosConvenio: comentarios,
+      estatusConvenio: aNumeroDeEstatus(estatus),
+      idUsuario: this.idUsuario
+    }).subscribe({
+      next: () => {
+        // Se actualiza el renglón en memoria en vez de recargar la tabla:
+        // recargar perdería el filtro y la página en la que iba el usuario.
+        viaje.idConvenio = idConvenio;
+        viaje.numeroConvenio = this.nombreDelConvenio(idConvenio);
+        viaje.comentariosConvenio = comentarios;
+        viaje.estatusConvenio = estatus;
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Guardado',
+          detail: `Se actualizó el convenio del folio ${viaje.folio}.`
+        });
+
+        this.recalcularContadores();
+        this.cerrarModal();
+      },
+      error: (err) => {
+        this.guardando = false;
+        console.error('Error al guardar el convenio', err);
+
+        const detalle = err?.status === 422
+          ? err?.error?.mensaje ?? 'Los datos del convenio no son válidos.'
+          : 'No se pudo guardar el convenio.';
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al guardar',
+          detail: detalle
+        });
+      }
     });
+  }
 
-    this.recalcularContadores();
-    this.cerrarModal();
+  private nombreDelConvenio(idConvenio: number | null): string | null {
+    if (idConvenio == null) {
+      return null;
+    }
+
+    return this.conveniosDisponibles
+      .find(convenio => convenio.idConvenio === idConvenio)?.noConvenio ?? null;
   }
 
   public verDocumento(): void {
@@ -279,18 +465,69 @@ export class ControlViajes implements OnInit {
     });
   }
 
-  public agregarConvenio(): void {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Pendiente',
-      detail: 'Falta el alta de convenios desde aquí.'
-    });
+  // ─── Alta de convenio ────────────────────────────────────────────
+
+  public mostrarModalNuevoConvenio = false;
+  public nuevoConvenioTexto = '';
+  public creandoConvenio = false;
+
+  public abrirModalNuevoConvenio(): void {
+    this.nuevoConvenioTexto = '';
+    this.mostrarModalNuevoConvenio = true;
   }
 
-  /** Fecha local a texto, sin pasar por UTC para que no se corra un día. */
-  private aTextoDeFecha(fecha: Date): string {
-    const dosDigitos = (n: number) => String(n).padStart(2, '0');
-    return `${fecha.getFullYear()}-${dosDigitos(fecha.getMonth() + 1)}-${dosDigitos(fecha.getDate())}`;
+  public cerrarModalNuevoConvenio(): void {
+    this.mostrarModalNuevoConvenio = false;
+    this.nuevoConvenioTexto = '';
+    this.creandoConvenio = false;
+  }
+
+  /**
+   * Mismo flujo que el modal de viajes: se crea, se agrega a la lista y
+   * queda seleccionado. La empresa sale del renglón abierto, porque aquí
+   * no hay una fija como allá.
+   */
+  public agregarConvenio(): void {
+    const texto = this.nuevoConvenioTexto.trim();
+
+    if (!texto || this.viajeAbierto == null) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Ingresa el número de convenio.'
+      });
+      return;
+    }
+
+    this.creandoConvenio = true;
+
+    this.comercialService.crearConvenio({
+      noConvenio: texto,
+      idEmpresa: this.viajeAbierto.idEmpresa
+    }).subscribe({
+      next: (convenioCreado) => {
+        this.conveniosDisponibles = [...this.conveniosDisponibles, convenioCreado];
+        this.formIdConvenio = convenioCreado.idConvenio ?? null;
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Convenio creado',
+          detail: `${convenioCreado.noConvenio} quedó seleccionado.`
+        });
+
+        this.cerrarModalNuevoConvenio();
+      },
+      error: (err) => {
+        this.creandoConvenio = false;
+        console.error('Error al crear el convenio', err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo crear el convenio.'
+        });
+      }
+    });
   }
 
   // ─── Apoyos para la plantilla ────────────────────────────────────
@@ -310,25 +547,5 @@ export class ControlViajes implements OnInit {
     return 'Por validar';
   }
 
-  private datosDeEjemplo(): ViajeConvenio[] {
-    const base = {
-      numeroViaje: null,
-      fechaVencimiento: '2026-10-30',
-      comentarios: null,
-      horasEstadias: null,
-      nombreArchivo: null
-    };
-
-    return [
-      { ...base, folio: 29983, idEmpresa: 1, empresa: 'Karve', numeroConvenio: '100027-2', fecha: '2026-10-18', cliente: 'LESCHACO MEXICANA S.A. DE C.V.', ejecutivo: 'NESTOR SANCHEZ', tipo: '1X20 TK', mercancia: 'GENERAL', origen: 'MANZANILLO', destino: 'VERACRUZ', ciudad: 'XALAPA', operacion: 'IMPORTACION', estatusConvenio: 'PENDIENTE' },
-      { ...base, folio: 30030, idEmpresa: 2, empresa: 'Vikingo', numeroConvenio: '1000726', fecha: '2026-10-18', cliente: 'KUEHNE + NAGEL, S.A. DE C.V.', ejecutivo: 'NESTOR SANCHEZ', tipo: '1X40 HC', mercancia: 'GENERAL', origen: 'MANZANILLO', destino: 'JALISCO', ciudad: 'GUADALAJARA', operacion: 'IMPORTACION', estatusConvenio: 'PENDIENTE' },
-      { ...base, folio: 30181, idEmpresa: 3, empresa: 'Drakkar', numeroConvenio: '300B28-5 - KN BAYER ORIZABA EXPO', fecha: '2026-10-18', cliente: 'KN - BAYER', ejecutivo: 'STEFANY LOPEZ', tipo: '1X40 RF', mercancia: 'REFRIGERADA', origen: 'VERACRUZ', destino: 'VERACRUZ', ciudad: 'IXTACZOQUITLAN', operacion: 'EXPORTACION', estatusConvenio: 'PENDIENTE', nombreArchivo: null },
-      { ...base, folio: 30304, idEmpresa: 4, empresa: 'Letca', numeroConvenio: '28911- GEODIS COATEPER', fecha: '2026-10-18', cliente: 'GEODIS MEXICO S.A. DE C.V.', ejecutivo: 'SAID FUENTES', tipo: '1X40 HC', mercancia: 'GENERAL', origen: 'VERACRUZ', destino: 'VERACRUZ', ciudad: 'COATEPEC', operacion: 'IMPORTACION', estatusConvenio: 'VALIDADO', nombreArchivo: 'convenio-28911.pdf' },
-      { ...base, folio: 30369, idEmpresa: 1, empresa: 'Karve', numeroConvenio: null, fecha: '2026-10-18', cliente: 'DHL - DURACELL', ejecutivo: 'NESTOR SANCHEZ', tipo: '1X40 HC', mercancia: 'PELIGROSA', origen: 'MANZANILLO', destino: 'MORELOS', ciudad: 'CUERNAVACA', operacion: 'IMPORTACION', estatusConvenio: 'RECHAZADO', comentarios: 'Falta adjuntar el convenio firmado.', fechaVencimiento: null },
-      { ...base, folio: 30392, idEmpresa: 2, empresa: 'Vikingo', numeroConvenio: 'UPS GRUNENTHAL 21777777', fecha: '2026-10-18', cliente: 'TELD GRUNENTHAL-UPS', ejecutivo: 'HUGO SANTOS', tipo: '1X40 RF', mercancia: 'REFRIGERADA', origen: 'VERACRUZ', destino: 'PUEBLA', ciudad: 'PUEBLA', operacion: 'EXPORTACION', estatusConvenio: 'PENDIENTE' },
-      { ...base, folio: 30393, idEmpresa: 3, empresa: 'Drakkar', numeroConvenio: 'UPS GRUNENTHAL 21777777', fecha: '2026-10-17', cliente: 'TELD GRUNENTHAL-UPS', ejecutivo: 'HUGO SANTOS', tipo: '1X40 RF', mercancia: 'REFRIGERADA', origen: 'VERACRUZ', destino: 'PUEBLA', ciudad: 'PUEBLA', operacion: 'EXPORTACION', estatusConvenio: 'VALIDADO' },
-      { ...base, folio: 30396, idEmpresa: 4, empresa: 'Letca', numeroConvenio: '000011', fecha: '2026-10-17', cliente: 'GEODIS MEXICO S.A. DE C.V.', ejecutivo: 'NESTOR SANCHEZ', tipo: '1X40 RF', mercancia: 'REFRIGERADA', origen: 'MANZANILLO', destino: 'VERACRUZ', ciudad: 'VERACRUZ', operacion: 'IMPORTACION', estatusConvenio: 'PENDIENTE' },
-    ];
-  }
 
 }

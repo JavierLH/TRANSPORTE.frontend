@@ -212,7 +212,6 @@
           <th pSortableColumn="numeroConvenio">No. Convenio <p-sortIcon field="numeroConvenio"></p-sortIcon></th>
           <th pSortableColumn="cliente">Cliente <p-sortIcon field="cliente"></p-sortIcon></th>
           <th pSortableColumn="ejecutivo">Ejecutivo <p-sortIcon field="ejecutivo"></p-sortIcon></th>
-          <th pSortableColumn="tipo">Tipo <p-sortIcon field="tipo"></p-sortIcon></th>
           <th pSortableColumn="mercancia">Mercancía <p-sortIcon field="mercancia"></p-sortIcon></th>
           <th pSortableColumn="origen">Origen <p-sortIcon field="origen"></p-sortIcon></th>
           <th pSortableColumn="destino">Destino <p-sortIcon field="destino"></p-sortIcon></th>
@@ -222,7 +221,11 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-viaje>
-        <tr class="fila-clicable" (click)="abrirModal(viaje)">
+        <tr
+          class="fila-clicable"
+          [class.fila-abierta]="viaje.folio === folioUltimoAbierto"
+          (click)="abrirModal(viaje)"
+        >
           <!-- stopPropagation: marcar la casilla no debe abrir el modal,
                son dos acciones distintas sobre el mismo renglón. -->
           <td (click)="$event.stopPropagation()">
@@ -245,7 +248,6 @@
 
           <td>{{ viaje.cliente }}</td>
           <td>{{ viaje.ejecutivo }}</td>
-          <td>{{ viaje.tipo }}</td>
           <td>{{ viaje.mercancia }}</td>
           <td>{{ viaje.origen }}</td>
           <td>{{ viaje.destino }}</td>
@@ -260,7 +262,7 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="13" class="text-center p-4">
+          <td colspan="12" class="text-center p-4">
             No hay convenios que coincidan con los filtros.
           </td>
         </tr>
@@ -298,27 +300,20 @@
 
       <div class="seccion__cuerpo">
         <div class="rejilla-comercial">
+          <!-- Se enlaza por idConvenio, que es lo que guarda el viaje; el
+               noConvenio es sólo el texto que se muestra. La lista es de la
+               empresa de este renglón. -->
           <div class="campo">
             <label>No. convenio</label>
             <p-select
               [options]="conveniosDisponibles"
-              [(ngModel)]="formNumeroConvenio"
+              [(ngModel)]="formIdConvenio"
               optionLabel="noConvenio"
-              optionValue="noConvenio"
+              optionValue="idConvenio"
               placeholder="Selecciona el convenio"
+              [loading]="cargandoConvenios"
               [filter]="true"
               [showClear]="true"
-              appendTo="body"
-              class="w-full"
-            />
-          </div>
-
-          <div class="campo">
-            <label>Fecha de vencimiento</label>
-            <p-datepicker
-              [(ngModel)]="formFechaVencimiento"
-              dateFormat="yy/mm/dd"
-              [showIcon]="true"
               appendTo="body"
               class="w-full"
             />
@@ -329,8 +324,8 @@
             <p-button
               icon="pi pi-plus"
               severity="info"
-              pTooltip="Dar de alta un convenio"
-              (onClick)="agregarConvenio()"
+              pTooltip="Dar de alta un convenio para esta empresa"
+              (onClick)="abrirModalNuevoConvenio()"
             ></p-button>
           </div>
 
@@ -372,17 +367,9 @@
               pInputText
               [(ngModel)]="formComentarios"
               class="w-full"
+              maxlength="100"
               placeholder="Observaciones para el ejecutivo"
             />
-          </div>
-
-          <div class="campo">
-            <label>Horas estadías</label>
-            <p-inputNumber
-              [(ngModel)]="formHorasEstadias"
-              [min]="0"
-              styleClass="w-full"
-            ></p-inputNumber>
           </div>
         </div>
 
@@ -426,10 +413,6 @@
             <input type="text" pInputText class="w-full" [value]="viajeAbierto.cliente" readonly />
           </div>
           <div class="campo">
-            <label>Tipo</label>
-            <input type="text" pInputText class="w-full" [value]="viajeAbierto.tipo" readonly />
-          </div>
-          <div class="campo">
             <label>Mercancía</label>
             <input type="text" pInputText class="w-full" [value]="viajeAbierto.mercancia" readonly />
           </div>
@@ -471,8 +454,55 @@
         label="Guardar"
         icon="pi pi-save"
         severity="success"
+        [loading]="guardando"
         (onClick)="guardarDesdeModal()"
       ></p-button>
     </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ═══ Alta rápida de convenio ══════════════════════════════════════
+     La empresa no se pide: sale del renglón abierto, porque en esta
+     pantalla cada viaje puede ser de una distinta. -->
+<p-dialog
+  header="Nuevo convenio"
+  [(visible)]="mostrarModalNuevoConvenio"
+  [modal]="true"
+  [style]="{ width: '26rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+  (onHide)="cerrarModalNuevoConvenio()"
+>
+  <div class="campo">
+    <label>
+      No. de convenio
+      @if (viajeAbierto) {
+        <span class="texto-empresa">para {{ viajeAbierto.empresa }}</span>
+      }
+    </label>
+    <input
+      type="text"
+      pInputText
+      [(ngModel)]="nuevoConvenioTexto"
+      class="w-full"
+      maxlength="50"
+      placeholder="Ej. 300B28-5"
+      (keyup.enter)="agregarConvenio()"
+    />
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      styleClass="p-button-text"
+      [disabled]="creandoConvenio"
+      (onClick)="cerrarModalNuevoConvenio()"
+    ></p-button>
+    <p-button
+      label="Crear"
+      icon="pi pi-plus"
+      [loading]="creandoConvenio"
+      (onClick)="agregarConvenio()"
+    ></p-button>
   </ng-template>
 </p-dialog>
