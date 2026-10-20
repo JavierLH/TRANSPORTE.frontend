@@ -15,8 +15,15 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageService } from 'primeng/api';
 import { ComercialService } from '../../../core/services/ComercialService';
+import { CatalogosViajeService } from '../../../core/services/CatalogosViajesService';
+import { ProgramacionViajesService } from '../../../core/services/ProgramacionViajesService';
 import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeViajesVista';
+import { FiltroDeBusqueda, Origen } from '../../../core/models/CatalogosFiltrosDtos';
+import { Cliente, Ejecutivo } from '../../../core/models/CatalogosViajeDtos';
 import Convenio from '../../../core/models/Convenio';
+
+/** Los ids de las cuatro empresas, para pedir sus catálogos. */
+const IDS_DE_EMPRESAS = [1, 2, 3, 4];
 
 /**
  * La vista sólo devuelve `idEmpresa`, no el nombre. Como las cuatro son
@@ -104,7 +111,9 @@ export class ControlViajes implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private comercialService: ComercialService
+    private comercialService: ComercialService,
+    private catalogosService: CatalogosViajeService,
+    private viajesService: ProgramacionViajesService
   ) {}
 
   // ─── Catálogos de los filtros ────────────────────────────────────
@@ -127,9 +136,9 @@ export class ControlViajes implements OnInit {
     { valor: 'RECHAZADO', nombre: 'Rechazado' },
   ];
 
-  public origenes: { idOrigen: number; origen1: string }[] = [];
-  public clientes: { idCliente: number; nombreCliente: string }[] = [];
-  public ejecutivos: { idEjecutivo: number; nombreEjecutivo: string }[] = [];
+  public origenes: Origen[] = [];
+  public clientes: Cliente[] = [];
+  public ejecutivos: Ejecutivo[] = [];
 
   // ─── Filtros seleccionados ───────────────────────────────────────
 
@@ -145,7 +154,18 @@ export class ControlViajes implements OnInit {
 
   // ─── Tabla ───────────────────────────────────────────────────────
 
+  /** Todo lo que trajo el servidor con los filtros de arriba. */
   public viajes: ViajeConvenio[] = [];
+
+  /**
+   * Lo que se pinta: `viajes` menos el filtro de estatus.
+   *
+   * El estatus se filtra aquí y no en el servidor para que los contadores
+   * sigan contando el periodo completo. Si el servidor devolviera sólo los
+   * pendientes, "Validados" y "Rechazados" saldrían siempre en cero.
+   */
+  public viajesVisibles: ViajeConvenio[] = [];
+
   public seleccionados: ViajeConvenio[] = [];
   public cargando = false;
 
@@ -165,21 +185,98 @@ export class ControlViajes implements OnInit {
   // ─── Contadores ──────────────────────────────────────────────────
 
   public totalPendientes = 0;
-  public totalValidadosHoy = 0;
+  public totalValidados = 0;
   public totalRechazados = 0;
 
   ngOnInit(): void {
+    this.cargarCatalogos();
+
+    // Al entrar se arranca con el mes en curso, igual que programación de
+    // viajes: sin rango, la consulta traería el histórico completo de las
+    // cuatro empresas.
+    this.filtroRangoFechas = this.mesEnCurso();
+
     this.cargarViajes();
+  }
+
+  /**
+   * Los catálogos vienen por empresa, así que se piden los de las cuatro y
+   * se juntan: aquí el usuario filtra sobre todo el grupo.
+   */
+  private cargarCatalogos(): void {
+    forkJoin(
+      IDS_DE_EMPRESAS.map(id => this.catalogosService.obtenerCatalagosPorEmpresa(id))
+    ).subscribe({
+      next: (respuestas) => {
+        this.origenes = this.unirSinRepetir(
+          respuestas.flatMap(r => r.origenesDestinos ?? []),
+          origen => origen.idOrigen
+        );
+
+        this.clientes = this.unirSinRepetir(
+          respuestas.flatMap(r => r.cliente ?? []),
+          cliente => cliente.idCliente
+        );
+
+        this.ejecutivos = this.unirSinRepetir(
+          respuestas.flatMap(r => r.ejecutivos ?? []),
+          ejecutivo => ejecutivo.idEjecutivo
+        );
+      },
+      error: (err) => console.error('Error al cargar los catálogos', err)
+    });
+  }
+
+  /**
+   * Quita los repetidos quedándose con el primero de cada llave. Hace falta
+   * porque un mismo origen aparece en las cuatro empresas.
+   */
+  private unirSinRepetir<T>(elementos: T[], llave: (elemento: T) => any): T[] {
+    const vistos = new Map<any, T>();
+
+    elementos.forEach(elemento => {
+      const id = llave(elemento);
+
+      if (id != null && !vistos.has(id)) {
+        vistos.set(id, elemento);
+      }
+    });
+
+    return [...vistos.values()];
+  }
+
+  /** Del día 1 al último día del mes actual. */
+  private mesEnCurso(): Date[] {
+    const hoy = new Date();
+
+    return [
+      new Date(hoy.getFullYear(), hoy.getMonth(), 1),
+      new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)
+    ];
   }
 
   public cargarViajes(): void {
     this.cargando = true;
 
-    // Sin idEmpresa: el backend devuelve las cuatro empresas.
-    this.comercialService.obtenerViajes().subscribe({
+    // Sin idEmpresa el backend devuelve las cuatro; sin estatus, todos.
+    this.comercialService.obtenerViajes({
+      idEmpresa: this.filtroIdEmpresa,
+      fechaInicio: this.aTextoDeFecha(this.filtroRangoFechas?.[0]),
+
+      // Si sólo se eligió un día en el calendario, el rango es ese día.
+      fechaFin: this.aTextoDeFecha(
+        this.filtroRangoFechas?.[1] ?? this.filtroRangoFechas?.[0]
+      ),
+
+      idOrigen: this.filtroIdOrigen,
+      idCliente: this.filtroIdCliente,
+      idEjecutivo: this.filtroIdEjecutivo
+    }).subscribe({
       next: (datos) => {
         this.viajes = datos.map(viaje => this.aViajeConvenio(viaje));
+        this.seleccionados = [];
         this.recalcularContadores();
+        this.aplicarFiltroDeEstatus();
         this.cargando = false;
       },
       error: (err) => {
@@ -193,6 +290,20 @@ export class ControlViajes implements OnInit {
         });
       }
     });
+  }
+
+  /**
+   * Fecha local a texto. No se usa toISOString() porque convierte a UTC y
+   * en México adelanta la fecha, con lo que el rango se corre un día.
+   */
+  private aTextoDeFecha(fecha: Date | undefined): string | null {
+    if (!fecha) {
+      return null;
+    }
+
+    const dosDigitos = (n: number) => String(n).padStart(2, '0');
+
+    return `${fecha.getFullYear()}-${dosDigitos(fecha.getMonth() + 1)}-${dosDigitos(fecha.getDate())}`;
   }
 
   /** Aplana la fila de la vista a lo que necesita esta pantalla. */
@@ -221,9 +332,7 @@ export class ControlViajes implements OnInit {
       // Los del convenio, no los del viaje: `comentarios` son las notas de
       // tráfico y aquí no tienen nada que hacer.
       comentariosConvenio: viaje.comentariosConvenio ?? null,
-
-      // Pendiente de definir con el backend.
-      nombreArchivo: null
+      nombreArchivo: viaje.nombreArchivo ?? null
     };
   }
 
@@ -237,14 +346,23 @@ export class ControlViajes implements OnInit {
     this.filtroIdOrigen = null;
     this.filtroIdCliente = null;
     this.filtroIdEjecutivo = null;
-    this.filtroRangoFechas = undefined;
+
+    // Vuelve al mes en curso, no a vacío: dejar el rango sin valor traería
+    // el histórico completo de las cuatro empresas.
+    this.filtroRangoFechas = this.mesEnCurso();
 
     this.cargarViajes();
   }
 
+  private aplicarFiltroDeEstatus(): void {
+    this.viajesVisibles = this.filtroEstatus == null
+      ? [...this.viajes]
+      : this.viajes.filter(viaje => viaje.estatusConvenio === this.filtroEstatus);
+  }
+
   private recalcularContadores(): void {
     this.totalPendientes = this.viajes.filter(v => v.estatusConvenio === 'PENDIENTE').length;
-    this.totalValidadosHoy = this.viajes.filter(v => v.estatusConvenio === 'VALIDADO').length;
+    this.totalValidados = this.viajes.filter(v => v.estatusConvenio === 'VALIDADO').length;
     this.totalRechazados = this.viajes.filter(v => v.estatusConvenio === 'RECHAZADO').length;
   }
 
@@ -289,6 +407,7 @@ export class ControlViajes implements OnInit {
 
         this.seleccionados = [];
         this.recalcularContadores();
+        this.aplicarFiltroDeEstatus();
       },
       error: (err) => {
         console.error('Error al validar en lote', err);
@@ -429,6 +548,7 @@ export class ControlViajes implements OnInit {
         });
 
         this.recalcularContadores();
+        this.aplicarFiltroDeEstatus();
         this.cerrarModal();
       },
       error: (err) => {
@@ -457,11 +577,41 @@ export class ControlViajes implements OnInit {
       .find(convenio => convenio.idConvenio === idConvenio)?.noConvenio ?? null;
   }
 
+  /**
+   * Abre el documento del viaje en otra pestaña. Reusa el mismo endpoint
+   * que el modal de programación de viajes.
+   */
   public verDocumento(): void {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Pendiente',
-      detail: 'Falta conectar la descarga del documento.'
+    if (this.viajeAbierto == null) {
+      return;
+    }
+
+    if (!this.viajeAbierto.nombreArchivo) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Sin documento',
+        detail: 'Este viaje no tiene ningún documento cargado.'
+      });
+      return;
+    }
+
+    this.viajesService.descargarDocumento(this.viajeAbierto.folio).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+
+        // Se libera la URL temporal una vez que el navegador ya la abrió.
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      },
+      error: (err) => {
+        console.error('Error al obtener el documento', err);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo abrir el documento.'
+        });
+      }
     });
   }
 

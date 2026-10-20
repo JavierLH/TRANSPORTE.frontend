@@ -47,4 +47,7 @@ export interface ProgramacionDeViajesVista {
 
   /** 1 aceptado, 0 rechazado, undefined o null todavía sin revisar. */
   estatusConvenio?: number | null;
+
+  /** Nombre del documento adjunto, o null si el viaje no tiene. */
+  nombreArchivo?: string | null;
 }

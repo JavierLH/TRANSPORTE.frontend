@@ -122,8 +122,8 @@
     </div>
 
     <div class="tarjeta-resumen">
-      <span class="tarjeta-resumen__etiqueta">Validados hoy</span>
-      <span class="tarjeta-resumen__numero">{{ totalValidadosHoy }}</span>
+      <span class="tarjeta-resumen__etiqueta">Validados</span>
+      <span class="tarjeta-resumen__numero">{{ totalValidados }}</span>
     </div>
 
     <div class="tarjeta-resumen">
@@ -138,7 +138,7 @@
   <div class="contenedor-tabla-viajes">
     <p-table
       #dt
-      [value]="viajes"
+      [value]="viajesVisibles"
       dataKey="folio"
       [loading]="cargando"
       [paginator]="true"
