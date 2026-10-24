@@ -10,6 +10,8 @@ import { TableModule } from "primeng/table";
 import { CrearNuevViajeDto } from '../../../core/models/CrearNuevoViajeDto';
 import { NgClass } from '@angular/common';
 import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeViajesVista';
+import { TooltipModule } from 'primeng/tooltip';
+import { colorDeTextoPara } from '../../../core/utilidades/contraste';
 
 @Component({
   selector: 'app-programacion-viajes-karve',
@@ -21,12 +23,16 @@ import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeVi
     DialogModule,
     ModalAgregarviajeViaje,
     TableModule,
-    NgClass
+    NgClass,
+    TooltipModule
 ],
   templateUrl: './programacion-viajes-karve.html',
   styleUrl: './programacion-viajes-karve.css',
 })
 export class ProgramacionViajesKarve implements OnInit {
+
+  /** El template sólo ve miembros de la clase, por eso se expone aquí. */
+  public colorDeTexto = colorDeTextoPara;
     private cdr = inject(ChangeDetectorRef);
 
     /**

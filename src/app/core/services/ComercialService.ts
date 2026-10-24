@@ -16,6 +16,12 @@ export interface ValidacionDeConvenio {
   /** 1 aceptado, 0 rechazado, null sin revisar. */
   estatusConvenio: number | null;
 
+  /**
+   * Nueva vigencia del convenio, en yyyy-MM-dd. Se guarda en la tabla
+   * Convenios, no en el viaje: aplica a todos los que usen ese convenio.
+   */
+  vigenciaConvenio: string | null;
+
   /** Quién hizo el cambio; el backend lo guarda en la bitácora. */
   idUsuario: number | null;
 }

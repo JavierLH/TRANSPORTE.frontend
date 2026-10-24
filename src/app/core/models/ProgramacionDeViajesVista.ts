@@ -50,4 +50,10 @@ export interface ProgramacionDeViajesVista {
 
   /** Nombre del documento adjunto, o null si el viaje no tiene. */
   nombreArchivo?: string | null;
+
+  /** ACEPTADO, RECHAZADO, PENDIENTE, SINCONVENIO o NUEVO. */
+  convenioViaje?: string | null;
+
+  /** Color de fondo del convenio, en hexadecimal, calculado por la vista. */
+  color?: string | null;
 }

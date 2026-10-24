@@ -21,6 +21,7 @@ import { ProgramacionDeViajesVista } from '../../../core/models/ProgramacionDeVi
 import { FiltroDeBusqueda, Origen } from '../../../core/models/CatalogosFiltrosDtos';
 import { Cliente, Ejecutivo } from '../../../core/models/CatalogosViajeDtos';
 import Convenio from '../../../core/models/Convenio';
+import { colorDeTextoPara } from '../../../core/utilidades/contraste';
 
 /** Los ids de las cuatro empresas, para pedir sus catálogos. */
 const IDS_DE_EMPRESAS = [1, 2, 3, 4];
@@ -83,6 +84,10 @@ export interface ViajeConvenio {
 
   /** La llave; `numeroConvenio` es sólo el texto que se muestra. */
   idConvenio: number | null;
+
+  /** Estado y color del convenio, calculados por la vista. */
+  convenioViaje: string | null;
+  color: string | null;
 }
 
 @Component({
@@ -130,9 +135,15 @@ export class ControlViajes implements OnInit {
     { idEmpresa: 4, nombreEmpresa: 'Letca' },
   ];
 
+  /**
+   * Los cinco estados que calcula la vista en `convenioViaje`. No se
+   * inventan aquí: si la vista cambia el CASE, esta lista se ajusta.
+   */
   public estatusDeConvenio = [
-    { valor: 'PENDIENTE', nombre: 'Por validar' },
-    { valor: 'VALIDADO', nombre: 'Validado' },
+    { valor: 'SINCONVENIO', nombre: 'Sin convenio' },
+    { valor: 'NUEVO', nombre: 'Nuevo' },
+    { valor: 'PENDIENTE', nombre: 'Pendiente (vigencia vencida)' },
+    { valor: 'ACEPTADO', nombre: 'Aceptado' },
     { valor: 'RECHAZADO', nombre: 'Rechazado' },
   ];
 
@@ -144,8 +155,14 @@ export class ControlViajes implements OnInit {
 
   public filtroIdEmpresa: number | null = null;
 
-  /** Arranca en "Por validar": es el trabajo de comercial, no la excepción. */
-  public filtroEstatus: EstatusConvenio | null = 'PENDIENTE';
+  /**
+   * Uno de los valores de `convenioViaje`; null muestra todos.
+   *
+   * Arranca sin filtro porque "por validar" abarca tres de los cinco
+   * estados y un selector de uno solo no lo puede expresar; el contador
+   * de arriba es el que dice cuánto trabajo hay.
+   */
+  public filtroEstatus: string | null = null;
 
   public filtroIdOrigen: number | null = null;
   public filtroIdCliente: number | null = null;
@@ -332,7 +349,10 @@ export class ControlViajes implements OnInit {
       // Los del convenio, no los del viaje: `comentarios` son las notas de
       // tráfico y aquí no tienen nada que hacer.
       comentariosConvenio: viaje.comentariosConvenio ?? null,
-      nombreArchivo: viaje.nombreArchivo ?? null
+      nombreArchivo: viaje.nombreArchivo ?? null,
+
+      convenioViaje: viaje.convenioViaje ?? null,
+      color: viaje.color ?? null
     };
   }
 
@@ -342,7 +362,7 @@ export class ControlViajes implements OnInit {
 
   public limpiarFiltros(): void {
     this.filtroIdEmpresa = null;
-    this.filtroEstatus = 'PENDIENTE';
+    this.filtroEstatus = null;
     this.filtroIdOrigen = null;
     this.filtroIdCliente = null;
     this.filtroIdEjecutivo = null;
@@ -357,13 +377,26 @@ export class ControlViajes implements OnInit {
   private aplicarFiltroDeEstatus(): void {
     this.viajesVisibles = this.filtroEstatus == null
       ? [...this.viajes]
-      : this.viajes.filter(viaje => viaje.estatusConvenio === this.filtroEstatus);
+      : this.viajes.filter(viaje => viaje.convenioViaje === this.filtroEstatus);
   }
 
+  /**
+   * Se cuenta por `convenioViaje`, el estado que resuelve la vista.
+   *
+   * "Por validar" junta los tres que piden acción de comercial: sin
+   * convenio, convenio nuevo por revisar, y vigencia vencida.
+   */
   private recalcularContadores(): void {
-    this.totalPendientes = this.viajes.filter(v => v.estatusConvenio === 'PENDIENTE').length;
-    this.totalValidados = this.viajes.filter(v => v.estatusConvenio === 'VALIDADO').length;
-    this.totalRechazados = this.viajes.filter(v => v.estatusConvenio === 'RECHAZADO').length;
+    const porValidar = ['SINCONVENIO', 'NUEVO', 'PENDIENTE'];
+
+    this.totalPendientes = this.viajes
+      .filter(v => porValidar.includes(v.convenioViaje ?? '')).length;
+
+    this.totalValidados = this.viajes
+      .filter(v => v.convenioViaje === 'ACEPTADO').length;
+
+    this.totalRechazados = this.viajes
+      .filter(v => v.convenioViaje === 'RECHAZADO').length;
   }
 
   // ─── Acciones ────────────────────────────────────────────────────
@@ -392,6 +425,11 @@ export class ControlViajes implements OnInit {
           idConvenio: viaje.idConvenio,
           comentariosConvenio: viaje.comentariosConvenio,
           estatusConvenio: 1,
+
+          // En lote no se toca la vigencia: es del convenio, no del viaje,
+          // y cambiarla afectaría a todos los que lo comparten.
+          vigenciaConvenio: null,
+
           idUsuario: this.idUsuario
         })
       )
@@ -450,6 +488,9 @@ export class ControlViajes implements OnInit {
   public formComentarios = '';
   public formEstatus: EstatusConvenio = 'PENDIENTE';
 
+  /** La vigencia del convenio elegido; vive en la tabla Convenios. */
+  public formVigencia: Date | undefined;
+
   public guardando = false;
 
   /** Los convenios de la empresa del renglón abierto. */
@@ -463,6 +504,10 @@ export class ControlViajes implements OnInit {
     this.formIdConvenio = viaje.idConvenio;
     this.formComentarios = viaje.comentariosConvenio ?? '';
     this.formEstatus = viaje.estatusConvenio;
+
+    // Se limpia aquí y se llena cuando lleguen los convenios: si no, se
+    // vería un instante la vigencia del registro anterior.
+    this.formVigencia = undefined;
 
     // Cada renglón puede ser de una empresa distinta, así que la lista se
     // pide al abrir y no se puede precargar como en el modal de viajes.
@@ -484,12 +529,29 @@ export class ControlViajes implements OnInit {
       next: (convenios) => {
         this.conveniosDisponibles = convenios;
         this.cargandoConvenios = false;
+
+        // La vigencia pertenece al convenio, así que se muestra hasta que
+        // la lista llega; antes no se sabe cuál tiene el seleccionado.
+        this.mostrarVigenciaDelConvenio();
       },
       error: (err) => {
         this.cargandoConvenios = false;
         console.error('Error al cargar los convenios', err);
       }
     });
+  }
+
+  /**
+   * Pone en el campo la vigencia que tiene guardada el convenio elegido.
+   * Se llama al abrir y al cambiar de convenio en el selector.
+   */
+  public mostrarVigenciaDelConvenio(): void {
+    const convenio = this.conveniosDisponibles
+      .find(c => c.idConvenio === this.formIdConvenio);
+
+    this.formVigencia = convenio?.vigencia
+      ? new Date(convenio.vigencia + 'T00:00:00')
+      : undefined;
   }
 
   public cerrarModal(): void {
@@ -524,6 +586,7 @@ export class ControlViajes implements OnInit {
     const comentarios = this.formComentarios.trim() || null;
     const estatus = this.formEstatus;
     const idConvenio = this.formIdConvenio;
+    const vigencia = this.aTextoDeFecha(this.formVigencia);
 
     this.guardando = true;
 
@@ -531,6 +594,7 @@ export class ControlViajes implements OnInit {
       idConvenio,
       comentariosConvenio: comentarios,
       estatusConvenio: aNumeroDeEstatus(estatus),
+      vigenciaConvenio: vigencia,
       idUsuario: this.idUsuario
     }).subscribe({
       next: () => {
@@ -540,6 +604,15 @@ export class ControlViajes implements OnInit {
         viaje.numeroConvenio = this.nombreDelConvenio(idConvenio);
         viaje.comentariosConvenio = comentarios;
         viaje.estatusConvenio = estatus;
+
+        // La vigencia también en memoria, para que al reabrir el registro
+        // no muestre la anterior.
+        const convenio = this.conveniosDisponibles
+          .find(c => c.idConvenio === idConvenio);
+
+        if (convenio != null && vigencia != null) {
+          convenio.vigencia = vigencia;
+        }
 
         this.messageService.add({
           severity: 'success',
@@ -682,20 +755,12 @@ export class ControlViajes implements OnInit {
 
   // ─── Apoyos para la plantilla ────────────────────────────────────
 
+  /** El template sólo ve miembros de la clase, por eso se expone aquí. */
+  public colorDeTexto = colorDeTextoPara;
+
   /** Clase del chip de empresa; el número es el IdEmpresa. */
   public claseDeEmpresa(idEmpresa: number): string {
     return `chip-empresa chip-empresa--${idEmpresa}`;
   }
-
-  public claseDeEstatus(estatus: EstatusConvenio): string {
-    return `chip-estatus chip-estatus--${estatus.toLowerCase()}`;
-  }
-
-  public textoDeEstatus(estatus: EstatusConvenio): string {
-    if (estatus === 'VALIDADO') return 'Validado';
-    if (estatus === 'RECHAZADO') return 'Rechazado';
-    return 'Por validar';
-  }
-
 
 }

@@ -24,7 +24,17 @@
           <span class="font-bold text-blue-500">{{ viaje.numeroViaje }}</span>
         </td>
 
-        <td>{{ viaje.numeroConvenio }}</td>
+        <!-- El color lo calcula la vista a partir del estatus del convenio
+             y su vigencia. El texto se ajusta solo para que se lea sobre
+             fondos claros y oscuros. -->
+        <td
+          [style.background-color]="viaje.color"
+          [style.color]="colorDeTexto(viaje.color)"
+          [pTooltip]="viaje.convenioViaje"
+          tooltipPosition="top"
+        >
+          {{ viaje.numeroConvenio }}
+        </td>
 
         <td>{{ viaje.fecha }}</td>
 

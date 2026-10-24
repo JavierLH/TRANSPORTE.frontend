@@ -237,8 +237,15 @@
           </td>
           <td>{{ viaje.fecha }}</td>
 
-          <!-- Sin convenio es el caso que comercial busca: se marca. -->
-          <td>
+          <!-- El color lo calcula la vista a partir del estatus del convenio
+               y su vigencia. El texto se ajusta solo para que se lea sobre
+               fondos claros y oscuros. -->
+          <td
+            [style.background-color]="viaje.color"
+            [style.color]="viaje.color ? colorDeTexto(viaje.color) : null"
+            [pTooltip]="viaje.convenioViaje"
+            tooltipPosition="top"
+          >
             @if (viaje.numeroConvenio) {
               {{ viaje.numeroConvenio }}
             } @else {
@@ -253,8 +260,14 @@
           <td>{{ viaje.destino }}</td>
           <td>{{ viaje.ciudad }}</td>
           <td>
-            <span [class]="claseDeEstatus(viaje.estatusConvenio)">
-              {{ textoDeEstatus(viaje.estatusConvenio) }}
+            <!-- Texto y color salen los dos de la vista: es la única fuente
+                 de verdad del estado del convenio. -->
+            <span
+              class="chip-estatus"
+              [style.background-color]="viaje.color"
+              [style.color]="viaje.color ? colorDeTexto(viaje.color) : null"
+            >
+              {{ viaje.convenioViaje ?? 'SIN ESTADO' }}
             </span>
           </td>
         </tr>
@@ -316,6 +329,7 @@
               [showClear]="true"
               appendTo="body"
               class="w-full"
+              (onChange)="mostrarVigenciaDelConvenio()"
             />
           </div>
 
@@ -370,6 +384,23 @@
               maxlength="100"
               placeholder="Observaciones para el ejecutivo"
             />
+          </div>
+
+          <!-- Se guarda en la tabla Convenios, no en el viaje: cambiarla
+               afecta a todos los viajes que usen este mismo convenio. -->
+          <div class="campo">
+            <label>Fecha de vencimiento</label>
+            <p-datepicker
+              [(ngModel)]="formVigencia"
+              dateFormat="yy/mm/dd"
+              [showIcon]="true"
+              [disabled]="formIdConvenio == null"
+              appendTo="body"
+              class="w-full"
+            />
+            @if (formIdConvenio == null) {
+              <small class="texto-empresa">Selecciona primero el convenio.</small>
+            }
           </div>
         </div>
 

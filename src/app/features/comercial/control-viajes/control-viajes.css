@@ -156,9 +156,10 @@
 /* El estatus lleva palabra además de color: el color solo es ambiguo
    —rojo podría ser "rechazado" o "falta capturar"— y además deja fuera
    a quien no distingue bien los colores. */
-.chip-estatus--pendiente { background-color: #fef3c7; color: #92400e; }
-.chip-estatus--validado  { background-color: #d1fae5; color: #065f46; }
-.chip-estatus--rechazado { background-color: #fee2e2; color: #991b1b; }
+/* El color del estatus no se define aquí: lo calcula la vista y llega en
+   la columna `color`. Tener una segunda paleta en el CSS hacía que el
+   mismo convenio se viera de un color en esta columna y de otro en la de
+   No. Convenio. */
 
 .celda-folio {
   font-variant-numeric: tabular-nums;

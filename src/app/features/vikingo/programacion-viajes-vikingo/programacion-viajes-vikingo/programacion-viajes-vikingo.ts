@@ -10,6 +10,8 @@ import { CrearNuevViajeDto } from '../../../../core/models/CrearNuevoViajeDto';
 import { ProgramacionViajesService } from '../../../../core/services/ProgramacionViajesService';
 import { NgClass } from '@angular/common';
 import { ProgramacionDeViajesVista } from '../../../../core/models/ProgramacionDeViajesVista';
+import { TooltipModule } from 'primeng/tooltip';
+import { colorDeTextoPara } from '../../../../core/utilidades/contraste';
 
 @Component({
   selector: 'app-programacion-viajes-vikingo',
@@ -20,11 +22,15 @@ import { ProgramacionDeViajesVista } from '../../../../core/models/ProgramacionD
     DialogModule,
     ModalAgregarviajeViaje,
     TableModule,
-    NgClass],
+    NgClass,
+    TooltipModule],
   templateUrl: './programacion-viajes-vikingo.html',
   styleUrl: './programacion-viajes-vikingo.css',
 })
 export class ProgramacionViajesVikingo {
+
+  /** El template sólo ve miembros de la clase, por eso se expone aquí. */
+  public colorDeTexto = colorDeTextoPara;
   private cdr = inject(ChangeDetectorRef);
 
   /**
