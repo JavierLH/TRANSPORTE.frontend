@@ -1,13 +1,19 @@
+/**
+ * Una unidad disponible para la empresa.
+ *
+ * Los datos salen del catálogo maestro, pero `idEquipo` es el del registro
+ * hijo en Equipos: es el que se guarda en el viaje.
+ */
 export interface Equipo {
   idEquipo: number;
+
+  /** El id de la unidad física en el catálogo maestro. */
+  idReal: number | null;
+
   clave: string | null;
   idTipoEquipo: number | null;
   descripcion: string | null;
   placa: string | null;
-  serie: string | null;
-  marca: string | null;
-  modelo: string | null;
-  anio: number | null;
   estatus: number | null;
   idEmpresa: number | null;
 }

@@ -99,7 +99,11 @@ export class EjecutivosKarve implements OnInit {
     const activo = this.formHabilitado;
 
     const creandoEjecutivo : Ejecutivo = {
-      idEjecutivo: idEjecutivo ?? null,
+      // Al crear no hay id todavía. Va 0 y no null porque IdEjecutivo es un
+      // int no anulable en el backend: con null, el enlace del modelo falla
+      // y responde 400 antes de entrar al controlador. El servicio calcula
+      // la llave real con MAX + 1, así que este valor se descarta.
+      idEjecutivo: idEjecutivo ?? 0,
       nombreEjecutivo : nombreEjecutivo,
       activo : activo,
       idEmpresa : idEmpresa
