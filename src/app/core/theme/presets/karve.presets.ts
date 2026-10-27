@@ -6,7 +6,7 @@ export const KarvePreset = definePreset(Aura, {
   //  COLOR DE MARCA
   // ═══════════════════════════════════════════════════════════
   semantic: {
-    primary: palette('#EE4E22'),   // el hex aterriza en el 500
+    primary: palette('#E84B1F'),   // color oficial del manual de identidad; aterriza en el 500
 
     // Ajustes transversales (afectan a todos los componentes)
     transitionDuration: '0.2s',

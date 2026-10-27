@@ -17,6 +17,7 @@
       [datosEmpresa]="datosEmpresa"
       (recargarTabla)="cargarViajes()"
       [columnas]="columnas"
+      [columnaColoreada]="columnaDelConvenio"
     >
       <ng-template #bodyTemplate let-viaje>
         <td>{{ viaje.folio }}</td>

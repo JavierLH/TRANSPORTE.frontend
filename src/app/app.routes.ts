@@ -311,7 +311,10 @@ export const routes: Routes = [
         path: 'siil/comercial/control_viajes',
         component: ControlViajes,
         canActivate: [authGuard, permisoRutaGuard],
-        data: { rutaModulo: 'siil/comercial/control_viajes' }
+        // `grupo`: aquí conviven las cuatro empresas, así que la pantalla
+        // no se pinta con el color de ninguna. Sin este `brand` se quedaba
+        // con el tema de la última empresa visitada.
+        data: { rutaModulo: 'siil/comercial/control_viajes', brand: 'grupo' }
       },
 
       {

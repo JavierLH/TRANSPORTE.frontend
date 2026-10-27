@@ -13,29 +13,30 @@
     dataKey="idOperador"
   >
     <ng-template pTemplate="caption">
-      <div class="tabla-header">
+      <div class="encabezado-catalogo">
         <span class="titulo">Operadores - VIKINGO</span>
+        <img class="logo-empresa" src="Recurso 3@4x.png" alt="Vikingo" />
+      </div>
 
-        <div class="grid-cols-3 p-1">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search mr-2"></i>
-            <input
-              pInputText
-              type="text"
-              placeholder="Buscar operador..."
-              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              class="mr-2"
-            />
-          </span>
+      <div class="grid-cols-3 p-1">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search mr-2"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Buscar operador..."
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            class="mr-2"
+          />
+        </span>
 
-          <button
-            pButton
-            type="button"
-            label="Nuevo operador"
-            icon="pi pi-plus"
-            (click)="nuevoOperador()"
-          ></button>
-        </div>
+        <button
+          pButton
+          type="button"
+          label="Nuevo operador"
+          icon="pi pi-plus"
+          (click)="nuevoOperador()"
+        ></button>
       </div>
     </ng-template>
 

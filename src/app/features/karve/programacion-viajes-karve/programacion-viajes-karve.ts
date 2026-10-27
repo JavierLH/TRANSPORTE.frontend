@@ -40,6 +40,12 @@ export class ProgramacionViajesKarve implements OnInit {
      * ProgramacionDeViajesVista, que es lo que se enlaza en [data].
      * El orden debe coincidir con el de los <td> del bodyTemplate.
      */
+    /**
+     * Al copiar al portapapeles, el convenio conserva el color que le calculó
+     * la vista, igual que en pantalla.
+     */
+    columnaDelConvenio = { field: 'numeroConvenio', propiedadColor: 'color' };
+
     columnas: ColumnaTabla[] = [
     { field: 'folio',                   header: 'Folio' },
     { field: 'numeroViaje',             header: 'No. Viaje' },

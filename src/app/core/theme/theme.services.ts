@@ -25,7 +25,9 @@ export class ThemeService {
     if (b.key === this.brand().key) return;   // ← evita regenerar el CSS sin necesidad
     this.brand.set(b);
     usePreset(b.preset);
-    localStorage.setItem(BRAND_STORAGE_KEY, b.key);
+    // `grupo` no se recuerda: es el tema de una pantalla, no la empresa
+    // en la que el usuario está trabajando.
+    if (b.esEmpresa) localStorage.setItem(BRAND_STORAGE_KEY, b.key);
   }
 
   /** Recorre el árbol de rutas y se queda con el `brand` más profundo. */

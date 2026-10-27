@@ -6,7 +6,7 @@ export const DrakkarPreset = definePreset(Aura, {
   //  COLOR DE MARCA
   // ═══════════════════════════════════════════════════════════
   semantic: {
-    primary: palette('#1F94C2'),   // el hex aterriza en el 500
+    primary: palette('#0094C2'),   // color oficial del manual de identidad; aterriza en el 500
 
     // Ajustes transversales (afectan a todos los componentes)
     transitionDuration: '0.2s',

@@ -20,6 +20,7 @@ import { CrearNuevViajeDto } from '../../core/models/CrearNuevoViajeDto';
 import { ProgramacionViajesService } from '../../core/services/ProgramacionViajesService';
 import { ProgramacionViajes } from '../../core/models/ProgramacionViajesDto';
 import { EdicionBitacora } from '../../core/models/BitacoraViaje';
+import { colorDeTextoPara } from '../../core/utilidades/contraste';
 
 /**
  * Definición de una columna de la tabla.
@@ -128,8 +129,20 @@ export class TablaDashboardComponent implements OnInit, OnDestroy, OnChanges {
   copiando = false;
 
   /**
-   * Copia la tabla al portapapeles en formato TSV (separado por tabuladores),
-   * que es lo que Excel interpreta como columnas al pegar.
+   * Columna cuyo fondo no es fijo sino que sale de una propiedad del propio
+   * renglón, como el convenio en programación de viajes: la vista calcula el
+   * color y la tabla sólo lo pinta. Si no se pasa, todas las celdas van sin
+   * fondo.
+   */
+  @Input() columnaColoreada?: { field: string; propiedadColor: string };
+
+  /**
+   * Copia la tabla al portapapeles en dos formatos a la vez:
+   *
+   * - `text/plain` en TSV, que es lo que leen el Bloc de notas y WhatsApp.
+   * - `text/html`, que es lo que prefieren Excel y Word, y que conserva el
+   *   formato: encabezados con el color de la marca y la celda del convenio
+   *   con el color que le calculó la vista.
    *
    * Copia lo que el usuario está viendo: si hay filtro activo usa el resultado
    * filtrado, y respeta el orden actual. No se limita a la página visible.
@@ -157,7 +170,10 @@ export class TablaDashboardComponent implements OnInit, OnDestroy, OnChanges {
         .map(fila => this.columnas.map(c => this.limpiar(fila?.[c.field])).join('\t'))
         .join('\n');
 
-      await navigator.clipboard.writeText(`${encabezados}\n${cuerpo}`);
+      await this.escribirPortapapeles(
+        `${encabezados}\n${cuerpo}`,
+        this.construirHtml(filas)
+      );
 
       this.avisar(
         'success',
@@ -170,6 +186,218 @@ export class TablaDashboardComponent implements OnInit, OnDestroy, OnChanges {
     } finally {
       this.copiando = false;
     }
+  }
+
+  copiandoVista = false;
+
+  /**
+   * Copia la tabla tal como se ve: sólo los renglones de la página actual y
+   * con los colores que el navegador está pintando en ese momento.
+   *
+   * Es el complemento del otro botón. Aquel copia todos los renglones del
+   * filtro; éste deja que quien va a pegar decida cuáles quiere — cambia el
+   * tamaño de página o se mueve de página y copia lo que quedó a la vista.
+   */
+  async copiarVista(): Promise<void> {
+    // Se acota al datatable: el componente tiene diálogos anidados que
+    // podrían traer sus propias <table> y colarse en la copia.
+    const raiz = (this.host.nativeElement as HTMLElement).querySelector('.p-datatable');
+
+    if (!raiz) {
+      this.avisar('warn', 'Sin tabla', 'La tabla todavía no está en pantalla.');
+      return;
+    }
+
+    // Con [scrollable] PrimeNG puede partir encabezado y cuerpo en dos
+    // <table> distintas, así que se recorren todas y se juntan.
+    const tablas = Array.from(raiz.querySelectorAll('table')) as HTMLTableElement[];
+
+    const encabezados = tablas.flatMap(tabla => Array.from(tabla.tHead?.rows ?? []));
+
+    const renglones = tablas
+      .flatMap(tabla => Array.from(tabla.tBodies))
+      .flatMap(cuerpo => Array.from(cuerpo.rows))
+      // El mensaje de "sin registros" es un solo <td> con colspan.
+      .filter(renglon => renglon.cells.length > 1);
+
+    if (!renglones.length) {
+      this.avisar('warn', 'Tabla vacía', 'No hay nada visible que copiar.');
+      return;
+    }
+
+    this.copiandoVista = true;
+
+    try {
+      const html =
+        `<table style="border-collapse:collapse;font-family:Segoe UI,Arial,sans-serif;font-size:10pt">` +
+        `<thead>${encabezados.map(renglon => this.renglonAHtml(renglon, true)).join('')}</thead>` +
+        `<tbody>${renglones.map(renglon => this.renglonAHtml(renglon, false)).join('')}</tbody>` +
+        `</table>`;
+
+      const texto = [...encabezados, ...renglones]
+        .map(renglon =>
+          Array.from(renglon.cells).map(celda => this.limpiar(celda.innerText)).join('\t')
+        )
+        .join('\n');
+
+      await this.escribirPortapapeles(texto, html);
+
+      this.avisar(
+        'success',
+        'Copiado',
+        `${renglones.length} ${renglones.length === 1 ? 'fila visible copiada' : 'filas visibles copiadas'}.`
+      );
+    } catch (error) {
+      console.error('Error al copiar la vista', error);
+      this.avisar('error', 'No se pudo copiar', 'El navegador bloqueó el acceso al portapapeles.');
+    } finally {
+      this.copiandoVista = false;
+    }
+  }
+
+  /**
+   * Un <tr> del DOM pasado a HTML con sus colores ya resueltos. Hay que
+   * resolverlos aquí porque Excel no recibe las hojas de estilo: lo que no
+   * vaya en el atributo `style` de la celda se pierde.
+   */
+  private renglonAHtml(renglon: HTMLTableRowElement, esEncabezado: boolean): string {
+    const etiqueta = esEncabezado ? 'th' : 'td';
+
+    const celdas = Array.from(renglon.cells).map(celda => {
+      const estilo = getComputedStyle(celda);
+
+      const fondo = this.esTransparente(estilo.backgroundColor)
+        ? ''
+        : `background:${estilo.backgroundColor};`;
+
+      return (
+        `<${etiqueta} style="${fondo}color:${estilo.color};border:1px solid #d0d0d0;` +
+        `padding:3px 8px;text-align:left;white-space:nowrap">` +
+        `${this.escaparHtml(this.limpiar(celda.innerText))}</${etiqueta}>`
+      );
+    });
+
+    return `<tr>${celdas.join('')}</tr>`;
+  }
+
+  /** Un fondo transparente no se escribe: en Excel saldría como blanco sólido. */
+  private esTransparente(color: string): boolean {
+    return !color || color === 'transparent' || /rgba\([^)]*,\s*0\s*\)$/.test(color);
+  }
+
+  /**
+   * Deja en el portapapeles el texto y el HTML a la vez. Excel y Word toman
+   * el HTML, con lo que conservan colores y columnas; el Bloc de notas y
+   * WhatsApp toman el texto.
+   */
+  private async escribirPortapapeles(texto: string, html: string): Promise<void> {
+    // ClipboardItem no existe en navegadores viejos; ahí se copia sólo el
+    // texto, que es el comportamiento que había antes.
+    if (typeof ClipboardItem === 'function' && navigator.clipboard?.write) {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/plain': new Blob([texto], { type: 'text/plain' }),
+          'text/html': new Blob([html], { type: 'text/html' }),
+        }),
+      ]);
+      return;
+    }
+
+    await navigator.clipboard.writeText(texto);
+  }
+
+  /** La tabla como HTML, para que Excel la pegue con formato. */
+  private construirHtml(filas: any[]): string {
+    const marca = this.coloresDeMarca();
+
+    const borde = `1px solid ${marca.borde}`;
+
+    const encabezado = this.columnas
+      .map(
+        columna =>
+          `<th style="background:${marca.fondoEncabezado};color:${marca.textoEncabezado};` +
+          `border:${borde};padding:4px 8px;text-align:left;white-space:nowrap">` +
+          `${this.escaparHtml(columna.header)}</th>`
+      )
+      .join('');
+
+    const cuerpo = filas
+      .map(fila => {
+        const celdas = this.columnas
+          .map(columna => {
+            const fondo = this.fondoDeCelda(fila, columna.field);
+            const pintado = fondo
+              ? `background:${fondo};color:${colorDeTextoPara(fondo)};`
+              : '';
+
+            return `<td style="${pintado}border:${borde};padding:3px 8px">` +
+              `${this.escaparHtml(this.limpiar(fila?.[columna.field]))}</td>`;
+          })
+          .join('');
+
+        return `<tr>${celdas}</tr>`;
+      })
+      .join('');
+
+    return (
+      `<table style="border-collapse:collapse;font-family:Segoe UI,Arial,sans-serif;font-size:10pt">` +
+      `<thead><tr>${encabezado}</tr></thead><tbody>${cuerpo}</tbody></table>`
+    );
+  }
+
+  /** El color de fondo del renglón para esa columna, si lleva uno. */
+  private fondoDeCelda(fila: any, field: string): string | null {
+    if (!this.columnaColoreada || this.columnaColoreada.field !== field) {
+      return null;
+    }
+
+    const color = fila?.[this.columnaColoreada.propiedadColor];
+    return typeof color === 'string' && color.trim() ? color.trim() : null;
+  }
+
+  /**
+   * Los colores de la marca activa, tomados de las variables que genera
+   * PrimeNG, así el pegado se ve como la pantalla sin tener que repetir los
+   * hex de cada empresa aquí.
+   */
+  private coloresDeMarca(): { fondoEncabezado: string; textoEncabezado: string; borde: string } {
+    const raiz = getComputedStyle(document.documentElement);
+
+    const leer = (nombre: string, respaldo: string) =>
+      this.aRgb(raiz.getPropertyValue(nombre).trim(), respaldo);
+
+    return {
+      fondoEncabezado: leer('--p-primary-50', '#fdecec'),
+      textoEncabezado: leer('--p-primary-800', '#8f1915'),
+      borde: leer('--p-primary-200', '#e8c4c4'),
+    };
+  }
+
+  /**
+   * Normaliza cualquier color de CSS a `rgb(...)`. Las variables de PrimeNG
+   * pueden venir en formatos que Excel no entiende, y el navegador es quien
+   * sabe convertirlos.
+   */
+  private aRgb(valor: string, respaldo: string): string {
+    if (!valor) {
+      return respaldo;
+    }
+
+    const sonda = document.createElement('span');
+    sonda.style.display = 'none';
+    sonda.style.color = valor;
+    document.body.appendChild(sonda);
+    const resuelto = getComputedStyle(sonda).color;
+    sonda.remove();
+
+    return resuelto || respaldo;
+  }
+
+  private escaparHtml(valor: string): string {
+    return valor
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   /**

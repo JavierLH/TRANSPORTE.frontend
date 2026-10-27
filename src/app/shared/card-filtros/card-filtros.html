@@ -80,9 +80,14 @@
           />
         </div>
 
-        <p-button (click)="limpiarFiltros()" class="btn-limpiar-filtros">
-          Limpiar filtros
-        </p-button>
+        <!-- Va envuelto en .campo-filtro como los demás: así la celda del
+             grid lo baja hasta la altura de los selectores, en lugar de
+             empujarlo con un margen a ojo. -->
+        <div class="campo-filtro campo-filtro--boton">
+          <p-button (click)="limpiarFiltros()" class="btn-limpiar-filtros">
+            Limpiar filtros
+          </p-button>
+        </div>
 
         <!-- 7. Ordenar -->
         <!--<div class="campo-filtro">

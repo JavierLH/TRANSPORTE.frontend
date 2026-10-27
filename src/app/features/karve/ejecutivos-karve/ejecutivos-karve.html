@@ -13,30 +13,30 @@
     dataKey="idEjecutivo"
   >
     <ng-template pTemplate="caption">
-      <div class="tabla-header">
+      <div class="encabezado-catalogo">
         <span class="titulo">Ejecutivos - KARVE</span>
+        <img class="logo-empresa" src="Recurso 5@4x.png" alt="Karve" />
+      </div>
 
-        <div class="grid-cols-3 p-1">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search mr-2"></i>
-            <input
-              pInputText
-              type="text"
-              placeholder="Buscar ejecutivo..."
-              (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-              class="mr-2"
-            />
-          </span>
+      <div class="grid-cols-3 p-1">
+        <span class="p-input-icon-left">
+          <i class="pi pi-search mr-2"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Buscar ejecutivo..."
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            class="mr-2"
+          />
+        </span>
 
-          <button
-            pButton
-            type="button"
-            label="Nuevo ejecutivo"
-            icon="pi pi-plus"
-            (click)="nuevoEjecutivo()"
-            class=""
-          ></button>
-        </div>
+        <button
+          pButton
+          type="button"
+          label="Nuevo ejecutivo"
+          icon="pi pi-plus"
+          (click)="nuevoEjecutivo()"
+        ></button>
       </div>
     </ng-template>
 

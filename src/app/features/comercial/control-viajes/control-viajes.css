@@ -40,6 +40,14 @@
   color: #333;
 }
 
+/* El logo es un SVG y no un PNG como los de empresa: se le fija el ancho
+   para que no dependa del tamaño intrínseco del archivo. */
+.card-header img {
+  width: 138px;
+  height: auto;
+  flex: 0 0 auto;
+}
+
 .card-body {
   padding: 15px;
 }
@@ -146,12 +154,19 @@
   white-space: nowrap;
 }
 
-/* Un color por empresa, por IdEmpresa. Estos son provisionales: cuando
-   llegue la paleta de la diseñadora, aquí se cambian. */
-.chip-empresa--1 { background-color: #dbeafe; color: #1e40af; }  /* Karve   */
-.chip-empresa--2 { background-color: #ede9fe; color: #5b21b6; }  /* Vikingo */
-.chip-empresa--3 { background-color: #ccfbf1; color: #115e59; }  /* Drakkar */
-.chip-empresa--4 { background-color: #ffedd5; color: #9a3412; }  /* Letca   */
+/* Un color por empresa, por IdEmpresa, tomados del manual de identidad
+   del grupo. De cada rampa se usan dos tonos: el claro de fondo y el más
+   oscuro de la misma rampa para el texto. Negro sobre un fondo de color
+   se ve sucio y pierde contraste.
+
+   Los hex no se comparten con los temas de PrimeNG a propósito: aquí
+   conviven las cuatro empresas en la misma tabla, así que los cuatro
+   colores tienen que estar fijos al mismo tiempo y no pueden depender
+   de `{primary.*}`, que sólo conoce la marca activa. */
+.chip-empresa--1 { background-color: #F7B48D; color: #68220F; }  /* Karve   */
+.chip-empresa--2 { background-color: #EFB3B3; color: #3A1011; }  /* Vikingo */
+.chip-empresa--3 { background-color: #7BC6DE; color: #013343; }  /* Drakkar */
+.chip-empresa--4 { background-color: #C7B5D6; color: #271A2D; }  /* Letca   */
 
 /* El estatus lleva palabra además de color: el color solo es ambiguo
    —rojo podría ser "rechazado" o "falta capturar"— y además deja fuera

@@ -6,7 +6,7 @@ export const LetcaPreset = definePreset(Aura, {
   //  COLOR DE MARCA
   // ═══════════════════════════════════════════════════════════
   semantic: {
-    primary: palette('#623594'),   // el hex aterriza en el 500
+    primary: palette('#622C85'),   // color oficial del manual de identidad; aterriza en el 500
 
     // Ajustes transversales (afectan a todos los componentes)
     transitionDuration: '0.2s',

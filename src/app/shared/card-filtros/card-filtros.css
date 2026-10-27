@@ -16,13 +16,16 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-.btn-limpiar-filtros{
+/* El botón no lleva etiqueta arriba, así que la celda lo alinea al fondo
+   para que su base coincida con la de los selectores vecinos. Antes se
+   empujaba con margin-top en porcentaje, que se descuadraba al cambiar
+   el ancho de la ventana. */
+.campo-filtro--boton {
+  justify-content: flex-end;
+}
+
+.btn-limpiar-filtros {
   width: 100%;
-  
-  color: #ffffff;
-  gap: 10px; /* Reduje un poco la separación para que respiren mejor si la pantalla es chica */
-  margin-top: 15%;
-  margin-left: 0%;
 }
 
 .card-header {

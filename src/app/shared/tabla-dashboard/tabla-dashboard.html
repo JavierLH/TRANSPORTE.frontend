@@ -51,16 +51,29 @@
             />
           </p-iconfield>
 
-          <!-- Copia al portapapeles lo que el usuario está viendo:
-               filtrado y ordenado, con encabezados, en formato TSV. -->
+          <!-- Copia TODO el resultado del filtro, sin importar la paginación.
+               Va con formato para que Excel respete colores y columnas. -->
           <p-button
             icon="pi pi-clipboard"
             severity="secondary"
             styleClass="p-button-sm"
-            pTooltip="Copiar tabla al portapapeles"
+            pTooltip="Copiar todas las filas del filtro"
             tooltipPosition="bottom"
-            [disabled]="copiando"
+            [disabled]="copiando || copiandoVista"
             (onClick)="copiarTabla(dt)"
+          ></p-button>
+
+          <!-- Copia sólo la página que está a la vista, tal cual se ve. Sirve
+               para armar el pegado a mano: se ajusta el tamaño de página o se
+               cambia de página y se copia eso. -->
+          <p-button
+            icon="pi pi-table"
+            severity="secondary"
+            styleClass="p-button-sm"
+            pTooltip="Copiar sólo las filas visibles"
+            tooltipPosition="bottom"
+            [disabled]="copiando || copiandoVista"
+            (onClick)="copiarVista()"
           ></p-button>
         </div>
 

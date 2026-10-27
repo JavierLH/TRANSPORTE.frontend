@@ -7,10 +7,11 @@
 :root{
   --color-cabecera: var(--p-sky-500);
 
-  --color-vikingo: #E01219;
-  --color-karve: #EE4E22;
-  --color-drakkar: #1F94C2;
-  --color-letca: #623594;
+  /* Colores oficiales del manual de identidad del grupo. */
+  --color-vikingo: #D3112B;
+  --color-karve: #E84B1F;
+  --color-drakkar: #0094C2;
+  --color-letca: #622C85;
 }
 
 body {
@@ -35,6 +36,36 @@ body {
 
 .tema-karve {
   --color-cabecera: var(--color-karve);
+}
+
+/* Cabecera de las pantallas de catálogo: título a la izquierda, logo de
+   la empresa a la derecha y una línea que la separa del contenido, igual
+   que la card de filtros de programación de viajes. Clase aparte de
+   .tabla-header para no alterar las tablas que ya la tienen con estilo
+   propio. */
+.encabezado-catalogo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* El margen va en la cabecera, no en el título: .titulo es global y trae
+   su propio margin-bottom, que aquí descuadraría la línea. */
+.encabezado-catalogo .titulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.encabezado-catalogo .logo-empresa {
+  height: 44px;
+  width: auto;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 .mi-contenedor {
