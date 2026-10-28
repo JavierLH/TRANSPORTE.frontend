@@ -1,10 +1,120 @@
+/* Estilo del menú lateral.
+ *
+ * Va aquí con `:host ::ng-deep` y no en los presets porque los cinco presets
+ * tendrían que repetir lo mismo, y `p-panelMenu` sólo se usa en este
+ * componente. El `:host` delante es obligatorio: sin él, `::ng-deep` se
+ * escapa a toda la aplicación.
+ *
+ * Los colores salen de las variables que genera PrimeNG, así que el menú
+ * sigue cambiando con la empresa sin repetir ningún hex.
+ *
+ * Nota: los nombres de clase son los que emite PanelMenu. Si algún día se
+ * actualiza PrimeNG y el menú se ve sin estilo, es aquí donde hay que mirar.
+ */
 
-/*
-:host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link * {
-  color: #ff4400 !important;
-  font-weight: 600 !important;
-}
+/* ─── Panel: deja de ser una tarjeta ───────────────────────────────── */
 
 :host ::ng-deep .p-panelmenu-panel {
-  border: none;
-}*/
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+/* ─── Filas de primer nivel y de submenú ───────────────────────────── */
+
+:host ::ng-deep .p-panelmenu-header-link,
+:host ::ng-deep .p-panelmenu-item-link {
+  position: relative;
+  gap: 12px;
+  padding: 9px 12px;
+  margin: 2px 9px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: #49535f;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+:host ::ng-deep .p-panelmenu-header-link:hover,
+:host ::ng-deep .p-panelmenu-item-link:hover {
+  background: #f5f7fa;
+  color: #1f2d3d;
+}
+
+/* El ícono del módulo. El de la flecha se reposiciona más abajo. */
+:host ::ng-deep .p-panelmenu-header-link > .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu-item-link > .p-menuitem-icon {
+  font-size: 17px;
+  width: 18px;
+  text-align: center;
+  color: #a2abb8;
+  flex: 0 0 auto;
+}
+
+/* ─── La flecha de abrir/cerrar se va a la derecha ─────────────────── */
+
+:host ::ng-deep .p-panelmenu-submenu-icon,
+:host ::ng-deep .p-panelmenu-header-icon {
+  order: 9;
+  margin-left: auto;
+  font-size: 13px;
+  color: #cbd2db;
+  flex: 0 0 auto;
+}
+
+/* El fondo lo pinta el enlace, no su contenedor. Los presets traen
+   `focusBackground` y un `css` para `.menu-activo` que lo pintan sobre
+   `.p-panelmenu-item-content`, y eso dibuja un rectángulo a todo lo ancho
+   que taparía las esquinas redondeadas de la fila. */
+:host ::ng-deep .p-panelmenu-item-content {
+  background: transparent;
+  border: 0;
+}
+
+/* ─── Item activo ─────────────────────────────────────────────────── */
+
+/* `menu-activo` lo pone marcarRutaActivaYExpandir(): cae en el panel cuando
+   el item es de primer nivel y en el <li> cuando es de submenú. */
+:host ::ng-deep .p-panelmenu-panel.menu-activo > .p-panelmenu-header .p-panelmenu-header-link,
+:host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link {
+  background: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-weight: 500;
+}
+
+:host ::ng-deep .p-panelmenu-panel.menu-activo > .p-panelmenu-header .p-panelmenu-header-link .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link .p-menuitem-icon,
+:host ::ng-deep .p-panelmenu-panel.menu-activo > .p-panelmenu-header .p-panelmenu-header-link .p-panelmenu-submenu-icon,
+:host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link .p-panelmenu-submenu-icon {
+  color: var(--p-primary-800);
+}
+
+/* La barra de la izquierda. Se dibuja fuera del padding de la fila, por eso
+   el margen lateral de 9px de arriba: es el espacio donde cabe. */
+:host ::ng-deep .p-panelmenu-panel.menu-activo > .p-panelmenu-header .p-panelmenu-header-link::before,
+:host ::ng-deep .p-panelmenu-item.menu-activo > .p-panelmenu-item-content .p-panelmenu-item-link::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--p-primary-color);
+}
+
+/* ─── Submenús ────────────────────────────────────────────────────── */
+
+:host ::ng-deep .p-panelmenu-content {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+:host ::ng-deep .p-panelmenu-submenu {
+  padding-left: 14px;
+}

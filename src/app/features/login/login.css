@@ -1,229 +1,282 @@
-/* --- Contenedor Principal --- */
-.login-wrapper {
-  display: flex;
-  flex-direction: column-reverse;
-  /*align-items: center;
-  justify-content: center;
-  min-height: 90vh;
-  width: 90vh;*/
-  margin-top: 0%;
-  width: 45%;
-  color: #202124;
-  padding: 20px;
-  margin-left: auto;
+/* Pantalla de acceso.
+ *
+ * El acento no es de ninguna empresa sino el gris del logo del grupo
+ * (#404041): al iniciar sesión todavía no se sabe en qué empresa va a
+ * trabajar el usuario, así que pintarlo de rojo o de azul sería arbitrario.
+ */
+
+:host {
+  --acento: #404041;
+  --acento-hover: #2b2b2c;
+  --borde: #dfe3e8;
+  --texto: #1f2d3d;
+  --texto-suave: #6b7280;
 }
 
-.fondo{
-  z-index: -1;
+.pantalla-acceso {
+  display: flex;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* ─── Panel de marca ───────────────────────────────────────────────── */
+
+.panel-marca {
+  position: relative;
+  flex: 1 1 52%;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-marca__fondo {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
 }
 
-/* --- Cabecera --- */
-.login-header {
+/* Velo blanco plano sobre la foto: sin él, el logo gris oscuro no se lee.
+   Va sólido y no en degradado para que no vibre al redimensionar. */
+.panel-marca::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.panel-marca__contenido {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  margin-bottom: 20px;
+  padding: 40px;
 }
 
-.login-header h2 {
-  font-size: 1.5rem; /* Tamaño más normal para un título */
-  font-weight: 500;
-  margin: 0;
+.panel-marca__logo {
+  width: 250px;
+  height: auto;
 }
 
-.login-header p {
-  font-size: 0.9rem; /* Cambiado de 1px a un tamaño legible */
-  margin: 8px 0 0 0;
-  color: #5f6368;
-}
-
-.login-header a, .link-action {
-  color: #3661be;
-  text-decoration: none;
-}
-
-.login-header a:hover, .link-action:hover {
-  text-decoration: underline;
-}
-
-/* --- Tarjeta del Formulario --- */
-.login-card {
-  background-color: #ffffff;
-  width: 100%; /* Cambiado de 160% a 100% para que no se desborde */
-  height: 65vh; /* Cambiado de 60vh a auto para que se adapte al contenido */
-  max-width: 30vw;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra un poco más suave y amplia */
-  border: 1px solid #e0e0e0;
-  padding: 10%;
-  margin-top: 15%;
-}
-
-/* --- Agrupación de Inputs --- */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* Mayor separación entre campos */
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* Separación entre el label y el input */
-}
-
-.input-group label, .password-labels label {
-  font-size: 0.95rem; /* Tamaño estándar para labels */
-  font-weight: 500;
-  color: #3c4043;
-}
-
-.password-labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* --- Enlaces de acción --- */
-.link-action {
-  font-size: 0.9rem;
-}
-
-.forgot-password {
-  font-size: 0.85rem;
-  margin-top: 15px;
-  display: inline-block;
-  text-align: center;
-}
-
-/* --- Estilos PrimeNG: Inputs --- */
-:host ::ng-deep .input-group .p-inputtext {
-  width: 100%;
-  height: 42px; /* Altura estándar y cómoda para hacer clic */
-  padding: 0 12px;
-  font-size: 1rem; /* Texto legible al escribir */
-  border: 1px solid #dadce0;
-  border-radius: 6px;
-  box-shadow: none;
-}
-
-:host ::ng-deep .input-group .p-inputtext:focus {
-  border-color: #3661be;
-  outline: 1px solid #3661be;
-}
-
-/* --- Estilos PrimeNG: Botón --- */
-:host ::ng-deep .btn-login.p-button {
-  background-color: #3f72df;
-  border: none;
-  width: 100%;
-  height: 45px; /* Botón un poco más alto que los inputs */
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-:host ::ng-deep .btn-login.p-button:hover {
-  background-color: #2f5bb5;
-}
-
-/* --- Estilos PrimeNG: ComboBox (p-select) --- */
-:host ::ng-deep .custom-combo {
-  width: 100%;
-  height: 42px; /* Igualado a la altura de los inputs de texto */
-  border: 1px solid #dadce0;
-  border-radius: 6px;
-  box-shadow: none;
-  align-items: center;
-  display: flex;
-}
-
-:host ::ng-deep .custom-combo .p-inputtext {
-  height: 100%;
-  padding: 0 12px;
-  font-size: 1rem;
-  border: none;
-  box-shadow: none;
-  outline: none;
-  background: transparent;
-}
-
-:host ::ng-deep .custom-combo.p-focus,
-:host ::ng-deep .custom-combo:focus-within {
-  border-color: #3661be;
-  outline: 1px solid #3661be;
-}
-
-:host ::ng-deep .custom-combo .p-select-dropdown,
-:host ::ng-deep .custom-combo .p-dropdown-trigger {
-  width: 35px;
-  color: #5f6368;
-}
-
-:host ::ng-deep .custom-combo .p-select-label,
-:host ::ng-deep .custom-combo .p-dropdown-label {
-  padding: 0 12px;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-/* --- Panel desplegable del ComboBox --- */
-:host ::ng-deep .custom-combo-panel {
-  font-size: 0.95rem;
-}
-
-:host ::ng-deep .custom-combo-panel .p-select-option,
-:host ::ng-deep .custom-combo-panel .p-dropdown-item {
-  padding: 10px 12px !important; /* Espaciado cómodo para seleccionar opciones */
-  font-size: 0.95rem !important;
-  margin: 0;
-}
-
-:host ::ng-deep .custom-combo-panel .p-select-list,
-:host ::ng-deep .custom-combo-panel .p-dropdown-items {
-  padding: 4px 0 !important;
-}
-
-.contenedorSelect{
-  display: flex;
-  align-items: center;
-  gap: 5%;
-}
-
-.contenedorSelect img {
-
-  width: 35px;
-  height: 35px;
-  object-fit: contain; /* Esta es la clave para que no se deformen */
-  margin-right: 10px;  /* Da un poco de aire entre el logo y el texto */
-  padding: 2%;
-
-}
-
-
-
-.alert {
-  padding: 10px 14px;
-  border-radius: 6px;
+.panel-marca__frase {
+  margin: 20px 0 0;
   font-size: 14px;
-  margin-bottom: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+/* ─── Panel del formulario ─────────────────────────────────────────── */
+
+.panel-acceso {
+  flex: 0 0 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  border-left: 1px solid var(--borde);
+}
+
+.tarjeta-acceso {
+  width: 100%;
+  max-width: 340px;
+}
+
+/* El logo de la tarjeta sólo hace falta cuando el panel de marca no se ve. */
+.tarjeta-acceso__logo {
+  display: none;
+  width: 186px;
+  height: auto;
+  margin: 0 auto 28px;
+}
+
+.tarjeta-acceso__titulo {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.tarjeta-acceso__ayuda {
+  margin: 6px 0 28px;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+/* ─── Campos ───────────────────────────────────────────────────────── */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.campo label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto);
+}
+
+.campo__contrasena {
+  position: relative;
+}
+
+.campo__ojo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #9aa4b2;
+  cursor: pointer;
+  border-radius: 0 7px 7px 0;
+}
+
+.campo__ojo:hover {
+  color: var(--texto);
+}
+
+/* ─── Franja de empresas ───────────────────────────────────────────── */
+
+.empresas {
+  margin-top: 34px;
+  padding-top: 20px;
+  border-top: 1px solid var(--borde);
+  text-align: center;
+}
+
+.empresas__rotulo {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #a2abb8;
+}
+
+.empresas__logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* En gris los cuatro juntos se ven como una familia; a color se pelean
+   entre ellos. El color aparece al pasar el mouse.
+   La altura es de 44px y no menos porque los cuatro archivos son casi
+   cuadrados —traen el símbolo encima del nombre—, así que más chicos el
+   nombre deja de leerse. */
+.empresas__logos img {
+  height: 44px;
+  width: auto;
+  max-width: 92px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.empresas__logos img:hover {
+  filter: none;
+  opacity: 1;
+}
+
+/* ─── Avisos ───────────────────────────────────────────────────────── */
+
+.aviso {
+  padding: 10px 13px;
+  border-radius: 7px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.error-message {
-  background-color: #ffeecf;
-  color: #b43426;
-  border: 1px solid #f5c2c2;
+.aviso--error {
+  background-color: #fdeceb;
+  color: #a4251c;
+  border: 1px solid #f6cbc7;
 }
 
-.success-message {
-  background-color: #def2d6;
-  color: #316d28;
-  border: 1px solid #c3e6cb;
+.aviso--exito {
+  background-color: #e7f5e9;
+  color: #2c6b33;
+  border: 1px solid #c3e2c8;
+}
+
+/* ─── PrimeNG ──────────────────────────────────────────────────────── */
+
+:host ::ng-deep .campo .p-inputtext {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+:host ::ng-deep .campo__contrasena .p-inputtext {
+  padding-right: 42px;
+}
+
+:host ::ng-deep .campo .p-inputtext::placeholder {
+  color: #b4bcc6;
+}
+
+:host ::ng-deep .campo .p-inputtext:enabled:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px rgba(64, 64, 65, 0.12);
+  outline: none;
+}
+
+:host ::ng-deep .boton-acceso.p-button {
+  width: 100%;
+  height: 44px;
+  margin-top: 6px;
+  background-color: var(--acento);
+  border: 1px solid var(--acento);
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  justify-content: center;
+}
+
+:host ::ng-deep .boton-acceso.p-button:not(:disabled):hover {
+  background-color: var(--acento-hover);
+  border-color: var(--acento-hover);
+}
+
+/* ─── Pantallas angostas ───────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .panel-marca {
+    display: none;
+  }
+
+  .panel-acceso {
+    flex: 1 1 auto;
+    border-left: 0;
+  }
+
+  .tarjeta-acceso__logo {
+    display: block;
+  }
 }

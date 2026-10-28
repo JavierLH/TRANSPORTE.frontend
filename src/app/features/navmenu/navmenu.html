@@ -5,12 +5,25 @@
   <!-- Encabezado: el botón queda siempre visible para poder reabrir el menú;
        el nombre sólo aparece cuando está expandido. -->
   <div
-    class="flex items-center gap-2 py-4 px-3 text-emerald-600"
+    class="flex items-center gap-2.5 py-3.5 px-3.5 text-emerald-600 border-b border-gray-100"
     [ngClass]="colapsado ? 'justify-center' : ''"
   >
+    <!-- La marca se oculta al colapsar: ahí sólo queda el botón, centrado. -->
+    <div
+      *ngIf="!colapsado"
+      class="flex items-center justify-center w-7 h-7 shrink-0 rounded-lg bg-emerald-700"
+    >
+      <i class="pi pi-truck text-white text-sm"></i>
+    </div>
+
+    <span *ngIf="!colapsado" class="text-base font-semibold tracking-wide whitespace-nowrap">
+      SIIL
+    </span>
+
     <button
       type="button"
-      class="flex items-center justify-center w-9 h-9 shrink-0 border-0 rounded bg-transparent text-emerald-600 cursor-pointer hover:bg-gray-100"
+      class="flex items-center justify-center w-8 h-8 shrink-0 border-0 rounded bg-transparent text-gray-400 cursor-pointer hover:bg-gray-100 hover:text-gray-600"
+      [ngClass]="colapsado ? '' : 'ml-auto'"
       [attr.aria-label]="colapsado ? 'Abrir menú' : 'Ocultar menú'"
       [attr.aria-expanded]="!colapsado"
       (click)="alternarMenu()"
@@ -20,10 +33,6 @@
         [ngClass]="colapsado ? 'pi-bars' : 'pi-angle-double-left'"
       ></i>
     </button>
-
-    <span *ngIf="!colapsado" class="text-lg font-bold whitespace-nowrap">
-      SIIL
-    </span>
   </div>
 
   <!-- Se oculta con la clase `hidden` y no con *ngIf para que #scrollContainer
@@ -34,13 +43,12 @@
     #scrollContainer
     (scroll)="onScroll($event)"
   >
+    <!-- Sin `pt`: el `border-1` que llevaba aquí era lo que convertía cada
+         módulo en una tarjeta. El estilo de las filas está en navmenu.css. -->
     <p-panelMenu
       [model]="items"
       [multiple]="true"
       styleClass="w-full"
-      [pt]="{
-        panel: { class: 'border-1' },
-      }"
     ></p-panelMenu>
   </div>
 
@@ -49,11 +57,11 @@
   <div *ngIf="colapsado" class="grow"></div>
 
   <div
-    class="flex border-t border-gray-200"
+    class="flex border-t border-gray-100 bg-gray-50/60"
     [ngClass]="colapsado ? 'flex-col' : 'flex-row items-center'"
   >
     <button
-      class="flex items-center flex-1 p-3 border-0 bg-transparent text-left cursor-pointer hover:bg-gray-50 min-w-0"
+      class="flex items-center flex-1 p-3 border-0 bg-transparent text-left cursor-pointer hover:bg-gray-100 min-w-0"
       [ngClass]="colapsado ? 'justify-center' : ''"
     >
       <p-avatar

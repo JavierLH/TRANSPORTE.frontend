@@ -10,9 +10,9 @@ import { Usuarios } from '../../core/services/usuarios';
 import { UsuarioCredenciales } from '../../core/models/UsuarioCredenciales';
 import { LoginResponse, Usuario } from '../../core/models/usuarioRolesFunciones';
 
+/** Las empresas del grupo, sólo para la franja de logos del pie. */
 interface Empresa {
     name: string;
-    code: string;
     url : string;
 }
 
@@ -26,11 +26,15 @@ interface Empresa {
 export class Login implements OnInit {
 
     empresas!: Empresa[];
-    empresaSeleccionada!: Empresa;
     loginForm!: FormGroup;
 
     mensajeError: string | null = null;
     mensajeExito: string | null = null;
+
+    /** Evita el doble envío mientras la petición está en vuelo. */
+    cargando = false;
+
+    mostrarContrasena = false;
 
     constructor(
       private usuarioService: Usuarios,
@@ -42,10 +46,10 @@ export class Login implements OnInit {
 
     ngOnInit() {
         this.empresas = [
-            { name: 'KARVE', code: '10', url: 'Recurso 5@4x.png' },
-            { name: 'VIKINGO', code: '30', url: 'Recurso 3@4x.png' },
-            { name: 'DRAKKAR', code: '40' , url: 'Recurso 4@4x.png' },
-            { name: 'LETCA', code: '50' , url: 'letscargo.png' }
+            { name: 'Vikingo', url: 'Recurso 3@4x.png' },
+            { name: 'Karve',   url: 'Recurso 5@4x.png' },
+            { name: 'Drakkar', url: 'Recurso 4@4x.png' },
+            { name: 'Letca',   url: 'letscargo.png' }
         ];
     }
 
@@ -65,15 +69,17 @@ export class Login implements OnInit {
         return;
       }
 
-      console.log("Iniciando sesión...");
-
       const credenciales: UsuarioCredenciales = {
         Username: this.loginForm.value.usuario,
         Password: this.loginForm.value.contrasena
       };
 
+      this.cargando = true;
+
       this.usuarioService.IniciarSesion(credenciales).subscribe({
         next: (respuesta: LoginResponse) => {
+          // En el caso exitoso no se apaga: la pantalla está por cambiar y
+          // reactivar el botón sólo invitaría a un segundo envío.
           if (respuesta.exito) {
             this.mensajeExito = '¡Inicio de sesión correcto! Redirigiendo...';
 
@@ -88,9 +94,11 @@ export class Login implements OnInit {
 
           } else {
             this.mensajeError = 'El inicio de sesión no fue válido.';
+            this.cargando = false;
           }
         },
         error: (err) => {
+          this.cargando = false;
 
           if (err.error && err.error.mensaje) {
             this.mensajeError = err.error.mensaje;

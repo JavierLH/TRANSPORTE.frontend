@@ -1,48 +1,100 @@
-<img class="fondo" src="Recurso 24x2.png" alt="Descripción de la imagen" />
+<div class="pantalla-acceso">
+  <!-- Panel de marca. Se oculta en pantallas angostas: ahí sólo estorba. -->
+  <aside class="panel-marca">
+    <img class="panel-marca__fondo" src="Recurso 24x2.png" alt="" aria-hidden="true" />
 
-<div class="login-wrapper">
-  <div class="login-header"></div>
+    <div class="panel-marca__contenido">
+      <img
+        class="panel-marca__logo"
+        src="logos/grupo.svg"
+        alt="Grupo Hernández Garza"
+        width="250"
+        height="72"
+      />
+      <p class="panel-marca__frase">Sistema integral de información logística</p>
+    </div>
+  </aside>
 
-  <div class="login-card">
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="iniciarSesion()"
-      class="form-container"
-    >
-      <div class="input-group">
-        <label for="username">Usuario</label>
-        <input pInputText id="username" type="text" formControlName="usuario" />
-      </div>
+  <main class="panel-acceso">
+    <div class="tarjeta-acceso">
+      <!-- El logo se repite aquí porque en móvil el panel de marca no se ve. -->
+      <img
+        class="tarjeta-acceso__logo"
+        src="logos/grupo.svg"
+        alt="Grupo Hernández Garza"
+        width="186"
+        height="54"
+      />
 
-      <div class="input-group">
-        <div class="password-labels">
-          <label for="password">Contraseña</label>
+      <h1 class="tarjeta-acceso__titulo">Iniciar sesión</h1>
+      <p class="tarjeta-acceso__ayuda">Entra con tu usuario del sistema.</p>
+
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="iniciarSesion()"
+        class="formulario"
+      >
+        <div class="campo">
+          <label for="username">Usuario</label>
+          <input
+            pInputText
+            id="username"
+            type="text"
+            formControlName="usuario"
+            autocomplete="username"
+            placeholder="Tu usuario"
+          />
         </div>
-        <input
-          pInputText
-          id="password"
-          type="password"
-          formControlName="contrasena"
-        />
+
+        <div class="campo">
+          <label for="password">Contraseña</label>
+
+          <!-- El ojo va dentro del campo, por eso el contenedor relativo. -->
+          <div class="campo__contrasena">
+            <input
+              pInputText
+              id="password"
+              [type]="mostrarContrasena ? 'text' : 'password'"
+              formControlName="contrasena"
+              autocomplete="current-password"
+              placeholder="Tu contraseña"
+            />
+            <button
+              type="button"
+              class="campo__ojo"
+              [attr.aria-label]="mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="mostrarContrasena = !mostrarContrasena"
+            >
+              <i class="pi" [ngClass]="mostrarContrasena ? 'pi-eye-slash' : 'pi-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="mensajeError" class="aviso aviso--error">
+          <i class="pi pi-exclamation-circle"></i> {{ mensajeError }}
+        </div>
+
+        <div *ngIf="mensajeExito" class="aviso aviso--exito">
+          <i class="pi pi-check-circle"></i> {{ mensajeExito }}
+        </div>
+
+        <p-button
+          label="Iniciar sesión"
+          type="submit"
+          styleClass="w-full boton-acceso"
+          [loading]="cargando"
+        ></p-button>
+      </form>
+
+      <div class="empresas">
+        <span class="empresas__rotulo">Empresas del grupo</span>
+
+        <div class="empresas__logos">
+          @for (empresa of empresas; track empresa.name) {
+            <img [src]="empresa.url" [alt]="empresa.name" [title]="empresa.name" />
+          }
+        </div>
       </div>
-
-      <div class="input-group"></div>
-
-      <div *ngIf="mensajeError" class="alert error-message">
-        <i class="pi pi-exclamation-circle"></i> {{ mensajeError }}
-      </div>
-
-      <div *ngIf="mensajeExito" class="alert success-message">
-        <i class="pi pi-check-circle"></i> {{ mensajeExito }}
-      </div>
-
-      <p-button
-        label="Iniciar sesión"
-        type="submit"
-        styleClass="w-full btn-login"
-      ></p-button>
-
-      <a href="#" class="link-action forgot-password">Administrador</a>
-    </form>
-  </div>
+    </div>
+  </main>
 </div>
