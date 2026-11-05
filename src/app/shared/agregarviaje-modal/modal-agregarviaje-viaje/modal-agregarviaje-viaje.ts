@@ -401,6 +401,81 @@ export class ModalAgregarviajeViaje implements OnInit {
     this.sIngreso = viaje.sIngreso ? new Date(viaje.sIngreso) : undefined;
     this.entrega = viaje.entrega ? new Date(viaje.entrega) : undefined;
     this.envio = viaje.envio ?? '';
+
+    // Va al final a propósito: necesita los ids que se acaban de asignar
+    // arriba y los catálogos, que ya llegaron porque esta precarga corre
+    // dentro del `next` de la petición de catálogos.
+    this.completarOpcionesDeRegistroLegado();
+  }
+
+  /**
+   * Un viaje migrado del sistema anterior conserva sus llaves originales, así
+   * que puede apuntar al catálogo de otra empresa. Como los combos sólo
+   * reciben el catálogo de la empresa actual, ese id no está entre las
+   * opciones y el campo se dibujaría vacío, aunque el renglón de la tabla sí
+   * muestre el dato.
+   *
+   * Aquí se completa la opción que falta: el id ya lo trae el viaje y el
+   * nombre lo resolvió la vista. El usuario ve el dato histórico y decide si
+   * lo deja o lo cambia por uno del catálogo nuevo; si lo cambia, ese campo
+   * queda normalizado y la próxima vez se resuelve solo.
+   *
+   * La decisión es por campo y no por registro: los que ya se migraron en una
+   * edición anterior se encuentran en el catálogo y se saltan. Por eso el
+   * sufijo "(histórico)" también sirve de semáforo de lo que falta.
+   */
+  private completarOpcionesDeRegistroLegado(): void {
+    const renglon = this.filaSeleccionada;
+
+    if (!renglon?.esUnRegistroLegado) {
+      return;
+    }
+
+    // lista de opciones, campo del id, campo del texto, id del viaje, nombre
+    // que entrega la vista.
+    const combos: [any[], string, string, number | undefined, string | undefined][] = [
+      [this.clientes,            'idCliente',       'nombreCliente',   this.idCliente,         renglon.cliente],
+      [this.ejecutivos,          'idEjecutivo',     'nombreEjecutivo', this.idEjecutivo,       renglon.ejecutivo],
+      [this.operadores,          'idOperador',      'nombreOperador',  this.idOperador,        renglon.nombreOperador],
+      [this.operadores,          'idOperador',      'nombreOperador',  this.idOperadorRetira,  renglon.operadorRetira],
+      [this.operadores,          'idOperador',      'nombreOperador',  this.idOperadorIngreso, renglon.operadorIngresa],
+      [this.equiposTractocamion, 'idEquipo',        'descripcion',     this.idEquipoRuta,      renglon.ecoRuta],
+      [this.equiposTractocamion, 'idEquipo',        'descripcion',     this.idEquipoRetira,    renglon.ecoRetira],
+      [this.equipos,             'idEquipo',        'descripcion',     this.idEquipoIngreso,   renglon.ecoIngresa],
+      [this.mercancias,          'idTipoMercancia', 'descripcion',     this.idTipoMercancia,   renglon.mercanciaDescripcion],
+    ];
+
+    for (const [lista, campoId, campoTexto, id, texto] of combos) {
+      // Sin nombre no vale la pena: la opción se vería igual de vacía.
+      if (id == null || !texto) {
+        continue;
+      }
+
+      if (lista.some(opcion => opcion[campoId] === id)) {
+        continue;
+      }
+
+      lista.push({ [campoId]: id, [campoTexto]: `${texto} (histórico)` });
+    }
+
+    // `push` muta el arreglo pero no cambia su referencia, y el p-select
+    // decide si rearma su lista interna comparando referencias. Con un
+    // catálogo que ya traía elementos el empujón se alcanza a ver, pero con
+    // uno que llegó vacío —el caso de ejecutivos y equipos en Karve— el
+    // combo nunca se entera y el campo se queda en blanco. Reasignar una
+    // copia es lo que lo obliga a releer.
+    this.clientes            = [...this.clientes];
+    this.ejecutivos          = [...this.ejecutivos];
+    this.operadores          = [...this.operadores];
+    this.equiposTractocamion = [...this.equiposTractocamion];
+    this.equipos             = [...this.equipos];
+    this.mercancias          = [...this.mercancias];
+
+    // La visibilidad de la temperatura se calculó arriba, cuando la mercancía
+    // del viaje todavía no estaba en el catálogo: ahí la descripción salía
+    // indefinida y el campo quedaba escondido aunque el viaje fuera
+    // refrigerado. Ya con la opción puesta hay que recalcularla.
+    this.actualizarVisibilidadDeTemperatura(this.idTipoMercancia);
   }
 
   insertarNuevoValor(){
@@ -587,11 +662,12 @@ export class ModalAgregarviajeViaje implements OnInit {
       .find(mercancia => mercancia.idTipoMercancia === idTipoMercancia)
       ?.descripcion;
 
-    this.NoEsVisibleLaTemperatura = !(
-      descripcion === "REFRIGERADA"
-      || descripcion === "REFRIGERADA/PELIGROSA"
-      || descripcion === "REFRIGERADA/GENERAL"
-    );
+    // Con `startsWith` y no con tres igualdades: cubre las mismas tres
+    // descripciones del catálogo y además tolera el sufijo "(histórico)" que
+    // completarOpcionesDeRegistroLegado() le agrega a la opción de un viaje
+    // migrado. Con la comparación exacta, un viaje refrigerado del sistema
+    // anterior abría con la temperatura escondida.
+    this.NoEsVisibleLaTemperatura = !descripcion?.startsWith('REFRIGERADA');
   }
 
   private construirObjetoViaje(): ProgramacionViajes {

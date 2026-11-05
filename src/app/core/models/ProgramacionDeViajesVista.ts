@@ -56,4 +56,11 @@ export interface ProgramacionDeViajesVista {
 
   /** Color de fondo del convenio, en hexadecimal, calculado por la vista. */
   color?: string | null;
+
+  /**
+   * Verdadero cuando el viaje vino de la migración del sistema anterior.
+   * Esos renglones conservan las llaves originales, así que pueden apuntar
+   * al catálogo de otra empresa.
+   */
+  esUnRegistroLegado?: boolean | null;
 }
